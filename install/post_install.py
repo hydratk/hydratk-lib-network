@@ -1,49 +1,28 @@
 # -*- coding: utf-8 -*-
-"""This code is a part of Hydra toolkit
-
-.. module:: install.post_install
-   :platform: Unix
-   :synopsis: Module for post-install tasks
-.. moduleauthor:: Petr Rašek <bowman@hydratk.org>
-
-"""
 
 from config import config as cfg
 import command as cmd
 from os import path
 
-def run_post_install(requires):
-    """Method runs post-install tasks
-
-    Args:
-       requires (list): installed required modules
-
-    Returns:
-       void
+def run_post_install(argv, requires):  
     
-    """     
+    if (cmd.is_install_cmd(argv)):           
     
-    print('**************************************') 
-    print('*     Running post-install tasks     *')    
-    print('**************************************')
+        print('**************************************') 
+        print('*     Running post-install tasks     *')    
+        print('**************************************')
     
-    tasks = cfg['post_tasks']
-    if ('JPype1>=0.6.1' not in requires):
-        del tasks[tasks.index('compile_java_classes')]
-    
-    for task in tasks:
-        print('\n*** Running task: {0} ***\n'.format(task))
-        globals()[task]()     
+        if ('JPype1>=0.6.1' in requires):
+            for task in cfg['post_tasks']:
+                print('\n*** Running task: {0} ***\n'.format(task))
+                globals()[task]()     
 
-def compile_java_classes():
-    """Method compiles Java classes
-
-    Args:
-
-    Returns:
-       void
+def copy_files():  
     
-    """    
+    for file, dir in cfg['files'].items():        
+        cmd.copy_file(file, dir) 
+
+def compile_java_classes():    
     
     dir = cfg['java']['dir'] 
     if (path.exists(dir)):

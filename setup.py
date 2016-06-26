@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
+from sys import argv
 from install.pre_install import run_pre_install
 from install.post_install import run_post_install
 
 with open("README.rst", "r") as f:
-    readme = f.readlines()
+    readme = f.read()
     
-requires, data_files = run_pre_install()      
+requires = run_pre_install(argv)       
     
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -40,8 +41,7 @@ setup(
       install_requires=requires,
       package_dir={'' : 'src'},
       classifiers=classifiers,
-      zip_safe=False,
-      data_files=data_files
+      zip_safe=False
      )        
 
-run_post_install(requires)
+run_post_install(argv, requires)

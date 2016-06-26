@@ -1,12 +1,4 @@
 # -*- coding: utf-8 -*-
-"""This code is a part of Hydra toolkit
-
-.. module:: install.config
-   :platform: Unix
-   :synopsis: Module with install config
-.. moduleauthor:: Petr Rašek <bowman@hydratk.org>
-
-"""
 
 config = {
   'pre_tasks' : [
@@ -16,6 +8,7 @@ config = {
                 ],
 
   'post_tasks' : [  
+                  'copy_files',
                   'compile_java_classes' 
                  ],
           
@@ -44,11 +37,9 @@ config = {
               ],
           
   'files' : {
-             'JPype1>=0.6.1' : [
-                                ('/var/local/hydratk/java', ['src/hydratk/lib/network/jms/java/JMSClient.java']), 
-                                ('/var/local/hydratk/java', ['src/hydratk/lib/network/jms/java/javaee.jar']),
-                                ('/var/local/hydratk/java', ['src/hydratk/lib/network/dbi/java/DBClient.java'])
-                               ]  
+             'src/hydratk/lib/network/jms/java/JMSClient.java' : '/var/local/hydratk/java', 
+             'src/hydratk/lib/network/jms/java/javaee.jar'     : '/var/local/hydratk/java',
+             'src/hydratk/lib/network/dbi/java/DBClient.java'  : '/var/local/hydratk/java' 
             },
           
   'libs' : {
@@ -99,6 +90,9 @@ config = {
                                                  ],
                                      'apt-get' : [
                                                   'libpq-dev'
+                                                 ],
+                                     'yum'     : [
+                                                  'postgresql-devel'
                                                  ]
                                     },             
             'pycurl>=7.19.5.1'    : {

@@ -1,0 +1,4 @@
+recursive-include install *
+recursive-include src/hydratk/lib/network/dbi/java *
+recursive-include src/hydratk/lib/network/jms/java *
+include *.txt
