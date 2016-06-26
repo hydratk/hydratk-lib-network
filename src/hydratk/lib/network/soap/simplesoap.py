@@ -91,13 +91,23 @@ class SoapResponse(object):
     def msg(self):
         """ msg property getter """
         
-        return self._msg   
+        return self._msg 
+    
+    @msg.setter
+    def msg(self, data):
+        """ msg property getter """
+        self._msg = data       
                      
     @property
     def message(self):
         """ message property getter """
         
         return self._msg
+
+    @message.setter
+    def message(self, data):
+        """ message property getter """
+        self._msg = data    
  
     def _extract_info(self, curl_obj):
         """Methods extracts parameters from CURL object
