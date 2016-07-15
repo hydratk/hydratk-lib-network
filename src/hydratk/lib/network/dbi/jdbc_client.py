@@ -58,7 +58,7 @@ class DBClient:
             self._bridge.start(options)  
             self._client = self._bridge.get_class('DBClient', self._verbose) 
         
-        except RuntimeError, ex:
+        except RuntimeError as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())       
         
     def close(self):
@@ -161,7 +161,7 @@ class DBClient:
         
             return result
     
-        except RuntimeError, ex:
+        except RuntimeError as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return False 
         
@@ -188,7 +188,7 @@ class DBClient:
             
             return result
         
-        except RuntimeError, ex:
+        except RuntimeError as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return False     
         
@@ -251,7 +251,7 @@ class DBClient:
                                                               
             return result, rows
         
-        except RuntimeError, ex:
+        except RuntimeError as ex:
             if ('SELECT ' not in query.upper()):
                 self._client.exec_query('ROLLBACK')            
             

@@ -51,7 +51,7 @@ class RPCClient():
             self._bridge = JavaBridge(jvm_path, classpath)
             self._bridge.start(options)  
         
-        except RuntimeError, ex:
+        except RuntimeError as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())       
         
     def close(self):
@@ -111,7 +111,7 @@ class RPCClient():
                 
             return True
     
-        except RuntimeError, ex:
+        except RuntimeError as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return False
             
@@ -150,5 +150,5 @@ class RPCClient():
                 
             return output
     
-        except RuntimeError, ex:
+        except RuntimeError as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())                          

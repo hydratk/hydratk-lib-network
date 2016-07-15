@@ -151,7 +151,7 @@ class EmailClient:
                                                    
             return True
         
-        except (SMTPException, error), ex:
+        except (SMTPException, error) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False            
                    
@@ -172,7 +172,7 @@ class EmailClient:
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_email_disconnected'), self._mh.fromhere())  
             return True  
     
-        except (SMTPException, error), ex:
+        except (SMTPException, error) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False  
         
@@ -225,7 +225,7 @@ class EmailClient:
             
             return True
             
-        except (SMTPException, error), ex:
+        except (SMTPException, error) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False 
                                                               

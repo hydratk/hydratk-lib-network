@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from config import config as cfg
-import command as cmd
+from install.config import config as cfg
+import install.command as cmd
 from time import sleep
 
 def run_pre_install(argv):   
@@ -32,9 +32,9 @@ def install_libs_from_repo(requires):
     for key in libs.keys():
         if (key in requires):
             lib_inst = []
-            if (libs[key].has_key('repo')):
+            if ('repo' in libs[key]):
                 lib_inst += libs[key]['repo']
-            if (libs[key].has_key(pckm)):
+            if (pckm in libs[key]):
                 lib_inst += libs[key][pckm]
             for lib in lib_inst:
                 cmd.install_pck(pckm, lib)  

@@ -8,6 +8,8 @@
 
 """
 
+from importlib import import_module
+
 engines = {
   'SQLITE'    : 'sqlite_client',
   'ORACLE'    : 'oracle_client',
@@ -33,14 +35,9 @@ def DBClient(engine='SQLITE', *args, **kwargs):
     """       
 
     engine = engine.upper()        
-    if (engines.has_key(engine)):
-            
-        client = None     
-        lib_call = 'from hydratk.lib.network.dbi.' + engines[engine] + ' import DBClient; client = DBClient(*args, **kwargs)'                                             
-        exec lib_call
-                        
-        return client
-
+    if (engine in engines):            
+        mod = import_module('hydratk.lib.network.dbi.{0}'.format(engines[engine]))                 
+        return mod.DBClient(*args, **kwargs)
     else:
         raise ValueError('Unknown engine:{0}'.format(engine))
         return None                           

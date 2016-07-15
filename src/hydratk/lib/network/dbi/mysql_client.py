@@ -130,7 +130,7 @@ class DBClient():
                         
             return True
         
-        except Error, ex:
+        except Error as ex:
             self._mh.dmsg('htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
             return False   
         
@@ -152,7 +152,7 @@ class DBClient():
             
             return True
         
-        except Error, ex:
+        except Error as ex:
             self._mh.dmsg('htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
             return False    
         
@@ -212,7 +212,7 @@ class DBClient():
                                       
             return True, rows
         
-        except Error, ex:
+        except Error as ex:
             if ('SELECT ' not in query.upper()):
                 self._client.rollback()            
             
@@ -263,7 +263,7 @@ class DBClient():
             
                 params = []
                 for name in param_names:
-                    if (i_values.has_key(name)):
+                    if (name in i_values):
                         params.append(i_values[name])
                     else:
                         params.append(None)                               
@@ -284,7 +284,7 @@ class DBClient():
                 for param in params:
                     name = param_names[i]
                                                     
-                    if (o_types.has_key(name) and o_types[name] == 'int' and param != None):
+                    if (name in o_types and o_types[name] == 'int' and param != None):
                         param = int(param)
                         
                     output[name] = param
@@ -305,7 +305,7 @@ class DBClient():
                 self._mh.fire_event(ev)                 
                 return output
         
-        except Error, ex:
+        except Error as ex:
             self._client.rollback()                        
             self._mh.dmsg('htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
             return None          

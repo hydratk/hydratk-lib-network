@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from config import config as cfg
-import command as cmd
+from install.config import config as cfg
+import install.command as cmd
 from os import path
 
 def run_post_install(argv, requires):  

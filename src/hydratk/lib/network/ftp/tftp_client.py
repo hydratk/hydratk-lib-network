@@ -117,7 +117,7 @@ class FTPClient:
                                     
             return True
         
-        except TftpShared.TftpException, ex:
+        except TftpShared.TftpException as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
         
@@ -162,7 +162,7 @@ class FTPClient:
               
             return True
  
-        except TftpShared.TftpException, ex:
+        except TftpShared.TftpException as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             if (path.exists(lpath)):
                 remove(lpath)                     
@@ -209,7 +209,7 @@ class FTPClient:
             
             return True
  
-        except TftpShared.TftpException, ex:
+        except TftpShared.TftpException as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())                    
             return False  
                                

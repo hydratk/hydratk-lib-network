@@ -150,7 +150,7 @@ class EmailClient:
                                                    
             return True
         
-        except IMAP4.error, ex:
+        except IMAP4.error as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False            
                    
@@ -171,7 +171,7 @@ class EmailClient:
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_email_disconnected'), self._mh.fromhere())  
             return True  
     
-        except IMAP4.error, ex:
+        except IMAP4.error as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False    
         
@@ -194,7 +194,7 @@ class EmailClient:
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_email_count', count), self._mh.fromhere())      
             return count              
             
-        except IMAP4.error, ex: 
+        except IMAP4.error as ex: 
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None      
         
@@ -219,7 +219,7 @@ class EmailClient:
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_email_listed'), self._mh.fromhere())         
             return emails
             
-        except IMAP4.error, ex: 
+        except IMAP4.error as ex: 
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None  
         
@@ -280,6 +280,6 @@ class EmailClient:
 
             return (sender, recipients, cc, subject, message)                                                       
             
-        except IMAP4.error, ex: 
+        except IMAP4.error as ex: 
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None                                                                            

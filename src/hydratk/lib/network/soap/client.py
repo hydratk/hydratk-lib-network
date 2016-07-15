@@ -183,7 +183,7 @@ class SOAPClient:
                 
             return True
             
-        except WebFault, ex:
+        except WebFault as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False 
         
@@ -255,6 +255,6 @@ class SOAPClient:
         
             return response
             
-        except WebFault, ex:
+        except WebFault as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None                     

@@ -171,7 +171,7 @@ class LDAPClient:
                                                    
             return True                      
             
-        except LDAPError, ex:
+        except LDAPError as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False              
     
@@ -192,7 +192,7 @@ class LDAPClient:
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ldap_disconnected'), self._mh.fromhere())  
             return True  
     
-        except LDAPError, ex:
+        except LDAPError as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False 
         
@@ -266,7 +266,7 @@ class LDAPClient:
                                                    
             return records                                   
             
-        except LDAPError, ex:
+        except LDAPError as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None                
         
@@ -306,7 +306,7 @@ class LDAPClient:
                         
             return True       
         
-        except LDAPError, ex:
+        except LDAPError as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False          
     
@@ -341,8 +341,8 @@ class LDAPClient:
                 record = self.read(rdn, fetch_one=True)[0]
                            
                 rdn_new = None
-                if (attrs.has_key('cn') or attrs.has_key('uid')):
-                    key = 'cn' if attrs.has_key('cn') else 'uid'
+                if ('cn' in attrs or 'uid' in attrs):
+                    key = 'cn' if 'cn' in attrs else 'uid'
                     rdn_new = attrs[key]
                     del attrs[key]
                 
@@ -361,7 +361,7 @@ class LDAPClient:
                         
             return True       
         
-        except LDAPError, ex:
+        except LDAPError as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False          
     
@@ -398,6 +398,6 @@ class LDAPClient:
                         
             return True       
         
-        except LDAPError, ex:
+        except LDAPError as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False            

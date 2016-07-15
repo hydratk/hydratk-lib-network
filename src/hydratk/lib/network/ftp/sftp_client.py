@@ -156,7 +156,7 @@ class FTPClient:
                                     
             return True
         
-        except (SSHException, NoValidConnectionsError, error), ex:
+        except (SSHException, NoValidConnectionsError, error) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
         
@@ -199,7 +199,7 @@ class FTPClient:
             names = self._client.listdir()                            
             return names  
     
-        except (SSHException, NoValidConnectionsError, error), ex: 
+        except (SSHException, NoValidConnectionsError, error) as ex: 
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())       
             return None       
         
@@ -233,7 +233,7 @@ class FTPClient:
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_cur_dir', self._path), self._mh.fromhere())  
             return True
          
-        except (SSHException, NoValidConnectionsError, error), ex:
+        except (SSHException, NoValidConnectionsError, error) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())        
             return False  
         
@@ -278,7 +278,7 @@ class FTPClient:
               
             return True
  
-        except (SSHException, NoValidConnectionsError, error), ex:
+        except (SSHException, NoValidConnectionsError, error) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             if (path.exists(lpath)):
                 remove(lpath)                     
@@ -325,7 +325,7 @@ class FTPClient:
             
             return True
  
-        except (SSHException, NoValidConnectionsError, error), ex:
+        except (SSHException, NoValidConnectionsError, error) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())                    
             return False  
         
@@ -357,7 +357,7 @@ class FTPClient:
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_file_deleted'), self._mh.fromhere())        
             return True              
             
-        except (SSHException, NoValidConnectionsError, error), ex:     
+        except (SSHException, NoValidConnectionsError, error) as ex:     
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())                             
             return False   
         
@@ -389,7 +389,7 @@ class FTPClient:
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_dir_made'), self._mh.fromhere())    
             return True
                       
-        except (SSHException, NoValidConnectionsError, error), ex:     
+        except (SSHException, NoValidConnectionsError, error) as ex:     
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())                             
             return False              
         
@@ -421,6 +421,6 @@ class FTPClient:
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_dir_removed'), self._mh.fromhere())     
             return True
                       
-        except (SSHException, NoValidConnectionsError, error), ex:     
+        except (SSHException, NoValidConnectionsError, error) as ex:     
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())                             
             return False                                    

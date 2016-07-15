@@ -8,6 +8,8 @@
 
 """
 
+from importlib import import_module
+
 protocols = {
   'FTP' : 'ftp_client',
   'SFTP': 'sftp_client',
@@ -31,14 +33,9 @@ def FTPClient(protocol='FTP', *args, **kwargs):
     """       
 
     protocol = protocol.upper()        
-    if (protocols.has_key(protocol)):
-            
-        client = None     
-        lib_call = 'from hydratk.lib.network.ftp.' + protocols[protocol] + ' import FTPClient; client = FTPClient(*args, **kwargs)'                                             
-        exec lib_call
-                        
-        return client
-
+    if (protocol in protocols):
+        mod = import_module('hydratk.lib.network.ftp.{0}'.format(protocols[protocol]))                 
+        return mod.FTPClient(*args, **kwargs)
     else:
         raise ValueError('Unknown protocol:{0}'.format(protocol))
         return None                           

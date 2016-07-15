@@ -59,7 +59,7 @@ def Packet(protocol, **kwargs):
                         
         return packet
     
-    except ImportError, ex:
+    except ImportError as ex:
         
         raise ValueError('Unknown protocol: {0}'.format(protocol))        
 
@@ -91,7 +91,7 @@ def compose_packet(packets, payload=None):
         else:
             return None
         
-    except error, ex:
+    except error as ex:
         mh.dmsg('htk_on_error', ex, mh.fromhere())
         return None 
 
@@ -115,7 +115,7 @@ def dump(packet, raw=False):
             from scapy.all import hexdump
             hexdump(packet)            
         
-    except error, ex:
+    except error as ex:
         mh.dmsg('htk_on_error', ex, mh.fromhere())
         return None         
 
@@ -156,7 +156,7 @@ def send_packet(packet, iface=None, verbose=False):
         ev = event.Event('inet_after_send_packet')
         mh.fire_event(ev)          
             
-    except error, ex:
+    except error as ex:
         mh.dmsg('htk_on_error', ex, mh.fromhere())           
         
 def send_recv_packet(packet, iface=None, retry=3, timeout=1, verbose=False):
@@ -204,7 +204,7 @@ def send_recv_packet(packet, iface=None, retry=3, timeout=1, verbose=False):
         
         return ans, unans
         
-    except error, ex:
+    except error as ex:
         mh.dmsg('htk_on_error', ex, mh.fromhere())
     
 def ping(destination, protocol='ICMP', port=None, verbose=False):
@@ -228,7 +228,7 @@ def ping(destination, protocol='ICMP', port=None, verbose=False):
     
     try:     
         
-        print ('ping {0}'.format(destination))
+        print('ping {0}'.format(destination))
         mh.dmsg('htk_on_debug_info', mh._trn.msg('htk_inet_ping', destination, protocol, port), mh.fromhere())
     
         ev = event.Event('inet_before_ping', destination, protocol, port)
@@ -262,7 +262,7 @@ def ping(destination, protocol='ICMP', port=None, verbose=False):
     
         return result
     
-    except error, ex:
+    except error as ex:
         mh.dmsg('htk_on_error', ex, mh.fromhere()) 
         return False
         
@@ -288,7 +288,7 @@ def traceroute(destination, protocol='ICMP', port=None, max_hops=10, verbose=Fal
     
     try:     
         
-        print ('traceroute {0}'.format(destination))
+        print('traceroute {0}'.format(destination))
         mh.dmsg('htk_on_debug_info', mh._trn.msg('htk_inet_traceroute', destination, protocol, port, max_hops), 
                 mh.fromhere()) 
         
@@ -319,7 +319,7 @@ def traceroute(destination, protocol='ICMP', port=None, max_hops=10, verbose=Fal
                 
                 if (packet[1].src != last_ip):
                     last_ip = packet[1].src
-                    print ('{0}: {1}'.format(packet[0].ttl, last_ip))  
+                    print('{0}: {1}'.format(packet[0].ttl, last_ip))  
                 else:
                     destination_reached = True
                     break;
@@ -336,7 +336,7 @@ def traceroute(destination, protocol='ICMP', port=None, max_hops=10, verbose=Fal
         
         return result                                   
         
-    except error, ex:
+    except error as ex:
         mh.dmsg('htk_on_error', ex, mh.fromhere())   
         return False  
         
@@ -385,5 +385,5 @@ def sniffer(output, iface='all', filter=None, timeout=10):
         ev = event.Event('inet_after_sniff')
         mh.fire_event(ev)             
         
-    except error, ex:
+    except error as ex:
         mh.dmsg('htk_on_error', ex, mh.fromhere())                  

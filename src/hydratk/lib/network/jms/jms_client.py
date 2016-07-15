@@ -60,7 +60,7 @@ class JMSClient:
             self._bridge.start(options)  
             self._client = self._bridge.get_class('JMSClient', self._verbose) 
         
-        except RuntimeError, ex:
+        except RuntimeError as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())       
         
     def close(self):
@@ -154,7 +154,7 @@ class JMSClient:
         
             return result
     
-        except RuntimeError, ex:
+        except RuntimeError as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return False 
         
@@ -181,7 +181,7 @@ class JMSClient:
             
             return result
         
-        except RuntimeError, ex:
+        except RuntimeError as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return False           
         
@@ -233,7 +233,7 @@ class JMSClient:
        
             return result 
     
-        except RuntimeError, ex:
+        except RuntimeError as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return False           
     
@@ -286,7 +286,7 @@ class JMSClient:
        
             return messages  
     
-        except RuntimeError, ex:
+        except RuntimeError as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None        
         
@@ -344,6 +344,6 @@ class JMSClient:
        
             return messages  
     
-        except RuntimeError, ex:
+        except RuntimeError as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None             

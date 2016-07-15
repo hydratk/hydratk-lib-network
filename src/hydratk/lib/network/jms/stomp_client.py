@@ -74,7 +74,7 @@ class JMSClient:
                 basicConfig()
                 getLogger().setLevel(DEBUG)
         
-        except RuntimeError, ex:
+        except StompError as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere()) 
             
     @property
@@ -159,7 +159,7 @@ class JMSClient:
         
             return True
     
-        except StompError, ex:
+        except StompError as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return False 
         
@@ -184,7 +184,7 @@ class JMSClient:
                 
             return True
         
-        except StompError, ex:
+        except StompError as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return False           
         
@@ -226,7 +226,7 @@ class JMSClient:
                 
                 headers_new = {}
                 for key, value in headers.items():
-                    if (mapping.has_key(key)):
+                    if (key in mapping):
                         headers_new[mapping[key]] = value
                 
                 self._client.send('/{0}/{1}'.format(destination_type, destination_name), message, headers_new)
@@ -237,7 +237,7 @@ class JMSClient:
 
             return True 
     
-        except StompError, ex:
+        except StompError as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return False           
     
@@ -297,7 +297,7 @@ class JMSClient:
        
             return messages  
     
-        except StompError, ex:
+        except StompError as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None            
         
@@ -372,6 +372,6 @@ class JMSClient:
        
             return messages  
     
-        except StompError, ex:
+        except StompError as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None                        

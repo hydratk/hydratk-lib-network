@@ -63,14 +63,14 @@ class Client:
         
             self._lay3_prot = lay3_prot.upper()
             self._lay4_prot = lay4_prot.upper()  
-            if (not self._protocols.has_key(self._lay3_prot)):
+            if (self._lay3_prot not in self._protocols):
                 raise ValueError('Unknown protocol:{0}'.format(self._lay3_prot))   
-            elif (not self._protocols.has_key(self._lay3_prot)):
+            elif (self._lay3_prot not in self._protocols):
                 raise ValueError('Unknown protocol:{0}'.format(self._lay4_prot))       
             else:
                 self._client = socket(self._protocols[self._lay3_prot], self._protocols[self._lay4_prot])
                 
-        except error, ex:
+        except error as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False                  
             
@@ -150,7 +150,7 @@ class Client:
             
             return True
             
-        except error, ex:
+        except error as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False 
         
@@ -179,7 +179,7 @@ class Client:
             
             return True
             
-        except error, ex:
+        except error as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False    
         
@@ -234,7 +234,7 @@ class Client:
             
             return True
             
-        except error, ex:
+        except error as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False       
         
@@ -281,7 +281,7 @@ class Client:
             
             return True
             
-        except error, ex:
+        except error as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False                           
         
@@ -301,7 +301,7 @@ class Client:
             host = gethostbyaddr(ip)
             return (host[0] if (len(host) > 0) else None)
         
-        except error, ex:
+        except error as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None          
         
@@ -320,6 +320,6 @@ class Client:
             addr = getaddrinfo(name, None)
             return (addr[0][4][0] if (len(addr) > 0) else None)
         
-        except error, ex:
+        except error as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None                       

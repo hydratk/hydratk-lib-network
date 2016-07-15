@@ -140,7 +140,7 @@ class DBClient():
                         
             return True
         
-        except Error, ex:
+        except Error as ex:
             self._mh.dmsg('htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
             return False    
         
@@ -162,7 +162,7 @@ class DBClient():
             
             return True
         
-        except Error, ex:
+        except Error as ex:
             self._mh.dmsg('htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
             return False    
         
@@ -224,7 +224,7 @@ class DBClient():
                                       
             return True, rows
         
-        except Error, ex:
+        except Error as ex:
             if ('SELECT ' not in query.upper()):
                 self._client.rollback()            
             
@@ -275,9 +275,9 @@ class DBClient():
             
                 params = []
                 for name in param_names:
-                    if (i_values.has_key(name)):
+                    if (name in i_values):
                         params.append(i_values[name])
-                    elif (o_types.has_key(name)):
+                    elif (name in o_types):
                         
                         if (o_types[name].lower() == 'cursor'):
                             params.append(self._client.cursor())
@@ -303,10 +303,10 @@ class DBClient():
                             param = [dict(zip(columns, row)) for row in param]                              
                         else:
                             param = param.getvalue()
-                            if (o_types.has_key(name) and o_types[name] == 'int' and param != None):
+                            if (name in o_types and o_types[name] == 'int' and param != None):
                                 param = int(param)
                     
-                    if (o_types.has_key(name)):    
+                    if (name in o_types):    
                         output[name] = param
                     i = i+1 
                     
@@ -325,7 +325,7 @@ class DBClient():
                 self._mh.fire_event(ev)                 
                 return output
         
-        except Error, ex:
+        except Error as ex:
             self._client.rollback()
             self._mh.dmsg('htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
             return None          

@@ -2,7 +2,6 @@
 
 from subprocess import call, Popen, PIPE
 from os import environ, path
-import cmd
 
 def is_install_cmd(argv):
 

@@ -8,6 +8,8 @@
 
 """
 
+from importlib import import_module
+
 protocols = {
   'SSH': 'ssh_client'
 }
@@ -29,14 +31,9 @@ def TermClient(protocol='SSH', *args, **kwargs):
     """       
 
     protocol = protocol.upper()        
-    if (protocols.has_key(protocol)):
-            
-        client = None     
-        lib_call = 'from hydratk.lib.network.term.' + protocols[protocol] + ' import TermClient; client = TermClient(*args, **kwargs)'                                             
-        exec lib_call
-                        
-        return client
-
+    if (protocol in protocols):
+        mod = import_module('hydratk.lib.network.term.{0}'.format(protocols[protocol]))                 
+        return mod.TermClient(*args, **kwargs)
     else:
         raise ValueError('Unknown protocol:{0}'.format(protocol))
         return None                           

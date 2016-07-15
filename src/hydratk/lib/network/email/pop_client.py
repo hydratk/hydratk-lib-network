@@ -152,7 +152,7 @@ class EmailClient:
                                                    
             return True
         
-        except (error_proto, error), ex:
+        except (error_proto, error) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False            
                    
@@ -173,7 +173,7 @@ class EmailClient:
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_email_disconnected'), self._mh.fromhere())  
             return True  
     
-        except (error_proto, error), ex:
+        except (error_proto, error) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False    
         
@@ -223,7 +223,7 @@ class EmailClient:
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_email_listed'), self._mh.fromhere())         
             return emails
             
-        except (error_proto, error), ex: 
+        except (error_proto, error) as ex: 
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None  
         
@@ -283,6 +283,6 @@ class EmailClient:
 
             return (sender, recipients, cc, subject, message)                                                       
             
-        except (error_proto, error), ex: 
+        except (error_proto, error) as ex: 
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None                                                                            

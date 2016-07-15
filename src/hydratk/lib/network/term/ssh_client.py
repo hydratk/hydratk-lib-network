@@ -143,7 +143,7 @@ class TermClient:
                                                    
             return True
         
-        except (SSHException, NoValidConnectionsError, error), ex:
+        except (SSHException, NoValidConnectionsError, error) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             self._client.close()            
             return False            
@@ -166,7 +166,7 @@ class TermClient:
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_term_disconnected'), self._mh.fromhere())  
             return True  
     
-        except (SSHException, NoValidConnectionsError, error), ex:
+        except (SSHException, NoValidConnectionsError, error) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False                    
     
@@ -213,6 +213,6 @@ class TermClient:
                     out = out if (len(out) > 0) else None
                     return True, out
             
-        except (SSHException, NoValidConnectionsError, error), ex:
+        except (SSHException, NoValidConnectionsError, error) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False, [str(ex)]                                

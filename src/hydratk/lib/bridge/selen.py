@@ -25,6 +25,12 @@ selen_after_save_screen
 
 """
 
+from hydratk.core.masterhead import MasterHead
+from hydratk.core import event
+from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.support.ui import WebDriverWait
+from importlib import import_module
+
 browsers = {
   'ANDROID'    : 'Android',
   'BLACKBERRY' : 'BlackBerry',
@@ -35,11 +41,6 @@ browsers = {
   'PHANTOMJS'  : 'PhantomJS',
   'SAFARI'     : 'Safari'
 }            
-
-from hydratk.core.masterhead import MasterHead
-from hydratk.core import event
-from selenium.common.exceptions import WebDriverException
-from selenium.webdriver.support.ui import WebDriverWait
 
 class SeleniumBridge():
     """Class SeleniumBridge
@@ -66,17 +67,14 @@ class SeleniumBridge():
         self._mh = MasterHead.get_head()
                 
         self._browser = browser.upper()
-        if (browsers.has_key(self._browser)):
+        if (self._browser in browsers):
             
-            client = None     
-            if (self._browser == 'PHANTOMJS'):
-                lib_call = 'from selenium.webdriver import ' + browsers[self._browser] + '; client = ' + browsers[self._browser] + \
-                           '(service_args = [\'--ignore-ssl-errors=true\', \'--ssl-protocol=any\'])' 
-                exec lib_call
+            mod = import_module('selenium.webdriver')   
+            if (self._browser == 'PHANTOMJS'):                
+                client = mod.__dict__[browsers[self._browser]](service_args=['--ignore-ssl-errors=true', '--ssl-protocol=any'])
                 client.set_window_size(1024, 768)         
             else:
-                lib_call = 'from selenium.webdriver import ' + browsers[self._browser] + '; client = ' + browsers[self._browser] + '()'                                             
-                exec lib_call
+                client = mod.__dict__[browsers[self._browser]]()
                 
             self._client = client            
 
@@ -127,7 +125,7 @@ class SeleniumBridge():
                 
             return True
             
-        except WebDriverException, ex:
+        except WebDriverException as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False  
         
@@ -148,7 +146,7 @@ class SeleniumBridge():
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_selen_closed'), self._mh.fromhere())
             return True
         
-        except WebDriverException, ex:
+        except WebDriverException as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False                  
         
@@ -187,7 +185,7 @@ class SeleniumBridge():
             ev = event.Event('selen_after_wait')
             self._mh.fire_event(ev)                
          
-        except WebDriverException, ex:
+        except WebDriverException as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())              
         
     def get_element(self, ident, method='id', single=True):
@@ -251,7 +249,7 @@ class SeleniumBridge():
         
             return elements
         
-        except WebDriverException, ex:
+        except WebDriverException as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None    
         
@@ -299,7 +297,7 @@ class SeleniumBridge():
             
                 return element.text
         
-        except WebDriverException, ex:
+        except WebDriverException as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None         
     
@@ -359,7 +357,7 @@ class SeleniumBridge():
                             
             return True     
     
-        except WebDriverException, ex:
+        except WebDriverException as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False  
         
@@ -395,7 +393,7 @@ class SeleniumBridge():
             
             return output                 
             
-        except WebDriverException, ex:
+        except WebDriverException as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())   
             return None    
         
@@ -429,6 +427,6 @@ class SeleniumBridge():
             self._mh.fire_event(ev)                  
             return True        
             
-        except WebDriverException, ex:
+        except WebDriverException as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False                                                                                             

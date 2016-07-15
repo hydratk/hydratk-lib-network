@@ -8,6 +8,8 @@
 
 """
 
+from importlib import import_module
+
 protocols = {
   'SMTP': 'smtp_client',
   'POP' : 'pop_client',
@@ -31,14 +33,9 @@ def EmailClient(protocol, *args, **kwargs):
     """       
 
     protocol = protocol.upper()        
-    if (protocols.has_key(protocol)):
-            
-        client = None     
-        lib_call = 'from hydratk.lib.network.email.' + protocols[protocol] + ' import EmailClient; client = EmailClient(*args, **kwargs)'                                             
-        exec lib_call
-                        
-        return client
-
+    if (protocol in protocols):
+        mod = import_module('hydratk.lib.network.email.{0}'.format(protocols[protocol]))                 
+        return mod.EmailClient(*args, **kwargs)
     else:
         raise ValueError('Unknown protocol:{0}'.format(protocol))
         return None                           

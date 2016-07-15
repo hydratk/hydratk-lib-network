@@ -72,7 +72,7 @@ class JMSClient:
                 basicConfig()
                 getLogger().setLevel(DEBUG)            
         
-        except RuntimeError, ex:
+        except ProtonException as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())     
     
     @property
@@ -159,7 +159,7 @@ class JMSClient:
         
             return True
     
-        except ProtonException, ex:
+        except ProtonException as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return False 
         
@@ -183,7 +183,7 @@ class JMSClient:
                 
             return True
         
-        except ProtonException, ex:
+        except ProtonException as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return False      
         
@@ -226,7 +226,7 @@ class JMSClient:
                 
                 headers_new = {}
                 for key, value in headers.items():
-                    if (mapping.has_key(key)):
+                    if (key in mapping):
                         headers_new[mapping[key]] = value
                                 
                 sender.send(Message(body=message, properties=headers_new))
@@ -238,7 +238,7 @@ class JMSClient:
 
             return True 
     
-        except ProtonException, ex:
+        except ProtonException as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return False     
         
@@ -300,7 +300,7 @@ class JMSClient:
        
             return messages  
     
-        except ProtonException, ex:
+        except ProtonException as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None           
         
@@ -344,7 +344,6 @@ class JMSClient:
                     try:
                         msg = receiver.receive(timeout=1) 
                         receiver.accept()                       
-                        print msg
                         correlation_id = None
                         type = None
                         for key, value in msg.properties.items():
@@ -379,6 +378,6 @@ class JMSClient:
        
             return messages  
     
-        except ProtonException, ex:
+        except ProtonException as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None                             

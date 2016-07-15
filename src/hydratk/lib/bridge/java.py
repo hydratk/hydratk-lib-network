@@ -131,7 +131,7 @@ class JavaBridge:
                 
             return result
             
-        except (RuntimeError, JavaException), ex:
+        except (RuntimeError, JavaException) as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None         
     
@@ -170,7 +170,7 @@ class JavaBridge:
                 
             return result
           
-        except (RuntimeError, JavaException), ex:
+        except (RuntimeError, JavaException) as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None         
     
@@ -188,13 +188,13 @@ class JavaBridge:
         
         try:
         
-            if (not java_types.has_key(datatype)):
+            if (datatype not in java_types):
                 self._mh.dmsg('htk_on_error', self._mh._trn.msg('htk_java_unknown_type', datatype), self._mh.fromhere())
                 return None        
             else: 
                 return java_types[datatype](value)
             
-        except (RuntimeError, JavaException), ex:
+        except (RuntimeError, JavaException) as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None            
         
@@ -214,7 +214,7 @@ class JavaBridge:
 
             return JClass(name)(*attrs)
         
-        except (RuntimeError, JavaException), ex:
+        except (RuntimeError, JavaException) as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None    
         
@@ -242,7 +242,7 @@ class JavaBridge:
             
             return attrs, methods
         
-        except (RuntimeError, JavaException), ex:
+        except (RuntimeError, JavaException) as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None   
         
@@ -262,7 +262,7 @@ class JavaBridge:
             package =  JPackage(name)
             return package
         
-        except (RuntimeError, JavaException), ex:
+        except (RuntimeError, JavaException) as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None             
         
@@ -285,7 +285,7 @@ class JavaBridge:
                 
             return arraylist 
         
-        except (RuntimeError, JavaException), ex:
+        except (RuntimeError, JavaException) as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None           
           
@@ -309,7 +309,7 @@ class JavaBridge:
                 
             return hashmap 
         
-        except (RuntimeError, JavaException), ex:
+        except (RuntimeError, JavaException) as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None   
         

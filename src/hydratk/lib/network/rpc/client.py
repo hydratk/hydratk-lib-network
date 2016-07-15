@@ -8,6 +8,8 @@
 
 """
 
+from importlib import import_module
+
 providers = {
   'RMI': 'rmi_client'
 }
@@ -29,14 +31,9 @@ def RPCClient(provider, *args):
     """       
 
     provider = provider.upper()        
-    if (providers.has_key(provider)):
-            
-        client = None     
-        lib_call = 'from hydratk.lib.network.rpc.' + providers[provider] + ' import RPCClient; client = RPCClient(*args, **kwargs)'                                             
-        exec lib_call
-                        
-        return client
-
+    if (provider in providers):
+        mod = import_module('hydratk.lib.network.rpc.{0}'.format(providers[provider]))                
+        return mod.RPCClient(*args)
     else:
         raise ValueError('Unknown provider:{0}'.format(provider))
         return None                           

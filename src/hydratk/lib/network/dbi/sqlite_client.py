@@ -88,7 +88,7 @@ class DBClient():
                         
             return True
     
-        except Error, ex:
+        except Error as ex:
             self._mh.dmsg('htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
             return False    
         
@@ -110,7 +110,7 @@ class DBClient():
             
             return True
         
-        except Error, ex:
+        except Error as ex:
             self._mh.dmsg('htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
             return False    
         
@@ -167,7 +167,7 @@ class DBClient():
                                       
             return True, rows
         
-        except Error, ex:            
+        except Error as ex:            
             if ('SELECT ' not in query.upper()):
                 self._client.rollback()
             

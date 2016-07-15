@@ -142,7 +142,7 @@ class RESTClient:
                         content_type = 'form'        
                 if (body != None and method in ('GET', None)):
                     method = 'POST'                    
-                if (content_type != None and mime_types.has_key(content_type)):
+                if (content_type != None and content_type in mime_types):
                     if (headers == None):
                         headers = {}
                     headers['Content-Type'] = mime_types[content_type]
@@ -163,7 +163,7 @@ class RESTClient:
                 
             return (self._res_header.status, self._res_body)
             
-        except (HttpLib2Error, error), ex:
+        except (HttpLib2Error, error) as ex:
             if (str(ex) == 'WWW-Authenticate'):
                 return (401, None)
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
@@ -181,7 +181,7 @@ class RESTClient:
         """  
         
         title = title.lower()
-        if (self._res_header.has_key(title)):        
+        if (title in self._res_header):        
             return self._res_header[title]
         else:
             return None 
