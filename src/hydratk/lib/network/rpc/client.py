@@ -8,6 +8,7 @@
 
 """
 
+from hydratk.core.masterhead import MasterHead
 from importlib import import_module
 
 providers = {
@@ -32,7 +33,9 @@ def RPCClient(provider, *args):
 
     provider = provider.upper()        
     if (provider in providers):
-        mod = import_module('hydratk.lib.network.rpc.{0}'.format(providers[provider]))                
+        mh = MasterHead.get_head()
+        mod = import_module('hydratk.lib.network.rpc.{0}'.format(providers[provider]))
+        mh.find_module('hydratk.lib.network.rpc.client', None)                  
         return mod.RPCClient(*args)
     else:
         raise ValueError('Unknown provider:{0}'.format(provider))

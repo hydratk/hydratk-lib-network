@@ -55,6 +55,7 @@ class LDAPClient:
         """          
         
         self._mh = MasterHead.get_head() 
+        self._mh.find_module('hydratk.lib.network.ldap.client', None)  
                           
         self._verbose = verbose
         if (self._verbose):

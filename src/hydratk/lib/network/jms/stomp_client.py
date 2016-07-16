@@ -24,11 +24,15 @@ jms_after_browse
 
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
-from stompest.config import StompConfig
-from stompest.sync import Stomp
-from stompest.protocol import StompSpec
-from stompest.error import StompError
 from logging import basicConfig, getLogger, DEBUG
+
+try:
+    from stompest.config import StompConfig
+    from stompest.sync import Stomp
+    from stompest.protocol import StompSpec
+    from stompest.error import StompError
+except ImportError:
+    raise NotImplementedError('STOMP client is not supported for Python 3.x due to external library stompest')
 
 mapping = {
   'JMSCorrelationID': 'correlation-id',

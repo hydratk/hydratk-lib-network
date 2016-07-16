@@ -2,6 +2,7 @@
 
 from install.config import config as cfg
 import install.command as cmd
+from sys import version_info
 from time import sleep
 
 def run_pre_install(argv):   
@@ -23,6 +24,19 @@ def run_pre_install(argv):
                 globals()[task](requires)          
     
     return requires  
+
+def version_update(requires):
+    
+    major, minor = version_info[0], version_info[1]
+    
+    if (major == 3):
+        del cfg['modules'][cfg['modules'].index('stompest>=2.1.6')]
+        cfg['modules'][cfg['modules'].index('MySQL-python>=1.2.3')] = 'mysqlclient>=1.3.7'
+        cfg['libs']['mysqlclient>=1.3.7'] = cfg['libs']['MySQL-python>=1.2.3']
+        cfg['modules'][cfg['modules'].index('python-ldap>=2.4.25')] = 'pyldap>=2.4.25'
+        cfg['libs']['pyldap>=2.4.25'] = cfg['libs']['python-ldap>=2.4.25']
+        cfg['modules'][cfg['modules'].index('scapy>=2.3.1')] = 'scapy-python3>=0.18'
+        cfg['modules'][cfg['modules'].index('suds>=0.4')] = 'suds-py3>=1.3.2.0'
 
 def install_libs_from_repo(requires):       
     

@@ -27,6 +27,7 @@ inet_after_sniff
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
 from logging import getLogger, ERROR
+from importlib import import_module
 
 getLogger('scapy.runtime').setLevel(ERROR)
 
@@ -53,9 +54,9 @@ def Packet(protocol, **kwargs):
     
     try:
         
-        packet = None     
-        lib_call = 'from scapy.all import ' + protocol + ' as Packet; packet = Packet(**kwargs)'                                             
-        exec lib_call
+        mod = import_module('scapy.all')
+        packet = mod.__dict__[protocol](**kwargs)
+        mh.find_module('hydratk.lib.network.inet.packet', None)   
                         
         return packet
     

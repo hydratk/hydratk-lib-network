@@ -65,6 +65,7 @@ class SeleniumBridge():
         """           
         
         self._mh = MasterHead.get_head()
+        self._mh.find_module('hydratk.lib.bridge.selen', None)  
                 
         self._browser = browser.upper()
         if (self._browser in browsers):

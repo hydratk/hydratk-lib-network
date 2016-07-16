@@ -19,10 +19,14 @@ rest_after_request
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
 from httplib2 import Http, debuglevel, HttpLib2Error
-from urllib import urlencode
-from jsonlib2 import read
+from simplejson import loads
 from lxml import objectify
 from socket import error
+
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
 
 mime_types = {
   'form': 'application/x-www-form-urlencoded',
@@ -56,6 +60,7 @@ class RESTClient:
         """         
         
         self._mh = MasterHead.get_head() 
+        self._mh.find_module('hydratk.lib.network.rest.client', None)  
         
         if (cache):
             self._client = Http('.cache', disable_ssl_certificate_validation=ignore_cert, timeout=timeout)
@@ -157,7 +162,7 @@ class RESTClient:
             content_type = self.get_header('Content-Type')
             if (content_type != None):
                 if ('json' in content_type and len(self._res_body) > 0):
-                    self._res_body = read(self._res_body)
+                    self._res_body = loads(self._res_body)
                 elif ('xml' in content_type and len(self._res_body) > 0):              
                     self._res_body = objectify.fromstring(self._res_body)                                             
                 

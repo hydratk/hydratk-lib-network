@@ -57,7 +57,8 @@ class JavaBridge:
            
         """         
         
-        self._mh = MasterHead.get_head()        
+        self._mh = MasterHead.get_head()  
+        self._mh.find_module('hydratk.lib.bridge.java', None)        
         
         if (jvm_path != None):
             self._jvm_path = jvm_path

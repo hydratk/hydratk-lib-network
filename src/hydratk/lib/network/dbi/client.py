@@ -8,6 +8,7 @@
 
 """
 
+from hydratk.core.masterhead import MasterHead
 from importlib import import_module
 
 engines = {
@@ -36,7 +37,9 @@ def DBClient(engine='SQLITE', *args, **kwargs):
 
     engine = engine.upper()        
     if (engine in engines):            
-        mod = import_module('hydratk.lib.network.dbi.{0}'.format(engines[engine]))                 
+        mh = MasterHead.get_head()        
+        mod = import_module('hydratk.lib.network.dbi.{0}'.format(engines[engine]))
+        mh.find_module('hydratk.lib.network.dbi.client', None)                 
         return mod.DBClient(*args, **kwargs)
     else:
         raise ValueError('Unknown engine:{0}'.format(engine))

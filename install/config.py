@@ -2,6 +2,7 @@
 
 config = {
   'pre_tasks' : [
+                 'version_update',
                  'install_libs_from_repo',
                  'install_java',
                  'install_oracle'
@@ -17,7 +18,6 @@ config = {
                'cx_Oracle>=5.1.3',
                'httplib2>=0.9.1',
                'JPype1>=0.6.1',
-               'jsonlib2>=1.5.2',
                'lxml>=3.3.3',                
                'MySQL-python>=1.2.3', 
                'paramiko>=1.16.0',
@@ -31,6 +31,7 @@ config = {
                'python-qpid-proton>=0.10',              
                'scapy>=2.3.1',
                'selenium>=2.46.1',
+               'simplejson>=3.8.2',
                'stompest>=2.1.6', 
                'suds>=0.4', 
                'tftpy>=0.6.2'                       

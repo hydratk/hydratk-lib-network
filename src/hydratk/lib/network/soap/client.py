@@ -52,7 +52,8 @@ class SOAPClient:
            
         """          
         
-        self._mh = MasterHead.get_head()          
+        self._mh = MasterHead.get_head()  
+        self._mh.find_module('hydratk.lib.network.soap.client', None)          
         
         self._verbose = verbose
         if (self._verbose):
@@ -245,6 +246,8 @@ class SOAPClient:
             
                 if (isinstance(body, str)):
                     body = fromstring(body) 
+                elif (isinstance(body, bytes)):
+                    body = fromstring(body.decode())
                 elem.append(body)           
             
                 response = getattr(self._client.service, operation)(__inject = {'msg': tostring(root)})                

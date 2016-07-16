@@ -60,6 +60,7 @@ class Client:
         try:
       
             self._mh = MasterHead.get_head()
+            self._mh.find_module('hydratk.lib.network.inet.client', None) 
         
             self._lay3_prot = lay3_prot.upper()
             self._lay4_prot = lay4_prot.upper()  
