@@ -36,7 +36,7 @@ class XMLValidate(object):
             content = fs.file_get_contents(xml_file)
             self.xsd_validate(content)
         else:
-            raise InputError("File doesn't exists: {0}".format(file))
+            raise InputError(0, [], "File doesn't exists: {0}".format(xml_file))
     
     def xsd_validate(self, xml_str):
         """Method validates XML string according to XSD

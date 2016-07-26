@@ -26,6 +26,7 @@ msg = {
     'htk_ftp_connected'        : ["Spojení se serverem bylo úspěšné"],
     'htk_ftp_unknown_method'   : ["Neznámá metoda pro protokol: '{0}'"],
     'htk_ftp_disconnected'     : ["Spojení se serverem bylo ukončeno"],
+    'htk_ftp_not_connected'    : ["Není navázáno spojení se serverem"],
     'htk_ftp_list_dir'         : ["Vypisuji obsah adresáře: '{0}'"],
     'htk_ftp_change_dir'       : ["Měním pracovní adresář: '{0}'"],
     'htk_ftp_cur_dir'          : ["Pracovní adresář: '{0}'"],

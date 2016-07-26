@@ -27,7 +27,7 @@ def RPCClient(provider, *args):
         obj: RPCClient
        
     Raises:
-        error: ValueError
+        error: NotImplementedError
                 
     """       
 
@@ -38,5 +38,4 @@ def RPCClient(provider, *args):
         mh.find_module('hydratk.lib.network.rpc.client', None)                  
         return mod.RPCClient(*args)
     else:
-        raise ValueError('Unknown provider:{0}'.format(provider))
-        return None                           
+        raise NotImplementedError('Unknown provider:{0}'.format(provider))                     

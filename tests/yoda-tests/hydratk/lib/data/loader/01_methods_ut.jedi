@@ -1,0 +1,353 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/data/loader/01_methods_ut.jedi
+  Name: ts_load_from_file
+  Desc: Test method load_from_file
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.data.loader import load_from_file
+    from os import remove
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_text
+    Desc: Load from text file
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_csv
+      Desc: CSV file
+      
+      Test: |
+        path = '/var/local/hydratk/yoda/helpers/yodahelpers/hydratk/lib/data/data.csv'
+        res = load_from_file(path)
+      
+      Validate: |
+        this.test_result = str(res)
+        assert (len(res) == 2), 'res contains 2 rows'
+        rows = [res[0]['col1'], res[0]['col2'], res[0]['col3'], res[1]['col1'], res[1]['col2'], res[1]['col3']]
+        exp = ['a', 'b', 'c', 1, 2, 3]
+        assert (rows == exp), 'rows = {0}'.format(exp)
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_tsv
+      Desc: TSV file
+      
+      Test: |
+        path = '/var/local/hydratk/yoda/helpers/yodahelpers/hydratk/lib/data/data.tsv'
+        res = load_from_file(path)
+      
+      Validate: |
+        this.test_result = str(res)
+        assert (len(res) == 2), 'res contains 2 rows'
+        rows = [res[0]['col1'], res[0]['col2'], res[0]['col3'], res[1]['col1'], res[1]['col2'], res[1]['col3']]
+        exp = ['a', 'b', 'c', 1, 2, 3]
+        assert (rows == exp), 'rows = {0}'.format(exp)    
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_header
+      Desc: Data header
+      
+      Test: |  
+        path = '/var/local/hydratk/yoda/helpers/yodahelpers/hydratk/lib/data/data.csv'
+        res = load_from_file(path, header=0)    
+        
+      Validate: |
+        this.test_result = str(res)
+        assert (len(res) == 2), 'res contains 2 rows'    
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_missing_header
+      Desc: Missing data header
+      
+      Test: |  
+        res = load_from_file(path, header=None)    
+        
+      Validate: |
+        this.test_result = str(res)
+        assert (len(res) == 3), 'res contains 3 rows' 
+        rows = [res[0][0], res[0][1], res[0][2], res[1][0], res[1][1], res[1][2], res[2][0], res[2][1], res[2][2]]
+        exp = ['col1', 'col2', 'col3', 'a', 'b', 'c', 1, 2, 3]
+        assert (rows == exp), 'rows = {0}'.format(exp)                  
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_delimiter
+      Desc: Data delimiter
+      
+      Test: |  
+        res = load_from_file(path, delimiter=';')    
+        
+      Validate: |
+        this.test_result = str(res)
+        assert (len(res) == 2), 'res contains 2 rows' 
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_excel
+    Desc: Load from excel file
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_xlsx
+      Desc: XLSX file
+      
+      Test: |
+        path = '/var/local/hydratk/yoda/helpers/yodahelpers/hydratk/lib/data/data.xlsx'
+        res = load_from_file(path)
+      
+      Validate: |
+        this.test_result = str(res)
+        assert (len(res) == 2), 'res contains 2 rows'
+        rows = [res[0]['col1'], res[0]['col2'], res[0]['col3'], int(res[1]['col1']), int(res[1]['col2']), int(res[1]['col3'])]
+        exp = ['a', 'b', 'c', 1, 2, 3]
+        assert (rows == exp), 'rows = {0}'.format(exp)    
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_xlsx_sheet
+      Desc: XLSX requested sheet
+      
+      Test: |
+        res = load_from_file(path, sheet='test')
+      
+      Validate: |
+        this.test_result = str(res)
+        assert (len(res) == 2), 'res contains 2 rows'
+        rows = [res[0]['col1'], res[0]['col2'], res[0]['col3'], int(res[1]['col1']), int(res[1]['col2']), int(res[1]['col3'])]
+        exp = ['a', 'b', 'c', 1, 2, 3]
+        assert (rows == exp), 'rows = {0}'.format(exp)  
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_ods
+      Desc: ODS file
+      
+      Test: |
+        path = '/var/local/hydratk/yoda/helpers/yodahelpers/hydratk/lib/data/data.ods'
+        res = load_from_file(path)
+      
+      Validate: |
+        this.test_result = str(res)
+        assert (len(res) == 2), 'res contains 2 rows'
+        rows = [res[0]['col1'], res[0]['col2'], res[0]['col3'], int(res[1]['col1']), int(res[1]['col2']), int(res[1]['col3'])]
+        exp = ['a', 'b', 'c', 1, 2, 3]
+        assert (rows == exp), 'rows = {0}'.format(exp)    
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_ods_sheet
+      Desc: ODS requested sheet
+      
+      Test: |
+        res = load_from_file(path, sheet='test')
+      
+      Validate: |
+        this.test_result = str(res)
+        assert (len(res) == 2), 'res contains 2 rows'
+        rows = [res[0]['col1'], res[0]['col2'], res[0]['col3'], int(res[1]['col1']), int(res[1]['col2']), int(res[1]['col3'])]
+        exp = ['a', 'b', 'c', 1, 2, 3]
+        assert (rows == exp), 'rows = {0}'.format(exp)  
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_header
+      Desc: Data header
+      
+      Test: |  
+        path = '/var/local/hydratk/yoda/helpers/yodahelpers/hydratk/lib/data/data.xlsx'
+        res = load_from_file(path, header=0)    
+        
+      Validate: |
+        this.test_result = str(res)
+        assert (len(res) == 2), 'res contains 2 rows'          
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_missing_header
+      Desc: Missing data header
+      
+      Test: |  
+        res = load_from_file(path, header=None)    
+        
+      Validate: |
+        this.test_result = str(res)
+        assert (len(res) == 3), 'res contains 3 rows' 
+        rows = [res[0][0], res[0][1], res[0][2], res[1][0], res[1][1], res[1][2], int(res[2][0]), int(res[2][1]), int(res[2][2])]
+        exp = ['col1', 'col2', 'col3', 'a', 'b', 'c', 1, 2, 3]
+        assert (rows == exp), 'rows = {0}'.format(exp)  
+        
+  Test-Case-3:
+    Id: tc_03
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_file
+      Desc: Invalid file    
+    
+      Test: |   
+        try:
+            load_from_file('xx')
+            ex = False
+        except ValueError:
+            ex = True
+          
+      Validate: |
+        this.test_result = ex
+        assert (ex), 'load_from_file raises ValueError'   
+      
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_ext
+      Desc: Invalid extension   
+      
+      Test: |
+        path = '/var/local/hydratk/test.txt'
+        with open(path, 'w') as f:
+            f.write('test')
+        
+        try:    
+            load_from_file(path)
+            ex = False
+        except ValueError:
+            ex = True
+            
+      Validate: |
+        this.test_result = ex
+        assert (ex), 'load_from_file raises ValueError'
+        remove(path)        
+                     
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_empty
+      Desc: Empty file   
+      
+      Test: |
+        path = '/var/local/hydratk/test.csv'
+        with open(path, 'w') as f:
+            f.write('') 
+            
+        res = load_from_file(path)
+        
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'load_from_file = None'
+        remove(path)  
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_invalid_excel
+      Desc: Invalid excel file   
+      
+      Test: |
+        path = '/var/local/hydratk/test.xlsx'
+        with open(path, 'w') as f:
+            f.write('') 
+            
+        res = load_from_file(path)
+        
+      Validate: |
+        this.test_result = res
+        assert True
+        remove(path)  
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_invalid_sheet
+      Desc: Invalid sheet
+      
+      Test: |
+        path = '/var/local/hydratk/yoda/helpers/yodahelpers/hydratk/lib/data/data.xlsx'
+        res = load_from_file(path, sheet='xx')
+      
+      Validate: |                           
+        this.test_result = res
+        assert (res == None), 'load_from_file = None'   
+        
+Test-Scenario-2:
+  Id: ts_02
+  Path: hydratk/lib/data/loader/01_methods_ut.jedi
+  Name: ts_load_from_db
+  Desc: Test method load_from_db
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.data.loader import load_from_db
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_file
+    Desc: Load from database file
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_load
+      Desc: Load data
+      
+      Test: |
+        path = '/var/local/hydratk/testenv/testenv.db3'
+        query = 'SELECT * FROM lov_status'
+        res = load_from_db('SQLITE', query, db_file=path)
+      
+      Validate: |     
+        this.test_result = str(res)
+        rows = [res[0]['id'], res[0]['title'], res[1]['id'], res[1]['title'], res[2]['id'], res[2]['title']]
+        exp = [1, 'active', 2, 'deactive', 3, 'suspend']
+        assert (rows == exp), 'rows = {0}'.format(exp)
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_bindings
+      Desc: Query with bindings
+      
+      Test: |
+        query = 'SELECT title FROM lov_status WHERE id = ?'
+        res = load_from_db('SQLITE', query, [2], db_file=path)
+      
+      Validate: |   
+        this.test_result = str(res)
+        exp = 'deactive'
+        assert (res[0]['title'] == exp), 'rows = {0}'.format(exp)
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_server
+    Desc: Load from database server
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_load
+      Desc: Load data   
+      
+      Test: |
+        host, port, sid, user, passw = '127.0.0.1', 3306, 'mysql', 'root', 'root'
+        query = 'SELECT * FROM lov_status'
+        res = load_from_db('MYSQL', query, host=host, port=port, sid=sid, user=user, passw=passw) 
+        
+      Validate: |     
+        this.test_result = str(res)
+        rows = [res[0]['id'], res[0]['title'], res[1]['id'], res[1]['title'], res[2]['id'], res[2]['title']]
+        exp = [1, 'active', 2, 'deactive', 3, 'suspend']
+        assert (rows == exp), 'rows = {0}'.format(exp)    
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_bindings
+      Desc: Query with bindings
+      
+      Test: |
+        query = 'SELECT title FROM lov_status WHERE id = ?'
+        res = load_from_db('MYSQL', query, [2], host, port, sid, user, passw)
+      
+      Validate: |   
+        this.test_result = str(res)
+        exp = 'deactive'
+        assert (res[0]['title'] == exp), 'rows = {0}'.format(exp)                                                                         

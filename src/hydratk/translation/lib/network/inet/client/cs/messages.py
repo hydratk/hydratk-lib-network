@@ -26,6 +26,7 @@ msg = {
     'htk_inet_connected'      : ["Spojení se serverem bylo úspěšné"],
     'htk_inet_disconnecting'  : ["Ukončuji spojení se serverem"],    
     'htk_inet_disconnected'   : ["Spojení se serverem bylo ukončeno"],
+    'htk_inet_not_connected'  : ["Není navázáno spojení se serverem"], 
     'htk_inet_sending_data'   : ["Odesílám data: '{0}'"],
     'htk_inet_data_sent'      : ["Data odeslána"],
     'htk_inet_receiving_data' : ["Přijímám data do velikosti: '{0}'"],

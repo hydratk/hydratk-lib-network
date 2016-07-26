@@ -45,13 +45,14 @@ class JMSClient:
     """Class JMSClient
     """
     
-    _mh = None
-    _verbose = None
+    _mh = None    
     _client = None
     _host = None
     _port = None
     _user = None
     _passw = None
+    _verbose = None
+    _is_connected = None
     
     def __init__(self, verbose=False):
         """Class constructor
@@ -73,13 +74,7 @@ class JMSClient:
                 getLogger().setLevel(DEBUG)            
         
         except ProtonException as ex:
-            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())     
-    
-    @property
-    def verbose(self):
-        """ verbose mode property getter """
-        
-        return self._verbose        
+            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())             
             
     @property
     def client(self):
@@ -109,9 +104,21 @@ class JMSClient:
     def passw(self):
         """ user password property getter """
         
-        return self._passw         
+        return self._passw 
     
-    def connect(self, host, port=5672, user=None, passw=None):
+    @property
+    def verbose(self):
+        """ verbose mode property getter """
+        
+        return self._verbose  
+    
+    @property
+    def is_connected(self):
+        """ is_connected property getter """
+        
+        return self._is_connected                  
+    
+    def connect(self, host, port=5672, user=None, passw=None, timeout=10):
         """Method connects to server
         
         Args:
@@ -119,6 +126,7 @@ class JMSClient:
            port (str): port
            user (str): username
            passw (str): password
+           timeout (int): timeout
 
         Returns:
            bool: result
@@ -131,15 +139,16 @@ class JMSClient:
         
         try:
         
-            msg = 'host:{0}, port:{1}, user:{2}, passw:{3}'.format(host, port, user, passw)       
+            msg = 'host:{0}, port:{1}, user:{2}, passw:{3}, timeout:{4}'.format(host, port, user, passw, timeout)       
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_connecting', msg), self._mh.fromhere()) 
         
-            ev = event.Event('jms_before_connect', host, port, user, passw)
+            ev = event.Event('jms_before_connect', host, port, user, passw, timeout)
             if (self._mh.fire_event(ev) > 0):
-                host = ev.argv[0]
-                port = ev.argv[1]
-                user = ev.argv[2]
-                passw = ev.argv[3]                 
+                host = ev.argv(0)
+                port = ev.argv(1)
+                user = ev.argv(2)
+                passw = ev.argv(3)
+                timeout = ev.argv(4)                 
         
             self._host = host
             self._port = port
@@ -148,10 +157,11 @@ class JMSClient:
             
             if (ev.will_run_default()):    
                 if (self._user == None):         
-                    self._client = BlockingConnection('amqp://{0}:{1}'.format(self._host, self._port))
+                    self._client = BlockingConnection('amqp://{0}:{1}'.format(self._host, self._port), timeout=timeout)
                 else:
                     self._client = BlockingConnection('amqp://{0}:{1}@{2}:{3}'.format(self._user, self._passw,
-                                                                                      self._host, self._port))
+                                                                                      self._host, self._port), timeout=timeout)
+                self._is_connected = True
         
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_connected'), self._mh.fromhere()) 
             ev = event.Event('jms_after_connect')
@@ -178,10 +188,14 @@ class JMSClient:
         
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_disconnecting'), self._mh.fromhere())
                 
-            self._client.close()           
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_disconnected'), self._mh.fromhere())
-                
-            return True
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_jms_not_connected'), self._mh.fromhere()) 
+                return False  
+            else:                
+                self._client.close()  
+                self._is_connected = False         
+                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_disconnected'), self._mh.fromhere())                
+                return True
         
         except ProtonException as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
@@ -214,12 +228,16 @@ class JMSClient:
                    destination_name, message, destination_type, headers)
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_sending_msg', msg), self._mh.fromhere())         
         
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_jms_not_connected'), self._mh.fromhere()) 
+                return False          
+        
             ev = event.Event('jms_before_send', destination_name, message, destination_type, headers)
             if (self._mh.fire_event(ev) > 0):        
-                destination_name = ev.args[0]
-                message = ev.args[1]
-                destination_type = ev.args[2]
-                headers = ev.args[3]
+                destination_name = ev.argv(0)
+                message = ev.argv(1)
+                destination_type = ev.argv(2)
+                headers = ev.argv(3)
         
             if (ev.will_run_default()):                 
                 sender = self._client.create_sender('{0}://{1}'.format(destination_type, destination_name))
@@ -263,10 +281,14 @@ class JMSClient:
             msg = 'destination_name:{0}, count:{1}'.format(destination_name, cnt)
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_receiving_msg', msg), self._mh.fromhere())         
         
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_jms_not_connected'), self._mh.fromhere()) 
+                return None          
+        
             ev = event.Event('jms_before_receive', destination_name, cnt)
             if (self._mh.fire_event(ev) > 0):        
-                destination_name = ev.args[0]
-                cnt = ev.args[1]
+                destination_name = ev.argv(0)
+                cnt = ev.argv(1)
         
             if (ev.will_run_default()): 
                 receiver = self._client.create_receiver('queue://{0}'.format(destination_name))
@@ -288,7 +310,8 @@ class JMSClient:
                     message = {}
                     message['message'] = msg.body
                     for key, value in msg.properties.items():
-                        message[mapping.keys()[mapping.values().index(key)]] = value
+                        if (key in mapping.values()):
+                            message[list(mapping.keys())[list(mapping.values()).index(key)]] = value
                     
                     messages.append(message)                                                      
                 
@@ -328,12 +351,16 @@ class JMSClient:
                    destination_name, cnt, jms_correlation_id, jms_type)
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_browsing', msg), self._mh.fromhere())         
         
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_jms_not_connected'), self._mh.fromhere()) 
+                return None          
+        
             ev = event.Event('jms_before_browse', destination_name, cnt)
             if (self._mh.fire_event(ev) > 0):        
-                destination_name = ev.args[0]
-                cnt = ev.args[1]
-                jms_correlation_id = ev.args[2]
-                jms_type = ev.args[3]
+                destination_name = ev.argv(0)
+                cnt = ev.argv(1)
+                jms_correlation_id = ev.argv(2)
+                jms_type = ev.argv(3)
         
             if (ev.will_run_default()): 
                 receiver = self._client.create_receiver('queue://{0}'.format(destination_name), options=Copy())
@@ -368,7 +395,8 @@ class JMSClient:
                     message = {}
                     message['message'] = msg.body
                     for key, value in msg.properties.items():
-                        message[mapping.keys()[mapping.values().index(key)]] = value
+                        if (key in mapping.values()):
+                            message[list(mapping.keys())[list(mapping.values()).index(key)]] = value
                     
                     messages.append(message)                                                      
                 

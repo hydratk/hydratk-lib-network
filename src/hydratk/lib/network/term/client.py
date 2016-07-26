@@ -27,7 +27,7 @@ def TermClient(protocol='SSH', *args, **kwargs):
         obj: TermClient
        
     Raises:
-        error: ValueError
+        error: NotImplementedError
                 
     """       
 
@@ -38,5 +38,4 @@ def TermClient(protocol='SSH', *args, **kwargs):
         mh.find_module('hydratk.lib.network.term.client', None)                   
         return mod.TermClient(*args, **kwargs)
     else:
-        raise ValueError('Unknown protocol:{0}'.format(protocol))
-        return None                           
+        raise NotImplementedError('Unknown protocol:{0}'.format(protocol))             

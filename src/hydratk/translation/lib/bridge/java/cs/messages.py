@@ -27,5 +27,6 @@ msg = {
     'htk_java_started'         : ["JVM bylo úspěšně spuštěno"],
     'htk_java_not_started'     : ["JVM ještě nebylo spuštěno"],
     'htk_java_stopping_jvm'    : ["Zastavuji JVM"],
+    'htk_java_stoppped'        : ["JVM bylo zastaveno"],
     'htk_java_unknown_type'    : ["Neznámý datový typ: '{0}'"]
 }

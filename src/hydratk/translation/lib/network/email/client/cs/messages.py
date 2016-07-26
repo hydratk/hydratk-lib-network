@@ -26,6 +26,7 @@ msg = {
     'htk_email_connecting'       : ["Připojuji se na server: '{0}'"],
     'htk_email_connected'        : ["Spojení se serverem bylo úspěšné"],
     'htk_email_disconnected'     : ["Spojení se serverem bylo ukončeno"],
+    'htk_email_not_connected'    : ["Není navázáno spojení se serverem"],
     'htk_email_sending'          : ["Odesílám email: '{0}'"],
     'htk_email_sent'             : ["Email odeslán"],
     'htk_email_counting'         : ["Vypisuji počet emailů"],

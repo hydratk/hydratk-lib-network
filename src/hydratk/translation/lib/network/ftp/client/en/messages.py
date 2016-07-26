@@ -26,6 +26,7 @@ msg = {
     'htk_ftp_connected'        : ["Connected successfully"],
     'htk_ftp_unknown_method'   : ["Unknown method for protocol: '{0}'"],
     'htk_ftp_disconnected'     : ["Disconnected from server"],
+    'htk_ftp_not_connected'    : ["Not connected to server"],
     'htk_ftp_list_dir'         : ["Listing directory: '{0}'"],
     'htk_ftp_change_dir'       : ["Changing to directory: '{0}'"],
     'htk_ftp_cur_dir'          : ["Working directory is: '{0}'"],

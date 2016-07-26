@@ -1,0 +1,96 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/network/dbi/client/01_methods_ut.jedi
+  Name: ts_dbclient
+  Desc: Test method DBClient
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.dbi.client import DBClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize DBClient
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_sqlite
+      Desc: SQLITE engine
+    
+      Test: |
+        c = DBClient('SQLITE')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'DBClient'), 'DBClient = DBClient'           
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_oracle
+      Desc: ORACLE engine
+    
+      Test: |
+        c = DBClient('ORACLE')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'DBClient'), 'DBClient = DBClient'    
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_mysql
+      Desc: MYSQL engine
+    
+      Test: |
+        c = DBClient('MYSQL')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'DBClient'), 'DBClient = DBClient'    
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_postgresql
+      Desc: POSTGRESQL engine
+    
+      Test: |
+        c = DBClient('POSTGRESQL')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'DBClient'), 'DBClient = DBClient'        
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_jdbc
+      Desc: JDBC engine
+    
+      Test: |
+        c = DBClient('JDBC', False, '/usr/local/app/java/jdk1.8.0_51/jre/lib/amd64/server/libjvm.so')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'DBClient'), 'DBClient = DBClient'                                    
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_invalid
+      Desc: Invalid protocol
+      
+      Test: |
+        try:
+            c = DBClient('')
+            ex = False
+        except NotImplementedError:
+            ex = True
+      
+      Validate: |          
+        this.test_result = ex
+        assert (ex), 'DBClient raises NotImplementedError'

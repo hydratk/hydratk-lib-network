@@ -1,0 +1,532 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/network/rest/client/01_methods_ut.jedi
+  Name: ts_init
+  Desc: Test method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.rest.client import RESTClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize RESTClient
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_verbose
+      Desc: Not verbose mode
+      
+      Test: |
+        c = RESTClient(False)
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'RESTClient'), '__init__ = RESTClient'
+        this.test_result = res = c._verbose
+        assert (not res), '_verbose = False'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_verbose
+      Desc: Verbose mode
+      
+      Test: |
+        c = RESTClient(True)
+        res = c._verbose
+      
+      Validate: |
+        this.test_result = res
+        assert (res), '_verbose = True'        
+        
+Test-Scenario-2:
+  Id: ts_02
+  Path: hydratk/lib/network/rest/client/01_methods_ut.jedi
+  Name: ts_props
+  Desc: Test properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.rest.client import RESTClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_client
+      Desc: Getter client
+      
+      Test: |
+        c = RESTClient(True)
+        c.send_request('http://localhost:8080/Autobot/rs/crm/')
+        res = c.client.__class__.__name__
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._client.__class__.__name__
+        assert (res == exp), 'client = {0}'.format(exp) 
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_res_header
+      Desc: Getter res_header
+      
+      Test: |
+        res = c.res_header
+      
+      Validate: |        
+        this.test_result = str(res)
+        exp = c._res_header
+        assert (res == exp), 'res_header = {0}'.format(exp)         
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_res_body
+      Desc: Getter res_body
+      
+      Test: |
+        res = c.res_body
+      
+      Validate: |        
+        this.test_result = (res)
+        exp = c._res_body
+        assert (res == exp), 'res_body = {0}'.format(exp)           
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_verbose
+      Desc: Getter verbose
+      
+      Test: |
+        res = c.verbose
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._verbose
+        assert (res == exp), 'verbose = {0}'.format(exp) 
+        c.reset_debug()
+        
+Test-Scenario-3:
+  Id: ts_03
+  Path: hydratk/lib/network/rest/client/01_methods_ut.jedi
+  Name: ts_get_header
+  Desc: Test method get_header
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.rest.client import RESTClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_get_header
+    Desc: Get header
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_header
+      Desc: Get header
+      
+      Test: |
+        
+        c = RESTClient()
+        c.send_request('http://localhost:8080/Autobot/rs/crm/')
+        res = c.get_header('content-type')
+      
+      Validate: |        
+        this.test_result = res
+        exp = 'text/html'
+        assert (res == exp), 'get_header = {0}'.format(exp)        
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid
+      Desc: Invalid header
+      
+      Test: |
+        res = c.get_header('xx')
+      
+      Validate: |        
+        this.test_result = res
+        assert (res == None), 'get_header = None'   
+        
+Test-Scenario-4:
+  Id: ts_04
+  Path: hydratk/lib/network/rest/client/01_methods_ut.jedi
+  Name: ts_get_body
+  Desc: Test method get_body
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.rest.client import RESTClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_get_body
+    Desc: Get body
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_body
+      Desc: Get body
+      
+      Test: |
+        c = RESTClient()
+        c.send_request('http://localhost:8080/Autobot/rs/crm/')
+        res = c.get_body()
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._res_body
+        assert (res == exp), 'get_body = {0}'.format(exp) 
+        
+Test-Scenario-5:
+  Id: ts_05
+  Path: hydratk/lib/network/rest/client/01_methods_ut.jedi
+  Name: ts_send_request
+  Desc: Test method send_request
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.rest.client import RESTClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+    from simplejson import dumps
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_json
+    Desc: Send request with JSON
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_get
+      Desc: GET method
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['rest_before_request', 'rest_after_request']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = RESTClient()
+        url = 'http://localhost:8080/Autobot/rs/crm/customer'
+        headers, params = {'Accept': 'application/json'}, {'id': 0} 
+        res, out = c.send_request(url, method='GET', headers=headers, params=params)      
+      
+      Validate: |          
+        this.test_result = res
+        assert (res == 400), 'status = 400'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'send_request fires {0}'.format(evs)        
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]       
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_post
+      Desc: POST method
+      
+      Test: |
+        name, status, segment = 'Charlie Bowman', 'active', 2
+        body = {'name': name, 'status': status, 'segment': segment}
+        content_type = 'json'
+        res, out = c.send_request(url, method='POST', content_type=content_type, body=dumps(body))      
+      
+      Validate: |          
+        this.test_result = res
+        assert (res == 200), 'status = 200'
+        id = int(out)
+        params['id'] = id
+        res, out = c.send_request(url, headers=headers, params=params)
+        this.test_result = str(out)
+        body['id'] = id
+        assert (out == body), 'out = {0}'.format(body)        
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_put
+      Desc: PUT method
+      
+      Test: |
+        name, status, segment = 'Vince Neil', 'suspend', 3
+        body = {'id': id, 'name': name, 'status': status, 'segment': segment}
+        res, out = c.send_request(url, method='PUT', content_type=content_type, body=dumps(body))      
+      
+      Validate: |          
+        this.test_result = res
+        assert (res == 200), 'status = 200'
+        this.test_result = out
+        res, out = c.send_request(url, headers=headers, params=params)
+        this.test_result = str(out)
+        assert (out == body), 'out = {0}'.format(body)  
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_xml
+    Desc: Send request with XML
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_get
+      Desc: GET method
+      
+      Test: |
+        c = RESTClient()
+        url = 'http://localhost:8080/Autobot/rs/crm/customer'
+        headers, params = {'Accept': 'application/xml'}, {'id': 0} 
+        res, out = c.send_request(url, method='GET', headers=headers, params=params)      
+      
+      Validate: |          
+        this.test_result = str(res)
+        assert (res == 400), 'status = 400'   
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_post
+      Desc: POST method
+      
+      Test: |
+        name, status, segment = 'Charlie Bowman', 'active', 2
+        body = '<customer><name>{0}</name><status>{1}</status><segment>{2}</segment></customer>'.format(name, status, segment)
+        content_type = 'xml'
+        res, out = c.send_request(url, method='POST', content_type=content_type, body=body)      
+      
+      Validate: |          
+        this.test_result = res
+        assert (res == 200), 'status = 200'
+        id = int(out)
+        params['id'] = id
+        res, out = c.send_request(url, headers=headers, params=params)
+        this.test_result = str(out)
+        res = [out.id, out.name, out.status, out.segment]
+        exp = [id, name, status, segment]
+        assert (res == exp), 'out = {0}'.format(exp)        
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_put
+      Desc: PUT method
+      
+      Test: |
+        name, status, segment = 'Vince Neil', 'suspend', 3
+        body = '<customer><id>{0}</id><name>{1}</name><status>{2}</status><segment>{3}</segment></customer>'.format(id, name, status, segment)
+        res, out = c.send_request(url, method='PUT', content_type=content_type, body=body)      
+      
+      Validate: |          
+        this.test_result = res
+        assert (res == 200), 'status = 200'
+        this.test_result = out
+        res, out = c.send_request(url, headers=headers, params=params)
+        res = [out.id, out.name, out.status, out.segment]
+        exp = [id, name, status, segment]
+        assert (res == exp), 'out = {0}'.format(exp)     
+        
+  Test-Case-3:
+    Id: tc_03
+    Name: tc_send
+    Desc: Send request
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_https
+      Desc: Send request via HTTPS
+      
+      Test: |
+        c = RESTClient()
+        url = 'https://google.com'
+        res, out = c.send_request(url)
+      
+      Validate: |     
+        this.test_result = res
+        assert (res == 200), 'status = 200'
+        exp = 'Google'
+        assert (exp in out), 'out contains {0}'.format(exp)  
+    
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_get_params
+      Desc: GET method with URL params
+      
+      Test: |
+        url = 'http://metalopolis.net/art_downtown.asp'
+        params = {'id': '7871'}
+        res, out = c.send_request(url, method='GET', params=params) 
+        
+      Validate: |
+        this.test_result = res
+        assert (res == 200), 'status = 200'  
+        exp = 'Andrzej Sapkowski'
+        assert (exp in out), 'out contains {0}'.format(exp)  
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_post_form
+      Desc: POST method to submit form     
+      
+      Test: |
+        url = 'http://metalopolis.net/fastsearch.asp'
+        params={'verb': 'motorhead', 'submit': '>>>'}
+        res, out = c.send_request(url, method='POST', params=params)
+      
+      Validate: |                                                  
+        this.test_result = res
+        assert (res == 200), 'status = 200'
+        exp = 'MOTORHEAD'
+        assert (exp in out), 'out contains {0}'.format(exp) 
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_auth
+      Desc: Basic authentication
+      
+      Test: |
+        url = 'https://git-retail.hydratk.org/'
+        res, out = c.send_request(url, user='bowman', passw='lynus1234')
+      
+      Validate: |  
+        this.test_result = res
+        assert (res == 200), 'status = 200' 
+        exp = 'hydratk-demo'
+        assert (exp in out), 'out contains {0}'.format(exp)       
+        
+  Test-Case-4:
+    Id: tc_04
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_host
+      Desc: Invalid host
+    
+      Test: |
+        c = RESTClient()
+        res, out = c.send_request('http://1.1.1.1')
+    
+      Validate: |                            
+        this.test_result = res
+        assert (res == None), 'status = None'   
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_name
+      Desc: Invalid domain name
+    
+      Test: |
+        c = RESTClient()
+        res, out = c.send_request('http://xxx')
+    
+      Validate: |                            
+        this.test_result = res
+        assert (res == None), 'status = None'         
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_port
+      Desc: Invalid port
+      
+      Test: |
+        res, out = c.send_request('http://google.cz:20')
+      
+      Validate: |  
+        this.test_result = res
+        assert (res == None), 'status = None'   
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_invalid_path
+      Desc: Invalid path
+      
+      Test: |
+        res, out = c.send_request('http://google.cz/xx')
+      
+      Validate: |  
+        this.test_result = res
+        assert (res == 404), 'status = 404' 
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_invalid_prot
+      Desc: Invalid protocol
+      
+      Test: |
+        res, out = c.send_request('https://metalopolis.net')
+      
+      Validate: |  
+        this.test_result = res
+        assert (res == None), 'status = None'          
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_invalid_param
+      Desc: Invalid path
+      
+      Test: |
+        
+        url = 'http://localhost:8080/Autobot/rs/crm/customer'
+        res, out = c.send_request(url, method='GET', headers={'Accept': 'application/json'}, params={'id2':2})
+      
+      Validate: |  
+        this.test_result = res
+        assert (res == 400), 'status = 400'   
+        
+    Test-Condition-7: 
+      Id: tco_07
+      Name: tco_invalid_json
+      Desc: Invalid JSON body
+      
+      Test: |
+        res, out = c.send_request(url, method='POST', body='xx', content_type='json')
+      
+      Validate: |  
+        this.test_result = res
+        assert (res == 400), 'status = 400'    
+        
+    Test-Condition-8: 
+      Id: tco_08
+      Name: tco_invalid_xml
+      Desc: Invalid XML body
+      
+      Test: |
+        res, out = c.send_request(url, method='POST', body='xx', content_type='xml')
+      
+      Validate: |  
+        this.test_result = res
+        assert (res == 400), 'status = 400'    
+        
+    Test-Condition-9: 
+      Id: tco_09
+      Name: tco_missing_auth
+      Desc: Missing authentication
+      
+      Test: |
+        url = 'https://git-retail.hydratk.org/'
+        res, out = c.send_request(url)
+      
+      Validate: |  
+        this.test_result = res
+        assert (res == 401), 'status = 401'   
+        
+    Test-Condition-10: 
+      Id: tco_10
+      Name: tco_invalid_auth
+      Desc: Invalid authentication
+      
+      Test: |
+        res, out = c.send_request(url, user='xx', passw='xx')
+      
+      Validate: |  
+        this.test_result = res
+        assert (res == 401), 'status = 401'                                                                             

@@ -1,0 +1,867 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/network/ldap/client/01_methods_ut.jedi
+  Name: ts_init
+  Desc: Test method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.ldap.client import LDAPClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize LDAPClient
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_verbose
+      Desc: Not verbose mode
+      
+      Test: |
+        c = LDAPClient(False)
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'LDAPClient'), '__init__ = LDAPClient'
+        this.test_result = res = c._verbose
+        assert (not res), '_verbose = False'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_verbose
+      Desc: Verbose mode
+      
+      Test: |
+        c = LDAPClient(True)
+        res = c._verbose
+      
+      Validate: |
+        this.test_result = res
+        assert (res), '_verbose = True'        
+        
+Test-Scenario-2:
+  Id: ts_02
+  Path: hydratk/lib/network/ldap/client/01_methods_ut.jedi
+  Name: ts_props
+  Desc: Test properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.ldap.client import LDAPClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_client
+      Desc: Getter client
+      
+      Test: |
+        c = LDAPClient(True)
+        c.connect('127.0.0.1', 'dc=test,dc=com', 389, 'admin', 'bowman')
+        res = c.client.__class__.__name__
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._client.__class__.__name__
+        assert (res == exp), 'client = {0}'.format(exp)
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_host
+      Desc: Getter host
+      
+      Test: |
+        res = c.host
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._host
+        assert (res == exp), 'host = {0}'.format(exp)     
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_port
+      Desc: Getter port
+      
+      Test: |
+        res = c.port
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._port
+        assert (res == exp), 'port = {0}'.format(exp)  
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_secured
+      Desc: Getter secured
+      
+      Test: |
+        res = c.secured
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._secured
+        assert (res == exp), 'secured = {0}'.format(exp)                 
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_user
+      Desc: Getter user
+      
+      Test: |
+        res = c.user
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._user
+        assert (res == exp), 'user = {0}'.format(exp)    
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_passw
+      Desc: Getter passw
+      
+      Test: |
+        res = c.passw
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._passw
+        assert (res == exp), 'passw = {0}'.format(exp)   
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_base_dn
+      Desc: Getter base_dn
+      
+      Test: |
+        res = c.base_dn
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._base_dn
+        assert (res == exp), 'base_dn = {0}'.format(exp)         
+        
+    Test-Condition-7: 
+      Id: tco_07
+      Name: tco_verbose
+      Desc: Getter verbose
+      
+      Test: |
+        res = c.verbose
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._verbose
+        assert (res == exp), 'verbose = {0}'.format(exp)   
+        
+    Test-Condition-8: 
+      Id: tco_08
+      Name: tco_is_connected
+      Desc: Getter is_connected
+      
+      Test: |
+        res = c.is_connected
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._is_connected
+        assert (res == exp), 'is_connected = {0}'.format(exp) 
+        c.disconnect()      
+        
+Test-Scenario-3:
+  Id: ts_03
+  Path: hydratk/lib/network/ldap/client/01_methods_ut.jedi
+  Name: ts_connect
+  Desc: Test method connect
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.ldap.client import LDAPClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_connect
+    Desc: Connect to server
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_secured
+      Desc: Connect to server via LDAP
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['ldap_before_connect', 'ldap_after_connect']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = LDAPClient()
+        host, port, user, passw, base_dn = '127.0.0.1', 389, 'admin', 'bowman', 'dc=test,dc=com' 
+        res = c.connect(host, base_dn, port, user, passw, secured=False)       
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'connect = True'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'connect fires {0}'.format(evs)
+        res = [c.host, c.port, c.user, c.passw, c.base_dn, c.is_connected]
+        this.test_result = str(res)
+        exp = [host, port, user, passw, base_dn, True]
+        assert (res == exp), 'host, port, user, passw, is_connected = {0}'.format(exp)
+        c.disconnect() 
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]           
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_host
+      Desc: Invalid host
+      
+      Test: |
+        c = LDAPClient()
+        base_dn = 'dc=test,dc=com'
+        res = c.connect('1.1.1.1', base_dn)
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), 'connect = False'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_port
+      Desc: Invalid port
+      
+      Test: |
+        res = c.connect('127.0.0.1', base_dn, 20)
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), 'connect = False'      
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_user
+      Desc: Invalid user
+      
+      Test: |
+        res = c.connect('127.0.0.1', base_dn, 389, 'xxx', 'xxx')
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), 'connect = False' 
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_invalid_base_dn
+      Desc: Invalid base_dn
+      
+      Test: |
+        res = c.connect('127.0.0.1', 'xxx', 389, 'admin', 'bowman')
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), 'connect = False'    
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_invalid_protocol
+      Desc: Invalid protocol
+      
+      Test: |
+        res = c.connect('127.0.0.1', 'xxx', 389, 'admin', 'bowman', secured=True)
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), 'connect = False'               
+        
+Test-Scenario-4:
+  Id: ts_04
+  Path: hydratk/lib/network/ldap/client/01_methods_ut.jedi
+  Name: ts_disconnect
+  Desc: Test method disconnect
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.ldap.client import LDAPClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_disconnect
+    Desc: Disconnect from server
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_disconnect
+      Desc: Disconnect from server
+      
+      Test: |
+        c = LDAPClient()
+        c.connect('127.0.0.1', 'dc=test,dc=com', 389, 'admin', 'bowman')
+        res = c.disconnect()
+      
+      Validate: |           
+        this.test_result = res
+        assert (res), 'disconnect = True' 
+        this.test_result = res = c.is_connected
+        assert (not res), 'is_connected = False'  
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        c = LDAPClient()
+        res = c.disconnect()
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), 'disconnect = False'  
+        
+Test-Scenario-5:
+  Id: ts_05
+  Path: hydratk/lib/network/ldap/client/01_methods_ut.jedi
+  Name: ts_read
+  Desc: Test method read
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.ldap.client import LDAPClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_read
+    Desc: Read records
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_single
+      Desc: Single record
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['ldap_before_read', 'ldap_after_read']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = LDAPClient()
+        host, port, user, passw, base_dn = '127.0.0.1', 389, 'admin', 'bowman', 'dc=test,dc=com' 
+        c.connect(host, base_dn, port, user, passw)       
+        res = c.read('ou=groups', fetch_one=True)
+      
+      Validate: |          
+        this.test_result = str(res)
+        assert (len(res) == 1), 'read contains 1 record'
+        exp = {'objectClass': ['organizationalUnit', 'top'], 'ou': 'groups', 'CN': 'ou=groups,'+base_dn}
+        assert (res[0] == exp), 'read = {0}'.format(exp)
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'read fires {0}'.format(evs)
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]      
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_mult
+      Desc: Multiple records
+      
+      Test: |
+        res = c.read('ou=groups', fetch_one=False)
+      
+      Validate: |  
+        this.test_result = str(res)
+        assert (len(res) > 1), 'read contains more than 1 record'
+        cn = [res[0]['CN'], res[3]['CN']]
+        exp = ['ou=groups,'+base_dn, 'cn=user,ou=groups,'+base_dn]
+        assert (cn == exp), 'cn = {0}'.format(exp)
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_no_child
+      Desc: Get no children records
+      
+      Test: |
+        res = c.read('ou=groups', get_child=False)
+      
+      Validate: |  
+        this.test_result = str(res)
+        assert (len(res) == 1), 'read contains 1 record'
+        exp = 'ou=groups,'+base_dn
+        assert (res[0]['CN'] == exp), 'cn = {0}'.format(exp)
+
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_cn_only
+      Desc: Get only CN
+      
+      Test: |
+        res = c.read('ou=groups', cn_only=True)
+      
+      Validate: |  
+        this.test_result = str(res)
+        exp = 'ou=groups,'+base_dn
+        assert (res[0] == exp), 'read = {0}'.format(exp)
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_attrs_only
+      Desc: Get only attributes
+      
+      Test: |
+        res = c.read('ou=groups', attrs_only=True)
+      
+      Validate: |  
+        this.test_result = str(res)
+        exp = ['objectClass', 'ou']
+        assert (res == exp), 'read = {0}'.format(exp)
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_attrs
+      Desc: Get given attributes
+      
+      Test: |
+        res = c.read('ou=groups', attrs=['objectClass'])
+      
+      Validate: |  
+        this.test_result = str(res)
+        assert ('objectClass' in res[0] and 'ou' not in res[0]), 'read contains {0} only'.format(attrs)        
+        
+    Test-Condition-7: 
+      Id: tco_07
+      Name: tco_filter
+      Desc: Use filter
+      
+      Test: |
+        res = c.read('ou=groups', filter='cn=user')
+      
+      Validate: |      
+        this.test_result = str(res)
+        assert (len(res) == 1), 'read contains 1 record'
+        exp = 'cn=user,ou=groups,'+base_dn
+        assert (res[0]['CN'] == exp), 'cn = {0}'.format(exp)
+        c.disconnect()  
+        
+  Test-Case-1:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases 
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_rdn
+      Desc: Invalid rdn   
+    
+      Test: |
+        c = LDAPClient()
+        host, port, user, passw, base_dn = '127.0.0.1', 389, 'admin', 'bowman', 'dc=test,dc=com' 
+        c.connect(host, base_dn, port, user, passw)       
+        res = c.read('xx')
+        
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'read = None'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_filter
+      Desc: Invalid filter 
+    
+      Test: |     
+        res = c.read('ou=groups', filter='xxx')
+        
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'read = None'        
+        c.disconnect()     
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        res = c.read('')
+        
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'read = None'      
+        
+Test-Scenario-6:
+  Id: ts_06
+  Path: hydratk/lib/network/ldap/client/01_methods_ut.jedi
+  Name: ts_create
+  Desc: Test method create
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.ldap.client import LDAPClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_create
+    Desc: Create record
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_create
+      Desc: Create
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['ldap_before_create', 'ldap_after_create']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = LDAPClient()
+        host, port, user, passw, base_dn = '127.0.0.1', 389, 'admin', 'bowman', 'dc=test,dc=com' 
+        c.connect(host, base_dn, port, user, passw) 
+        attrs = {'cn': 'test', 'gidNumber': '503', 'objectClass': ['top','posixGroup']}
+        cn = 'cn=test,ou=groups'
+        res = c.create(cn, attrs)              
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'create = True'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'create fires {0}'.format(evs)
+        res = c.read('ou=groups', filter='cn=test')
+        this.test_result = str(res)
+        exp = [cn+','+base_dn, '503']
+        assert ([res[0]['CN'], res[0]['gidNumber']] == exp), 'cn, gidNumber = {0}'.format(exp)
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0] 
+        c.delete(cn)
+        c.disconnect()  
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_rdn
+      Desc: Invalid rdn
+                      
+      Test: |
+        c = LDAPClient()
+        host, port, user, passw, base_dn = '127.0.0.1', 389, 'admin', 'bowman', 'dc=test,dc=com' 
+        c.connect(host, base_dn, port, user, passw) 
+        attrs = {'cn': 'test', 'gidNumber': '503', 'objectClass': ['top','posixGroup']}
+        cn = 'cn=test,ou=group'
+        res = c.create(cn, attrs)        
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), 'create = False'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_attr
+      Desc: Invalid attribute
+      
+      Test: |
+        cn = 'cn=test,ou=groups'
+        attrs['xx'] = 'xx'
+        res = c.create(cn, attrs)
+      
+      Validate: |  
+        this.test_result = res
+        assert (not res), 'create = False' 
+        del attrs['xx']      
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_missing_attr
+      Desc: Missing attribute
+      
+      Test: |
+        del attrs['gidNumber']
+        res = c.create(cn, attrs)
+      
+      Validate: |  
+        this.test_result = res
+        assert (not res), 'create = False' 
+        attrs['gidNumber'] = '503'   
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_duplicate
+      Desc: Duplicate record
+      
+      Test: |
+        c.create(cn, attrs)
+        res = c.create(cn, attrs)
+      
+      Validate: |  
+        this.test_result = res
+        assert (not res), 'create = False' 
+        c.delete(cn)
+        c.disconnect()  
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        res = c.create('', '')
+      
+      Validate: |     
+        this.test_result = res
+        assert (not res), 'create = False' 
+        
+Test-Scenario-7:
+  Id: ts_07
+  Path: hydratk/lib/network/ldap/client/01_methods_ut.jedi
+  Name: ts_update
+  Desc: Test method update
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.ldap.client import LDAPClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_update
+    Desc: Update record
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_update
+      Desc: Update
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['ldap_before_update', 'ldap_after_update']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = LDAPClient()
+        host, port, user, passw, base_dn = '127.0.0.1', 389, 'admin', 'bowman', 'dc=test,dc=com' 
+        c.connect(host, base_dn, port, user, passw) 
+        attrs = {'cn': 'test', 'gidNumber': '503', 'objectClass': ['top','posixGroup']}
+        cn = 'cn=test,ou=groups'
+        c.create(cn, attrs)
+        res = c.update(cn, {'gidNumber': '504'})              
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'update = True'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'update fires {0}'.format(evs)
+        res = c.read('ou=groups', filter='cn=test')
+        this.test_result = str(res)
+        exp = [cn+','+base_dn, '504']
+        assert ([res[0]['CN'], res[0]['gidNumber']] == exp), 'cn, gidNumber = {0}'.format(exp)
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]  
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_replace
+      Desc: Replace existing record
+      
+      Test: |
+        res = c.update(cn, {'cn': 'test2'}) 
+        
+      Validate: |
+        this.test_result = res
+        assert (res), 'update = True' 
+        res = c.read('ou=groups', filter='cn=test2')
+        this.test_result = str(res)
+        cn_new = 'cn=test2,ou=groups'
+        exp = [cn_new+','+base_dn, '504']
+        assert ([res[0]['CN'], res[0]['gidNumber']] == exp), 'cn, gidNumber = {0}'.format(exp)   
+        c.delete(cn_new)
+        c.disconnect()       
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_rdn
+      Desc: Invalid rdn
+                      
+      Test: |
+        c = LDAPClient()
+        host, port, user, passw, base_dn = '127.0.0.1', 389, 'admin', 'bowman', 'dc=test,dc=com' 
+        c.connect(host, base_dn, port, user, passw) 
+        attrs = {'cn': 'test', 'gidNumber': '503', 'objectClass': ['top','posixGroup']}
+        cn = 'cn=test,ou=group'
+        res = c.update(cn, attrs)        
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), 'update = False'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_attr
+      Desc: Invalid attribute
+      
+      Test: |
+        cn = 'cn=test,ou=groups'
+        c.create(cn, attrs)
+        res = c.update(cn, {'xx': 'xx'})
+      
+      Validate: |  
+        this.test_result = res
+        assert (not res), 'update = False'      
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_duplicate
+      Desc: Duplicate record
+      
+      Test: |
+        cn2 = 'cn=test2,ou=groups'
+        attrs = {'cn': 'test', 'gidNumber': '503', 'objectClass': ['top','posixGroup']}
+        c.create(cn2, attrs)
+        res = c.update(cn, {'cn': 'test2'})
+      
+      Validate: |  
+        this.test_result = res
+        assert (not res), 'update = False' 
+        c.delete(cn)
+        c.delete(cn2)
+        c.disconnect()  
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        res = c.update('', '')
+      
+      Validate: |     
+        this.test_result = res
+        assert (not res), 'update = False'             
+        
+Test-Scenario-8:
+  Id: ts_08
+  Path: hydratk/lib/network/ldap/client/01_methods_ut.jedi
+  Name: ts_delete
+  Desc: Test method delete
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.ldap.client import LDAPClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_delete
+    Desc: Delete record
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_delete
+      Desc: Delete
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['ldap_before_delete', 'ldap_after_delete']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = LDAPClient()
+        host, port, user, passw, base_dn = '127.0.0.1', 389, 'admin', 'bowman', 'dc=test,dc=com' 
+        c.connect(host, base_dn, port, user, passw) 
+        attrs = {'cn': 'test', 'gidNumber': '503', 'objectClass': ['top','posixGroup']}
+        cn = 'cn=test,ou=groups'
+        c.create(cn, attrs)
+        res = c.delete(cn)              
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'delete = True'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'delete fires {0}'.format(evs)
+        res = c.read('ou=groups', filter='cn=test')
+        this.test_result = str(res)
+        assert (len(res) == 0), 'record {0} deleted '.format(cn)
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]  
+        c.disconnect()       
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_rdn
+      Desc: Invalid rdn
+                      
+      Test: |
+        c = LDAPClient()
+        host, port, user, passw, base_dn = '127.0.0.1', 389, 'admin', 'bowman', 'dc=test,dc=com' 
+        c.connect(host, base_dn, port, user, passw) 
+        res = c.delete('cn=test,ou=grou')        
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), 'delete = False' 
+        c.disconnect()
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        res = c.delete('')
+      
+      Validate: |     
+        this.test_result = res
+        assert (not res), 'delete = False'                           

@@ -27,10 +27,12 @@ msg = {
     'htk_jms_disconnecting'       : ["Disconnecting from JMS server"],
     'htk_jms_disconnected'        : ["Disconnected from JMS server"],
     'htk_jms_disconnecting_error' : ["Error occured during disconnecting from JMS server"],
+    'htk_jms_not_connected'       : ["Not connected to server"],
     'htk_jms_sending_msg'         : ["Sending message with params: '{0}'"],
     'htk_jms_msg_sent'            : ["Message sent"],
     'htk_jms_sending_error'       : ["Error occured during message sending"],
     'htk_jms_receiving_msg'       : ["Receiving messages with params: '{0}'"],
     'htk_jms_msg_received'        : ["Received '{0}' messages"],
-    'htk_jms_receiving_error'     : ["Error occured during message receiving"]
+    'htk_jms_receiving_error'     : ["Error occured during message receiving"],
+    'htk_jms_browsing'            : ["Browsing queue with params: '{0}'"] 
 }

@@ -57,14 +57,14 @@ public class DBClient {
      * @param passw
      * @return boolean
      */
-    public boolean connect(String driver, String connStr, String user, String passw) {
+    public boolean connect(String driver, String connStr, String user, String passw, int timeout) {
         
         try {
             
             if (conn != null) {
                 
                 System.out.println("INFO - Client is already connected to database");
-                return true;
+                return false;
                 
             }   
             
@@ -73,11 +73,12 @@ public class DBClient {
                 sb.append("INFO - Connecting to database: driver:").append(driver).append(", connStr:").append(connStr);
                 sb.append(", user:").append(user).append(", passw:").append(passw);
                 System.out.println(sb.toString());
-            }  
+            }                         
             
             Class.forName(driver);
+            DriverManager.setLoginTimeout(timeout);
             conn = DriverManager.getConnection(connStr, user, passw);            
-            conn.setAutoCommit(true);
+            conn.setAutoCommit(false);
             
             if (verbose)
                 System.out.println("INFO - Connected to database");  
@@ -107,7 +108,7 @@ public class DBClient {
             if (conn == null) {
                 
                 System.out.println("INFO - Client is not connected to database");
-                return true;
+                return false;
                 
             }
             
@@ -115,6 +116,7 @@ public class DBClient {
                 System.out.println("INFO - Disconnecting from database"); 
             
             conn.close();
+            conn = null;
             
             if (verbose)
                 System.out.println("INFO - Disconnected from database");             
@@ -210,6 +212,64 @@ public class DBClient {
             
         }
         
-    }                
+    }
+    
+    /**
+    * Commit transaction
+    */
+    public boolean commit() {
+    	
+        try {
+
+            if (conn == null) {
+                
+                System.out.println("ERR - Client is not connected to database");
+                return false;
+                
+            } 
+            
+            conn.commit();
+            return true;
+            
+        }
+        catch (Exception ex) {
+
+            System.out.println("ERR - Exception: " + ex.toString());
+            if (verbose)
+                ex.printStackTrace();               
+            return false;
+            
+        }          
+        
+    }
+    
+    /**
+    * Rollback transaction
+    */
+    public boolean rollback() {
+    	
+        try {
+
+            if (conn == null) {
+                
+                System.out.println("ERR - Client is not connected to database");
+                return false;
+                
+            } 
+            
+            conn.rollback();
+            return true;
+            
+        }
+        catch (Exception ex) {
+
+            System.out.println("ERR - Exception: " + ex.toString());
+            if (verbose)
+                ex.printStackTrace();               
+            return false;
+            
+        }          
+        
+    }    
     
 }

@@ -37,7 +37,6 @@ class RPCClient():
         Uses Java client program to access JMS provider 
         
         Args:                   
-           verbose (bool): verbose mode
            jvm_path (str): JVM location, default from configuration
            classpath (str): Java classpath, default from configuration
            options (list): JVM options
@@ -65,7 +64,7 @@ class RPCClient():
                 
         """  
         
-        self._bridge.stop()
+        return self._bridge.stop()
         
     @property
     def bridge(self):
@@ -100,7 +99,7 @@ class RPCClient():
             
             ev = event.Event('rpc_before_init_proxy', url)
             if (self._mh.fire_event(ev) > 0):
-                url = ev.args(0)            
+                url = ev.argv(0)            
             
             if (ev.will_run_default()):      
                 self._proxy = self._bridge.get_package('java').rmi.Naming.lookup(url)
@@ -111,7 +110,7 @@ class RPCClient():
                 
             return True
     
-        except RuntimeError as ex:
+        except (RuntimeError, Exception) as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return False
             
@@ -136,10 +135,14 @@ class RPCClient():
             args = list(args)
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_rpc_call_method', name, args), self._mh.fromhere())
             
+            if (self._proxy == None):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_rpc_proxy_not_init'), self._mh.fromhere())
+                return None
+            
             ev = event.Event('rpc_before_call_method', name, args)
             if (self._mh.fire_event(ev) > 0):
-                name = ev.args(0)
-                args = ev.args(1)                      
+                name = ev.argv(0)
+                args = ev.argv(1)                      
                   
             if (ev.will_run_default()):          
                 output = getattr(self._proxy, name)(*args)
@@ -150,5 +153,6 @@ class RPCClient():
                 
             return output
     
-        except RuntimeError as ex:
-            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())                          
+        except (RuntimeError, AttributeError) as ex:
+            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
+            return None                          

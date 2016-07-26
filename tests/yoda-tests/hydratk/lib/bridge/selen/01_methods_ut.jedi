@@ -1,0 +1,1085 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/bridge/selen/01_methods_ut.jedi
+  Name: ts_init
+  Desc: Test method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.bridge.selen import SeleniumBridge
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize SeleniumBridge
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_phantomjs
+      Desc: Firefox browser
+      
+      Test: |
+        c = SeleniumBridge('PHANTOMJS')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'SeleniumBridge'), '__init__ = SeleniumBridge'
+        res = [c._browser, c._client.__class__.__name__]
+        exp = ['PHANTOMJS', 'WebDriver']
+        this.test_result = str(res)   
+        assert (res == exp), '_browser, _client = {0}'.format(exp)    
+        c.close()
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_firefox
+      Desc: Firefox browser
+      
+      Test: |
+        c = SeleniumBridge('FIREFOX')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'SeleniumBridge'), '__init__ = SeleniumBridge'
+        res = [c._browser, c._client.__class__.__name__]
+        exp = ['FIREFOX', 'WebDriver']
+        this.test_result = str(res)   
+        assert (res == exp), '_browser, _client = {0}'.format(exp)  
+        c.close()
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid
+      Desc: Invalid browser
+      
+      Test: |    
+        try:
+            c = SeleniumBridge('xx')
+            ex = False
+        except NotImplementedError:
+            ex = True                      
+      
+      Validate: |
+        this.test_result = ex
+        assert (ex), '__init__ raises NotImplementedError'
+        
+Test-Scenario-2:
+  Id: ts_02
+  Path: hydratk/lib/bridge/selen/01_methods_ut.jedi
+  Name: ts_props
+  Desc: Test properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.bridge.selen import SeleniumBridge
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_client
+      Desc: Getter client
+      
+      Test: |
+        c = SeleniumBridge()
+        c.open('http://localhost:8080/Autobot/')
+        res = c.client.__class__.__name__
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._client.__class__.__name__
+        assert (res == exp), 'client = {0}'.format(exp)
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_browser
+      Desc: Getter browser
+      
+      Test: |
+        res = c.browser
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._browser
+        assert (res == exp), 'browser = {0}'.format(exp)  
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_url
+      Desc: Getter url
+      
+      Test: |
+        res = c.url
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._url
+        assert (res == exp), 'url = {0}'.format(exp)
+        c.close()     
+        
+Test-Scenario-3:
+  Id: ts_03
+  Path: hydratk/lib/bridge/selen/01_methods_ut.jedi
+  Name: ts_open
+  Desc: Test method open
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.bridge.selen import SeleniumBridge
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_open
+    Desc: Open URL
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_phantomjs
+      Desc: Open URL via PhantomJS
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['selen_before_open', 'selen_after_open']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = SeleniumBridge('PhantomJS')
+        url = 'http://127.0.0.1:8080/Autobot/'  
+        res = c.open(url)
+      
+      Validate: |         
+        this.test_result = res
+        assert (res), 'open_url = True' 
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'open fires {0}'.format(evs)
+        this.test_result = res = c._url
+        assert (res == url), '_url = {0}'.format(url)
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0] 
+        c.close()      
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_firefox
+      Desc: Open URL via Firefox
+      
+      Test: |
+        c = SeleniumBridge('Firefox') 
+        res = c.open(url)
+      
+      Validate: |         
+        this.test_result = res
+        assert (res), 'open_url = True' 
+        c.close()        
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases     
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_host
+      Desc: Invalid host
+      
+      Test: |
+        c = SeleniumBridge()
+        url = 'http://1.1.1.1:8080/Autobot/'
+        res = c.open(url)
+      
+      Validate: |    
+        this.test_result = res
+        assert (not res), 'open_url = False'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_prot
+      Desc: Invalid protocol
+      
+      Test: |
+        url = 'https://127.0.0.1:8080/Autobot/'
+        res = c.open(url)
+      
+      Validate: |    
+        this.test_result = res
+        assert (not res), 'open_url = False'                    
+        c.close()  
+        
+Test-Scenario-4:
+  Id: ts_04
+  Path: hydratk/lib/bridge/selen/01_methods_ut.jedi
+  Name: ts_close
+  Desc: Test method close
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.bridge.selen import SeleniumBridge
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_close
+    Desc: Close browser
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_close
+      Desc: Close    
+    
+      Test: |
+        c = SeleniumBridge()
+        res = c.close()
+        
+      Validate: |
+        this.test_result = res
+        assert (res), 'close = True'
+                             
+Test-Scenario-5:
+  Id: ts_05
+  Path: hydratk/lib/bridge/selen/01_methods_ut.jedi
+  Name: ts_wait_for_element
+  Desc: Test method wait_for_element
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.bridge.selen import SeleniumBridge
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_wait_for_element
+    Desc: Wait for element
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_phantomjs
+      Desc: Wait via PhantomJS
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['selen_before_wait', 'selen_after_wait']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = SeleniumBridge('PhantomJS')
+        url = 'http://127.0.0.1:8080/Autobot/'  
+        c.open(url)
+        res = c.wait_for_element('customerId')
+      
+      Validate: |         
+        this.test_result = res
+        assert (res), 'wait_for_element = True' 
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'wait_for_element fires'.format(evs)
+        this.test_result = res = c._url
+        assert (res == url), '_url = {0}'.format(url)
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0] 
+        c.close()   
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_firefox
+      Desc: Wait via Firefox
+      
+      Test: |
+        c = SeleniumBridge('Firefox') 
+        c.open(url)
+        res = c.wait_for_element('customerId')
+      
+      Validate: |         
+        this.test_result = res
+        assert (res), 'wait_for_element = True' 
+        c.close()  
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_elem_id
+      Desc: Element id
+      
+      Test: |
+        c = SeleniumBridge()
+        c.open(url)
+        res = c.wait_for_element('customerRead', 'id')
+      
+      Validate: |   
+        this.test_result = res
+        assert (res), 'wait_for_element = True'    
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_elem_xpath
+      Desc: Element xpath
+      
+      Test: |
+        c.open(url)
+        res = c.wait_for_element('//div[@id=\'customerRead\']', 'xpath')
+      
+      Validate: |   
+        this.test_result = res
+        assert (res), 'wait_for_element = True'   
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_invalid_id
+      Desc: Invalid element id
+      
+      Test: |
+        c.open(url)
+        res = c.wait_for_element('customerRed', 'id')
+      
+      Validate: |   
+        this.test_result = res
+        assert (not res), 'wait_for_element = False'             
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_invalid_xpath
+      Desc: Invalid element xpath
+      
+      Test: |
+        c.open(url)
+        res = c.wait_for_element('//xx[@id=\'customerRead\']', 'xpath')
+      
+      Validate: |   
+        this.test_result = res
+        assert (not res), 'wait_for_element = False'  
+        
+Test-Scenario-6:
+  Id: ts_06
+  Path: hydratk/lib/bridge/selen/01_methods_ut.jedi
+  Name: ts_get_element
+  Desc: Test method get_element
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.bridge.selen import SeleniumBridge
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+    from time import sleep
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_get_element
+    Desc: Get element
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_phantomjs
+      Desc: Get via PhantomJS
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = 'selen_before_get_elem'
+        reg_ev_hook(mh, evs)
+        c = SeleniumBridge('PhantomJS')
+        url = 'http://127.0.0.1:8080/Autobot/'  
+        c.open(url)
+        sleep(3)
+        res = c.get_element('customerId')
+      
+      Validate: |         
+        this.test_result = str(res)
+        assert (res != None), 'get_element != None' 
+        res = events[0]._id
+        this.test_result = str(res)
+        assert (res == evs), 'get_element fires'.format(evs)
+        this.test_result = res = c._url
+        assert (res == url), '_url = {0}'.format(url)
+        del mh._event_hooks[evs]  
+        del events[0]
+        c.close()   
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_firefox
+      Desc: Get via Firefox
+      
+      Test: |
+        c = SeleniumBridge('Firefox')
+        c.open(url)
+        sleep(3)
+        res = c.get_element('customerId')
+      
+      Validate: |         
+        this.test_result = str(res)
+        assert (res != None), 'get_element != None' 
+        c.close()                 
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_elem_id
+      Desc: Get element by id
+      
+      Test: |
+        c = SeleniumBridge()
+        c.open(url)
+        sleep(3)
+        res = c.get_element('customerRead', 'id')
+      
+      Validate: |         
+        this.test_result = str(res)
+        assert (res != None), 'get_element != None'                
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_elem_class
+      Desc: Get element by class
+      
+      Test: |
+        res = c.get_element('v-formlayout-row', 'class')
+      
+      Validate: |         
+        this.test_result = str(res)
+        assert (res != None), 'get_element != None'        
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_elems_class
+      Desc: Get elements by class
+      
+      Test: |
+        res = c.get_element('v-formlayout-row', 'class', False)
+      
+      Validate: |         
+        this.test_result = str(res)
+        assert (len(res) > 0), 'get_element is not empty'    
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_elem_css
+      Desc: Get element by css
+      
+      Test: |
+        res = c.get_element('.autobot .v-tabsheet-tabitemcell .v-caption .v-captiontext', 'css')
+      
+      Validate: |         
+        this.test_result = str(res)
+        assert (res != None), 'get_element != None'        
+        
+    Test-Condition-7: 
+      Id: tco_07
+      Name: tco_elems_css
+      Desc: Get elements by css
+      
+      Test: |
+        res = c.get_element('.autobot .v-tabsheet-tabitemcell .v-caption .v-captiontext', 'css', False)
+      
+      Validate: |         
+        this.test_result = str(res)
+        assert (len(res) > 0), 'get_element is not empty'    
+        
+    Test-Condition-8: 
+      Id: tco_08
+      Name: tco_elem_tag
+      Desc: Get element by tag
+      
+      Test: |
+        res = c.get_element('td', 'tag')
+      
+      Validate: |         
+        this.test_result = str(res)
+        assert (res != None), 'get_element != None'        
+        
+    Test-Condition-9: 
+      Id: tco_09
+      Name: tco_elems_tag
+      Desc: Get elements by tag
+      
+      Test: |
+        res = c.get_element('td', 'tag', False)
+      
+      Validate: |         
+        this.test_result = str(res)
+        assert (len(res) > 0), 'get_element is not empty'       
+        
+    Test-Condition-10: 
+      Id: tco_10
+      Name: tco_elem_xpath
+      Desc: Get element by xpath
+      
+      Test: |
+        res = c.get_element('//input[@type=\'text\']', 'xpath')
+      
+      Validate: |         
+        this.test_result = str(res)
+        assert (res != None), 'get_element != None'        
+        
+    Test-Condition-11: 
+      Id: tco_11
+      Name: tco_elems_xpath
+      Desc: Get elements by xpath
+      
+      Test: |
+        res = c.get_element('//input[@type=\'text\']', 'xpath', False)
+      
+      Validate: |         
+        this.test_result = str(res)
+        assert (len(res) > 0), 'get_element is not empty'                      
+        c.close()    
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_id
+      Desc: Invalid id 
+      
+      Test: |
+        c = SeleniumBridge()
+        url = 'http://127.0.0.1:8080/Autobot/'  
+        c.open(url)
+        sleep(3)  
+        res = c.get_element('xx', 'id')    
+      
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'res is empty'      
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_class
+      Desc: Invalid class
+      
+      Test: |
+        res = c.get_element('xx', 'class')    
+      
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'res is empty'  
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_css
+      Desc: Invalid css
+      
+      Test: |
+        res = c.get_element('xx', 'css')    
+      
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'res is empty' 
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_invalid_text
+      Desc: Invalid text
+      
+      Test: |
+        res = c.get_element('xx', 'text')    
+      
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'res is empty' 
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_invalid_name
+      Desc: Invalid name
+      
+      Test: |
+        res = c.get_element('xx', 'name')    
+      
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'res is empty' 
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_invalid_tag
+      Desc: Invalid tag
+      
+      Test: |
+        res = c.get_element('xx', 'tag')    
+      
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'res is empty' 
+        
+    Test-Condition-7: 
+      Id: tco_07
+      Name: tco_invalid_xpath
+      Desc: Invalid xpath
+      
+      Test: |
+        res = c.get_element('xx', 'xpath')    
+      
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'res is empty'  
+        c.close()                 
+        
+Test-Scenario-7:
+  Id: ts_07
+  Path: hydratk/lib/bridge/selen/01_methods_ut.jedi
+  Name: ts_read_element
+  Desc: Test method read_element
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.bridge.selen import SeleniumBridge
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+    from time import sleep
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_read_element
+    Desc: Read element
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_phantomjs
+      Desc: Read via PhantomJS
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = 'selen_before_read_elem'
+        reg_ev_hook(mh, evs)
+        c = SeleniumBridge('PhantomJS')
+        url = 'http://127.0.0.1:8080/Autobot/'  
+        c.open(url)
+        sleep(3)
+        res = c.read_element('customerId')
+      
+      Validate: |         
+        this.test_result = str(res)
+        assert (res != None), 'read_element != None' 
+        res = events[0]._id
+        this.test_result = str(res)
+        assert (res == evs), 'read_element fires'.format(evs)
+        del mh._event_hooks[evs]  
+        del events[0]
+        c.close()     
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_firefox
+      Desc: Read via Firefox
+      
+      Test: |
+        c = SeleniumBridge('Firefox') 
+        c.open(url)
+        sleep(3)
+        res = c.read_element('customerId')
+      
+      Validate: |         
+        this.test_result = str(res)
+        assert (res != None), 'read_element != None' 
+        c.close()    
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_text
+      Desc: Read element text attribute
+      
+      Test: |
+        c = SeleniumBridge() 
+        c.open(url)
+        sleep(3)
+        res = c.read_element('customerId', attr='type', attr_val='text')
+      
+      Validate: |         
+        this.test_result = str(res)
+        assert (res != None), 'read_element != None'  
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_attr
+      Desc: Read element with attribute
+      
+      Test: |
+        res = c.read_element('customerId', attr='tabindex', attr_val='0')
+      
+      Validate: |         
+        this.test_result = str(res)
+        assert (res != None), 'read_element != None'  
+        c.close()      
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_elem
+      Desc: Invalid element
+      
+      Test: |
+        c = SeleniumBridge()
+        url = 'http://127.0.0.1:8080/Autobot/'  
+        c.open(url)
+        sleep(3)
+        res = c.read_element('xx')  
+        
+      Validate: |         
+        this.test_result = str(res)
+        assert (res == None), 'read_element = None'    
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_attr
+      Desc: Invalid attribute
+      
+      Test: |
+        res = c.read_element('customerId', attr='xx', attr_val='0')  
+        
+      Validate: |         
+        this.test_result = str(res)
+        assert (res == None), 'read_element = None'   
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_attr_val
+      Desc: Invalid attribute value
+      
+      Test: |
+        res = c.read_element('customerId', attr='tabindex', attr_val='1')  
+        
+      Validate: |         
+        this.test_result = str(res)
+        assert (res == None), 'read_element = None' 
+        c.close() 
+        
+Test-Scenario-8:
+  Id: ts_08
+  Path: hydratk/lib/bridge/selen/01_methods_ut.jedi
+  Name: ts_set_element
+  Desc: Test method set_element
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.bridge.selen import SeleniumBridge
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+    from time import sleep
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_set_element
+    Desc: Set element
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_phantomjs
+      Desc: Set via PhantomJS
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = 'selen_before_set_elem'
+        reg_ev_hook(mh, evs)
+        c = SeleniumBridge('PhantomJS')
+        url = 'http://127.0.0.1:8080/Autobot/'  
+        c.open(url)
+        sleep(3)
+        elem, val = 'customerId', 'xx'
+        res = c.set_element(elem, val)
+      
+      Validate: |         
+        this.test_result = res
+        assert (res), 'set_element = True' 
+        res = events[0]._id
+        this.test_result = str(res)
+        assert (res == evs), 'set_element fires'.format(evs)
+        del mh._event_hooks[evs]  
+        del events[0]
+        c.close()      
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_firefox
+      Desc: Set via PhantomJS
+      
+      Test: |
+        c = SeleniumBridge('Firefox')
+        c.open(url)
+        sleep(3)
+        res = c.set_element(elem, val)
+      
+      Validate: |         
+        this.test_result = res
+        assert (res), 'set_element = True' 
+        c.close()  
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_text
+      Desc: Set element with attribute
+      
+      Test: |
+        c = SeleniumBridge() 
+        c.open(url)
+        sleep(3)
+        res = c.set_element('customerId', val, attr='type', attr_val='text')
+      
+      Validate: |         
+        this.test_result = res
+        assert (res), 'set_element = True' 
+        c.close()    
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_elem
+      Desc: Invalid element
+      
+      Test: |
+        c = SeleniumBridge()
+        url = 'http://127.0.0.1:8080/Autobot/'  
+        c.open(url)
+        sleep(3)
+        val = 'xx'
+        res = c.set_element('xx', val)  
+        
+      Validate: |         
+        this.test_result = res
+        assert (not res), 'set_element = False'    
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_attr
+      Desc: Invalid attribute
+      
+      Test: |
+        res = c.set_element('customerId', val, attr='xx', attr_val='0')  
+        
+      Validate: |         
+        this.test_result = res
+        assert (not res), 'set_element = False'   
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_attr_val
+      Desc: Invalid attribute value
+      
+      Test: |
+        res = c.set_element('customerId', val, attr='tabindex', attr_val='1')  
+        
+      Validate: |         
+        this.test_result = res
+        assert (not res), 'set_element = False' 
+        c.close()          
+        
+Test-Scenario-9:
+  Id: ts_09
+  Path: hydratk/lib/bridge/selen/01_methods_ut.jedi
+  Name: ts_exec_script
+  Desc: Test method exec_script
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.bridge.selen import SeleniumBridge
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+    from time import sleep
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_exec_script
+    Desc: Execute JS script
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_phantomjs
+      Desc: Execute via PhantomJS
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['selen_before_script', 'selen_after_script']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = SeleniumBridge('PhantomJS')
+        url = 'http://127.0.0.1:8080/Autobot/'  
+        c.open(url)
+        sleep(3)
+        script = "return document.getElementById('customerId').value;"
+        res = c.exec_script(script)
+      
+      Validate: |         
+        this.test_result = res
+        assert (res != None), 'exec_script != None' 
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'exec_script fires'.format(evs)
+        del mh._event_hooks[evs[0]]  
+        del mh._event_hooks[evs[1]] 
+        del events[0]
+        del events[0]
+        c.close()      
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_firefox
+      Desc: Execute via Firefox
+      
+      Test: |
+        c = SeleniumBridge('Firefox')
+        c.open(url)
+        sleep(3)
+        res = c.exec_script(script)
+      
+      Validate: |         
+        this.test_result = res
+        assert (res != None), 'exec_script != None' 
+        c.close() 
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_read_text
+      Desc: Read text field
+      
+      Test: |
+        c = SeleniumBridge()
+        c.open(url)
+        sleep(3)
+        elem, val = 'customerId', 'xx'
+        c.set_element(elem, val)
+        script = "return document.getElementById('{0}').value;".format(elem)
+        res = c.exec_script(script)  
+        
+      Validate: |
+        this.test_result = res
+        assert (res == val), 'exec_script = {0}'.format(val)
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_read_select
+      Desc: Read select
+      
+      Test: |
+        script = "var e = document.getElementById('customerStatus').getElementsByTagName('select')[0];return e.options[1].text;"
+        res = c.exec_script(script)  
+        
+      Validate: |
+        this.test_result = res
+        exp = 'suspend'
+        assert (res == exp), 'exec_script = {0}'.format(exp)    
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_invalid
+      Desc: Invalid script
+      
+      Test: |
+        script = "var e = document.getElementById('customer').getElementsByTagName('select')[0];return e.options[1].text;"
+        res = c.exec_script(script)  
+        
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'exec_script = None'               
+        c.close()                       
+        
+Test-Scenario-10:
+  Id: ts_10
+  Path: hydratk/lib/bridge/selen/01_methods_ut.jedi
+  Name: ts_save_screen
+  Desc: Test method save_screen
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.bridge.selen import SeleniumBridge
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+    from time import sleep
+    from os import path, remove
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_save_screen
+    Desc: Save screenshot
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_phantomjs
+      Desc: Save via PhantomJS
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['selen_before_save_screen', 'selen_after_save_screen']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = SeleniumBridge('PhantomJS')
+        url = 'http://127.0.0.1:8080/Autobot/'  
+        c.open(url)
+        sleep(3)
+        file = '/var/local/hydratk/test.png'
+        res = c.save_screen(file)
+      
+      Validate: |         
+        this.test_result = res
+        assert (res), 'save_screen = True' 
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'save_screen fires'.format(evs)
+        this.test_resut = res = (path.exists(file))
+        assert (res), 'file {0} created'.format(file)
+        del mh._event_hooks[evs[0]]
+        del mh._event_hooks[evs[1]] 
+        del events[0]
+        del events[0]
+        c.close()    
+        remove(file)     
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_firefox
+      Desc: Save via Firefox
+      
+      Test: |
+        c = SeleniumBridge('Firefox')
+        c.open(url)
+        sleep(3)
+        res = c.save_screen(file)
+      
+      Validate: |         
+        this.test_result = res
+        assert (res), 'save_screen = True' 
+        this.test_resut = res = (path.exists(file))
+        assert (res), 'file {0} created'.format(file)
+        c.close()    
+        remove(file)     
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid
+      Desc: Invalid path
+      
+      Test: |
+        c = SeleniumBridge()
+        c.open(url)
+        sleep(3)
+        res = c.save_screen('/private/xx')
+      
+      Validate: |         
+        this.test_result = res
+        assert (not res), 'save_screen = False' 
+        c.close()                                                                                                                                                                                         

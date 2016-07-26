@@ -29,7 +29,7 @@ def EmailClient(protocol, *args, **kwargs):
         obj: EmailClient
        
     Raises:
-        error: ValueError
+        error: NotImplementedError
                 
     """       
 
@@ -40,5 +40,4 @@ def EmailClient(protocol, *args, **kwargs):
         mh.find_module('hydratk.lib.network.email.client', None)                  
         return mod.EmailClient(*args, **kwargs)
     else:
-        raise ValueError('Unknown protocol:{0}'.format(protocol))
-        return None                           
+        raise NotImplementedError('Unknown protocol:{0}'.format(protocol))                         

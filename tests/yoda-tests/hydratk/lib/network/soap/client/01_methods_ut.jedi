@@ -1,0 +1,484 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/network/soap/client/01_methods_ut.jedi
+  Name: ts_init
+  Desc: Test method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.soap.client import SOAPClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize SOAPClient
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_verbose
+      Desc: Not verbose mode
+      
+      Test: |
+        c = SOAPClient(False)
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'SOAPClient'), '__init__ = SOAPClient'
+        this.test_result = res = c._verbose
+        assert (not res), '_verbose = False'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_verbose
+      Desc: Verbose mode
+      
+      Test: |
+        c = SOAPClient(True)
+        res = c._verbose
+      
+      Validate: |
+        this.test_result = res
+        assert (res), '_verbose = True'        
+        
+Test-Scenario-2:
+  Id: ts_02
+  Path: hydratk/lib/network/soap/client/01_methods_ut.jedi
+  Name: ts_props
+  Desc: Test properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.soap.client import SOAPClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_client
+      Desc: Getter client
+      
+      Test: |
+        c = SOAPClient(True)
+        c.load_wsdl('http://localhost:8080/Autobot/crm?wsdl')
+        res = c.client.__class__.__name__
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._client.__class__.__name__
+        assert (res == exp), 'client = {0}'.format(exp) 
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_wsdl
+      Desc: Getter wsdl
+      
+      Test: |
+        res = c.wsdl.__class__.__name__
+      
+      Validate: |        
+        this.test_result = str(res)
+        exp = c._wsdl.__class__.__name__
+        assert (res == exp), 'wsdl = {0}'.format(exp) 
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_url
+      Desc: Getter url
+      
+      Test: |
+        res = c.url
+      
+      Validate: |        
+        this.test_result = str(res)
+        exp = c._url
+        assert (res == exp), 'url = {0}'.format(exp)         
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_location
+      Desc: Getter location
+      
+      Test: |
+        res = c.location
+      
+      Validate: |        
+        this.test_result = str(res)
+        exp = c._location
+        assert (res == exp), 'location = {0}'.format(exp)
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_user
+      Desc: Getter user
+      
+      Test: |
+        res = c.user
+      
+      Validate: |        
+        this.test_result = str(res)
+        exp = c._user
+        assert (res == exp), 'user = {0}'.format(exp)
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_passw
+      Desc: Getter passw
+      
+      Test: |
+        res = c.passw
+      
+      Validate: |        
+        this.test_result = str(res)
+        exp = c._passw
+        assert (res == exp), 'passw = {0}'.format(exp)  
+        
+    Test-Condition-7: 
+      Id: tco_07
+      Name: tco_endpoint
+      Desc: Getter endpoint
+      
+      Test: |
+        res = c.endpoint
+      
+      Validate: |        
+        this.test_result = str(res)
+        exp = c._endpoint
+        assert (res == exp), 'endpoint = {0}'.format(exp)
+        
+    Test-Condition-8: 
+      Id: tco_08
+      Name: tco_headers
+      Desc: Getter headers
+      
+      Test: |
+        res = c.headers
+      
+      Validate: |        
+        this.test_result = str(res)
+        exp = c._headers
+        assert (res == exp), 'headers = {0}'.format(exp)
+        
+    Test-Condition-9: 
+      Id: tco_09
+      Name: tco_verbose
+      Desc: Getter verbose
+      
+      Test: |
+        res = c.verbose
+      
+      Validate: |        
+        this.test_result = str(res)
+        exp = c._verbose
+        assert (res == exp), 'verbose = {0}'.format(exp)   
+        
+Test-Scenario-3:
+  Id: ts_03
+  Path: hydratk/lib/network/soap/client/01_methods_ut.jedi
+  Name: ts_load_wsdl
+  Desc: Test method load_wsdl
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.soap.client import SOAPClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_load_wsdl
+    Desc: Load WSDL
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_remote
+      Desc: Remote WSDL
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['soap_before_load_wsdl', 'soap_after_load_wsdl']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = SOAPClient()
+        url = 'http://localhost:8080/Autobot/crm?wsdl'
+        res = c.load_wsdl(url, location='remote')     
+      
+      Validate: |          
+        this.test_result = True
+        assert (res), 'load_wsdl = True'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'load_wsdl fires {0}'.format(evs)
+        res = c._wsdl
+        this.test_result = str(res)
+        assert (res != None), 'wsdl is not empty'        
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]                 
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_local
+      Desc: Local WSDL
+      
+      Test: |
+        url = '/var/local/hydratk/testenv/crm.wsdl'
+        res = c.load_wsdl(url, location='local')     
+      
+      Validate: |          
+        this.test_result = True
+        assert (res), 'load_wsdl = True'
+        res = c._wsdl
+        this.test_result = str(res)
+        assert (res != None), 'wsdl is not empty' 
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_remote
+      Desc: Invalid remote WSDL   
+      
+      Test: |
+        c = SOAPClient()
+        res = c.load_wsdl('http://localhost/xx?wsdl', location='remote')
+      
+      Validate: |                                   
+        this.test_result = res
+        assert (not res), 'load_wsdl = False'     
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_local
+      Desc: Invalid local WSDL   
+      
+      Test: |
+        c = SOAPClient()
+        res = c.load_wsdl('/var/xx.wsdl')
+      
+      Validate: |                                   
+        this.test_result = res
+        assert (not res), 'load_wsdl = False' 
+        
+Test-Scenario-4:
+  Id: ts_04
+  Path: hydratk/lib/network/soap/client/01_methods_ut.jedi
+  Name: ts_get_operations
+  Desc: Test method get_operations
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.soap.client import SOAPClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_get_operations
+    Desc: Get WSDL operations
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_get
+      Desc: Get
+      
+      Test: |
+        c = SOAPClient()
+        c.load_wsdl('http://localhost:8080/Autobot/crm?wsdl') 
+        res = c.get_operations()
+        
+      Validate: |
+        this.test_result = str(res)
+        assert (len(res) > 0), 'get_operations is not empty'
+        exp = 'readCustomer'  
+        assert (exp in res), 'get_operations contains {0}'.format(exp)
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_loaded
+      Desc: WSDL not loaded
+      
+      Test: |
+        c = SOAPClient()
+        res = c.get_operations()
+      
+      Validate: |                                              
+        this.test_result = res
+        assert (res == None), 'get_operations = None'
+        
+Test-Scenario-5:
+  Id: ts_05
+  Path: hydratk/lib/network/soap/client/01_methods_ut.jedi
+  Name: ts_send_request
+  Desc: Test method send_request
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.soap.client import SOAPClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_send_request
+    Desc: Send request
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_read
+      Desc: Read operation
+      
+      Test: |    
+        c = SOAPClient()
+        c.load_wsdl('http://localhost:8080/Autobot/crm?wsdl')
+        op, ns = 'readCustomer', '\"http://autobot.bowman.com/\"'
+        doc = '<aut:{0} xmlns:aut={1}><id>0</id></aut:{2}>'.format(op, ns, op) 
+        res = c.send_request(op, doc, headers={'SOAPAction': op})    
+        
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'send_request = None'       
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_create
+      Desc: Create operation
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['soap_before_request', 'soap_after_request']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])       
+        op = 'createCustomer'
+        name, status, segment = 'Charlie Bowman', 'active', 3
+        doc = '<aut:{0} xmlns:aut={1}><name>{2}</name><status>{3}</status>'.format(op, ns, name, status) + \
+              '<segment>{0}</segment></aut:{1}>'.format(segment, op) 
+        res = c.send_request(op, doc, headers={'SOAPAction': op})    
+        
+      Validate: |
+        this.test_result = res
+        id = res
+        assert (id > 0), 'record {0} created'.format(id)
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'send_request fires {0}'.format(evs)              
+        op = 'readCustomer'
+        doc = '<aut:{0} xmlns:aut={1}><id>{2}</id></aut:{3}>'.format(op, ns, id, op)
+        res = c.send_request(op, doc, headers={'SOAPAction': op})
+        this.test_result = str(res)
+        cont = [res.id, res.name, res.status, res.segment]
+        exp = [id, name, status, segment]
+        assert (cont == exp), 'res contains {0}'.format(exp)
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]    
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_update
+      Desc: Update operation
+      
+      Test: |      
+        op = 'changeCustomer'
+        name, status, segment = 'Vince Neil', 'suspend', 2
+        doc = '<aut:{0} xmlns:aut={1}><id>{2}</id><name>{3}</name><status>{4}</status>'.format(op, ns, id, name, status) + \
+              '<segment>{0}</segment></aut:{1}>'.format(segment, op) 
+        res = c.send_request(op, doc, headers={'SOAPAction': op})    
+        
+      Validate: |
+        this.test_result = res
+        assert (res), 'res = True'           
+        op = 'readCustomer'
+        doc = '<aut:{0} xmlns:aut={1}><id>{2}</id></aut:{3}>'.format(op, ns, id, op)
+        res = c.send_request(op, doc, headers={'SOAPAction': op})
+        this.test_result = str(res)
+        cont = [res.id, res.name, res.status, res.segment]
+        exp = [id, name, status, segment]
+        assert (cont == exp), 'res contains {0}'.format(exp)    
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_loaded
+      Desc: WSDL not loaded
+      
+      Test: |
+        c = SOAPClient()
+        res = c.send_request('', '')
+      
+      Validate: |                         
+        this.test_result = res
+        assert (res == None), 'send_request = None'        
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_xml
+      Desc: Invalid xml
+      
+      Test: |
+        c.load_wsdl('http://localhost:8080/Autobot/crm?wsdl')
+        res = c.send_request('xx', '<xx')
+      
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'send_request = None'  
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_operation
+      Desc: Invalid operation
+      
+      Test: |            
+        res = c.send_request('xx', '<root />')
+        
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'send_request = None'                
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_invalid_body
+      Desc: Invalid body 
+      
+      Test: |
+        op = 'readCustomer'
+        doc = '<{0}><id>0</id></{1}>'.format(op, op)         
+        res = c.send_request(op, doc)
+      
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'send_request = None'      
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_invalid_response
+      Desc: Invalid response
+      
+      Test: |
+        ns = '\"http://autobot.bowman.com/\"'
+        doc = '<aut:{0} xmlns:aut={1}><id>0</id></aut:{2}>'.format(op, ns, op)
+        res = c.send_request(op, doc)
+      
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'send_request = None'                 

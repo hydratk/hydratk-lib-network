@@ -29,7 +29,7 @@ def FTPClient(protocol='FTP', *args, **kwargs):
         obj: FTPClient
        
     Raises:
-        error: ValueError
+        error: NotImplementedError
                 
     """       
 
@@ -40,5 +40,4 @@ def FTPClient(protocol='FTP', *args, **kwargs):
         mh.find_module('hydratk.lib.network.ftp.client', None)                  
         return mod.FTPClient(*args, **kwargs)
     else:
-        raise ValueError('Unknown protocol:{0}'.format(protocol))
-        return None                           
+        raise NotImplementedError('Unknown protocol:{0}'.format(protocol))                         

@@ -24,7 +24,7 @@ msg = {
     'htk_inet_sending_packet'      : ["Odesílám packet, iface: '{0}'"],   
     'htk_inet_packet_sent'         : ["Packet odeslán"], 
     'htk_inet_sending_recv_packet' : ["Odesílám a příjímám packety, iface: '{0}', retry: '{1}', timeout: '{2}'"],   
-    'htk_inet_packet_sent'         : ["Packety odeslány a přijaty"],
+    'htk_inet_packet_sent_recv'    : ["Packety odeslány a přijaty"],
     'htk_inet_ping'                : ["Ping destination: '{0}', protocol: '{1}', port: '{2}'"],
     'htk_inet_ping_ok'             : ["Ping byl úspěšný"],
     'htk_inet_ping_nok'            : ["Ping byl neúspěšný"],

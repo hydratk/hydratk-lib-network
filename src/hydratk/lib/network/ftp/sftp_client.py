@@ -28,9 +28,9 @@ from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
 from paramiko import SFTPClient, Transport
 from paramiko.ssh_exception import SSHException, NoValidConnectionsError
-from socket import error
+from socket import error, setdefaulttimeout
 from os import path, remove
-from logging import getLogger, DEBUG
+from logging import basicConfig, DEBUG
 
 class FTPClient:
     """Class FTPClient
@@ -38,12 +38,12 @@ class FTPClient:
     
     _mh = None
     _client = None
-    _output = None
     _host = None
     _port = None
     _user = None
     _path = None
     _verbose = None
+    _is_connected = None
     
     def __init__(self, verbose=False):
         """Class constructor
@@ -57,9 +57,9 @@ class FTPClient:
         
         self._mh = MasterHead.get_head()
                          
-        self.verbose = verbose 
-        if (self.verbose):              
-            getLogger('paramiko').setLevel(DEBUG)
+        self._verbose = verbose 
+        if (self._verbose):              
+            basicConfig(level=DEBUG)
             
     @property
     def client(self): 
@@ -101,9 +101,15 @@ class FTPClient:
     def verbose(self):
         """ verbose mode property getter """  
         
-        return self._verbose                 
+        return self._verbose    
+    
+    @property
+    def is_connected(self):
+        """ is_connected property getter """  
         
-    def connect(self, host, port=22, user=None, passw=None, path='/'):
+        return self._is_connected                       
+        
+    def connect(self, host, port=22, user=None, passw=None, path='/', timeout=10):
         """Method connects to server
         
         Args:
@@ -112,6 +118,7 @@ class FTPClient:
            user (str): username
            passw (str): password
            path (str): server path
+           timeout (int): timeout
            
         Returns:
            bool: result
@@ -124,32 +131,36 @@ class FTPClient:
         
         try:            
                           
-            message = '{0}/{1}@{2}:{3}{4}'.format(user, passw, host, port, path)                            
+            message = '{0}/{1}@{2}:{3}{4} timeout:{5}'.format(user, passw, host, port, path, timeout)                            
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_connecting', message), self._mh.fromhere())
             
-            ev = event.Event('ftp_before_connect', host, port, user, passw, path)
+            ev = event.Event('ftp_before_connect', host, port, user, passw, path, timeout)
             if (self._mh.fire_event(ev) > 0):
                 host = ev.argv(0)
                 port = ev.argv(1)
                 user = ev.argv(2)
                 passw = ev.argv(3)
                 path = ev.argv(4)
+                timeout = ev.argv(5)
                 
             self._host = host
             self._port = port
             self._user = user
-            self._passw = passw
-            self._path = path                        
+            self._passw = passw 
+            self._path = '/'                 
             
-            if (ev.will_run_default()):                  
-                t = Transport((host, self._port))                                                  
+            if (ev.will_run_default()):
+                setdefaulttimeout(timeout)                  
+                t = Transport((host, self._port))                                                
             
                 if (user != None):
                     t.connect(username=user, password=passw)
                     self._client = SFTPClient.from_transport(t)         
                            
+                self._is_connected = True           
+                           
                 if (path != None):
-                    self.change_dir(path)
+                    self.change_dir(path)                                   
                                             
             ev = event.Event('ftp_after_connect')
             self._mh.fire_event(ev)   
@@ -172,12 +183,17 @@ class FTPClient:
         """           
          
         try:
-                                             
-            self._client.close()           
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_disconnected'), self._mh.fromhere())  
-            return True
+                              
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_ftp_not_connected'), self._mh.fromhere()) 
+                return False
+            else:                                             
+                self._client.close()
+                self._is_connected = False           
+                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_disconnected'), self._mh.fromhere())  
+                return True
             
-        except (SSHException, NoValidConnectionsError, error), ex: 
+        except (SSHException, NoValidConnectionsError, error) as ex: 
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())       
             return False 
         
@@ -195,6 +211,10 @@ class FTPClient:
         try: 
             
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_list_dir', self._path), self._mh.fromhere())
+        
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_ftp_not_connected'), self._mh.fromhere()) 
+                return None        
         
             names = self._client.listdir()                            
             return names  
@@ -221,19 +241,22 @@ class FTPClient:
             
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_change_dir', path), self._mh.fromhere())
             
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_ftp_not_connected'), self._mh.fromhere()) 
+                return False            
+            
             ev = event.Event('ftp_before_change_dir', path)
             if (self._mh.fire_event(ev) > 0):
                 path = ev.argv(0)             
             
             if (ev.will_run_default()):
                 self._client.chdir(path)
-                cur_dir = self._client.getcwd()           
+                self._path = self._client.getcwd()           
             
-            self._path = cur_dir
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_cur_dir', self._path), self._mh.fromhere())  
             return True
          
-        except (SSHException, NoValidConnectionsError, error) as ex:
+        except (SSHException, NoValidConnectionsError, error, IOError) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())        
             return False  
         
@@ -257,6 +280,10 @@ class FTPClient:
             
             self._mh.dmsg('htk_on_debug_info',self._mh._trn.msg('htk_ftp_downloading_file', remote_path), self._mh.fromhere())
             
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_ftp_not_connected'), self._mh.fromhere()) 
+                return False            
+            
             ev = event.Event('ftp_before_download_file', remote_path, local_path)
             if (self._mh.fire_event(ev) > 0):
                 remote_path = ev.argv(0)  
@@ -278,7 +305,7 @@ class FTPClient:
               
             return True
  
-        except (SSHException, NoValidConnectionsError, error) as ex:
+        except (SSHException, NoValidConnectionsError, error, IOError) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             if (path.exists(lpath)):
                 remove(lpath)                     
@@ -304,6 +331,10 @@ class FTPClient:
             
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_uploading_file', local_path), self._mh.fromhere())
             
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_ftp_not_connected'), self._mh.fromhere()) 
+                return False            
+            
             ev = event.Event('ftp_before_upload_file', local_path, remote_path)
             if (self._mh.fire_event(ev) > 0):
                 local_path = ev.argv(0)
@@ -325,7 +356,7 @@ class FTPClient:
             
             return True
  
-        except (SSHException, NoValidConnectionsError, error) as ex:
+        except (SSHException, NoValidConnectionsError, error, IOError) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())                    
             return False  
         
@@ -347,6 +378,10 @@ class FTPClient:
 
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_deleting_file', path), self._mh.fromhere())
             
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_ftp_not_connected'), self._mh.fromhere()) 
+                return False            
+            
             ev = event.Event('ftp_before_delete_file', path)
             if (self._mh.fire_event(ev) > 0):
                 path = ev.argv(0)            
@@ -357,7 +392,7 @@ class FTPClient:
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_file_deleted'), self._mh.fromhere())        
             return True              
             
-        except (SSHException, NoValidConnectionsError, error) as ex:     
+        except (SSHException, NoValidConnectionsError, error, IOError) as ex:     
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())                             
             return False   
         
@@ -379,6 +414,10 @@ class FTPClient:
             
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_making_dir', path), self._mh.fromhere())
             
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_ftp_not_connected'), self._mh.fromhere()) 
+                return False            
+            
             ev = event.Event('ftp_before_make_dir', path)
             if (self._mh.fire_event(ev) > 0):
                 path = ev.argv(0)            
@@ -389,7 +428,7 @@ class FTPClient:
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_dir_made'), self._mh.fromhere())    
             return True
                       
-        except (SSHException, NoValidConnectionsError, error) as ex:     
+        except (SSHException, NoValidConnectionsError, error, IOError) as ex:     
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())                             
             return False              
         
@@ -411,6 +450,10 @@ class FTPClient:
             
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_removing_dir', path), self._mh.fromhere())  
             
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_ftp_not_connected'), self._mh.fromhere()) 
+                return False            
+            
             ev = event.Event('ftp_before_remove_dir', path)
             if (self._mh.fire_event(ev) > 0):
                 path = ev.argv(0)                     
@@ -421,6 +464,6 @@ class FTPClient:
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_dir_removed'), self._mh.fromhere())     
             return True
                       
-        except (SSHException, NoValidConnectionsError, error) as ex:     
+        except (SSHException, NoValidConnectionsError, error, IOError) as ex:     
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())                             
             return False                                    

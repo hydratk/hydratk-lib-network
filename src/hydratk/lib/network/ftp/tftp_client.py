@@ -31,10 +31,11 @@ class FTPClient:
     
     _mh = None
     _client = None
-    _output = None
     _host = None
     _port = None
     _verbose = None
+    _is_connected = None
+    _timeout = None
     
     def __init__(self, verbose=False):
         """Class constructor
@@ -48,8 +49,8 @@ class FTPClient:
         
         self._mh = MasterHead.get_head()
                          
-        self.verbose = verbose 
-        if (self.verbose):              
+        self._verbose = verbose 
+        if (self._verbose):              
             TftpShared.setLogLevel(2)
             
     @property
@@ -74,17 +75,21 @@ class FTPClient:
     def verbose(self):
         """ verbose mode property getter """  
         
-        return self._verbose                  
+        return self._verbose  
+    
+    @property
+    def is_connected(self):
+        """ is_connected property getter """  
         
-    def connect(self, host, port=69):
+        return self._verbose                        
+        
+    def connect(self, host, port=69, timeout=10):
         """Method connects to server
         
         Args:
            host (str): server host
            port (int): server port, default protocol port
-           user (str): username
-           passw (str): password
-           path (str): server path
+           timeout (int): timeout
            
         Returns:
            bool: result
@@ -97,19 +102,22 @@ class FTPClient:
         
         try:            
                           
-            message = '{0}:{1}'.format(host, port)                            
+            message = '{0}:{1} timeout:{2}'.format(host, port, timeout)                            
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_connecting', message), self._mh.fromhere())
             
-            ev = event.Event('ftp_before_connect', host, port)
+            ev = event.Event('ftp_before_connect', host, port, timeout)
             if (self._mh.fire_event(ev) > 0):
                 host = ev.argv(0)
                 port = ev.argv(1)
+                timeout = ev.argv(2)
                 
             self._host = host
-            self._port = port                      
+            self._port = port  
+            self._timeout = timeout                    
             
             if (ev.will_run_default()):    
-                self._client = TftpClient(host, self._port)                              
+                self._client = TftpClient(self._host, self._port)  
+                self._is_connected = True                            
                 self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_connected'), self._mh.fromhere())        
                                             
             ev = event.Event('ftp_after_connect')
@@ -141,6 +149,10 @@ class FTPClient:
             
             self._mh.dmsg('htk_on_debug_info',self._mh._trn.msg('htk_ftp_downloading_file', remote_path), self._mh.fromhere())
             
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_ftp_not_connected'), self._mh.fromhere()) 
+                return False            
+            
             ev = event.Event('ftp_before_download_file', remote_path, local_path)
             if (self._mh.fire_event(ev) > 0):
                 remote_path = ev.argv(0)  
@@ -154,7 +166,7 @@ class FTPClient:
             lpath = filename if (local_path == None) else path.join(local_path, filename)
               
             if (ev.will_run_default()):                      
-                self._client.download(filename, lpath)
+                self._client.download(filename, lpath, timeout=self._timeout)
              
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_file_downloaded'), self._mh.fromhere()) 
             ev = event.Event('ftp_after_download_file')
@@ -162,7 +174,7 @@ class FTPClient:
               
             return True
  
-        except TftpShared.TftpException as ex:
+        except (TftpShared.TftpException, IOError) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             if (path.exists(lpath)):
                 remove(lpath)                     
@@ -188,6 +200,10 @@ class FTPClient:
             
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_uploading_file', local_path), self._mh.fromhere())
             
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_ftp_not_connected'), self._mh.fromhere()) 
+                return False            
+            
             ev = event.Event('ftp_before_upload_file', local_path, remote_path)
             if (self._mh.fire_event(ev) > 0):
                 local_path = ev.argv(0)
@@ -201,7 +217,7 @@ class FTPClient:
             rpath = filename if (remote_path == None) else path.join(remote_path, filename)            
             
             if (ev.will_run_default()):
-                self._client.upload(rpath, local_path)   
+                self._client.upload(rpath, local_path, timeout=self._timeout)   
  
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_file_uploaded'), self._mh.fromhere()) 
             ev = event.Event('ftp_after_upload_file')   
@@ -209,7 +225,7 @@ class FTPClient:
             
             return True
  
-        except TftpShared.TftpException as ex:
+        except (TftpShared.TftpException, IOError) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())                    
             return False  
                                

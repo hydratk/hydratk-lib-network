@@ -1,0 +1,927 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/network/soap/simplesoap/01_methods_ut.jedi
+  Name: ts_srq_init
+  Desc: Test class SoapRequest method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.soap.simplesoap import SoapRequest
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize SoapRequest
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_init
+      Desc: Initialize
+      
+      Test: |
+        url = 'xxx'
+        c = SoapRequest(url)
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'SoapRequest'), '__init__ = SoapRequest'
+        this.test_result = res = c._req_url
+        assert (res == url), '_req_url = {0}'.format(url)
+        
+Test-Scenario-2:
+  Id: ts_02
+  Path: hydratk/lib/network/soap/simplesoap/01_methods_ut.jedi
+  Name: ts_srq_props
+  Desc: Test class SoapRequest properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.soap.simplesoap import SoapRequest
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_url
+      Desc: Getter url
+      
+      Test: |
+        c = SoapRequest()
+        res = c.url
+      
+      Validate: |       
+        this.test_result = str(res)
+        exp = c._req_url
+        assert (res == exp), 'url = {0}'.format(exp)
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_headers
+      Desc: Getter headers
+      
+      Test: |
+        res = c.headers
+      
+      Validate: |       
+        this.test_result = str(res)
+        exp = c._req_headers
+        assert (res == exp), 'headers = {0}'.format(exp) 
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_msg
+      Desc: Getter msg
+      
+      Test: |
+        res = c.msg
+      
+      Validate: |       
+        this.test_result = str(res)
+        exp = c._msg
+        assert (res == exp), 'msg = {0}'.format(exp)        
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_message
+      Desc: Getter message
+      
+      Test: |
+        res = c.message
+      
+      Validate: |       
+        this.test_result = str(res)
+        exp = c._msg
+        assert (res == exp), 'message = {0}'.format(exp)              
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_setters
+    Desc: Setter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_url
+      Desc: Setter url
+      
+      Test: |
+        c = SoapRequest()
+        obj = 'test'
+        c.url = obj
+        res = c.url
+      
+      Validate: |      
+        this.test_result = res
+        assert (res == obj), 'url = {0}'.format(obj) 
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_headers
+      Desc: Setter headers
+      
+      Test: |
+        c.headers = obj
+        res = c.headers
+      
+      Validate: |      
+        this.test_result = res
+        assert (res == obj), 'headers = {0}'.format(obj)        
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_msg
+      Desc: Setter msg
+      
+      Test: |
+        c.msg = obj
+        res = c.msg
+      
+      Validate: |      
+        this.test_result = res
+        assert (res == obj), 'msg = {0}'.format(obj)  
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_message
+      Desc: Setter message
+      
+      Test: |
+        c.message = obj
+        res = c.message
+      
+      Validate: |      
+        this.test_result = res
+        assert (res == obj), 'message = {0}'.format(obj)   
+        
+Test-Scenario-3:
+  Id: ts_03
+  Path: hydratk/lib/network/soap/simplesoap/01_methods_ut.jedi
+  Name: ts_srqm_init
+  Desc: Test class SoapRequestMessage method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.soap.simplesoap import SoapRequestMessage
+    from os import remove
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize SoapRequestMessage
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_str
+      Desc: Initialize from string
+      
+      Test: |
+        msg = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">' + \
+              '<soapenv:Header/><soapenv:Body><readCustomer><id>1</id></readCustomer></soapenv:Body></soapenv:Envelope>'
+        c = SoapRequestMessage(msg, source='str')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'SoapRequestMessage'), '__init__ = SoapRequestMessage'
+        this.test_result = res = c._content
+        assert (res == msg), '_content = {0}'.format(msg)
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_file
+      Desc: Initialize from file
+      
+      Test: |
+        path = '/var/local/hydratk/test.xml'
+        with open(path, 'w') as f:
+            f.write(msg)
+            
+        c = SoapRequestMessage(path, source='file')
+        res = c._content
+      
+      Validate: |                                 
+        this.test_result = res
+        assert (res == msg), '_content = {0}'.format(msg)
+        remove(path)
+        
+Test-Scenario-4:
+  Id: ts_04
+  Path: hydratk/lib/network/soap/simplesoap/01_methods_ut.jedi
+  Name: ts_srqm_props
+  Desc: Test class SoapRequestMessage properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.soap.simplesoap import SoapRequestMessage
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_content
+      Desc: Getter content       
+      
+      Test: |
+        c = SoapRequestMessage()
+        res = c.content
+      
+      Validate: |
+        this.test_result = res
+        exp = c._content
+        assert (res == exp), 'content = {0}'.format(exp)
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_setters
+    Desc: Setter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_content
+      Desc: Setter content       
+      
+      Test: |
+        c = SoapRequestMessage()
+        obj = 'test'
+        c.content = obj
+        res = c.content
+      
+      Validate: |
+        this.test_result = res
+        assert (res == obj), 'content = {0}'.format(obj)  
+        
+Test-Scenario-5:
+  Id: ts_05
+  Path: hydratk/lib/network/soap/simplesoap/01_methods_ut.jedi
+  Name: ts_srqm_load_from_file
+  Desc: Test class SoapRequestMessage method load_from_file
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.soap.simplesoap import SoapRequestMessage
+    from os import remove
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_load
+    Desc: Load message
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_load
+      Desc: Load
+      
+      Test: |
+        msg = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">' + \
+              '<soapenv:Header/><soapenv:Body><readCustomer><id>1</id></readCustomer></soapenv:Body></soapenv:Envelope>'
+        path = '/var/local/hydratk/test.xml'
+        with open(path, 'w') as f:
+            f.write(msg)
+                          
+        c = SoapRequestMessage()
+        c.load_from_file(path)
+        res = c._content
+      
+      Validate: |
+        this.test_result = res
+        assert (res == msg), '_content = {0}'.format(msg)
+        remove(path)        
+        
+Test-Scenario-6:
+  Id: ts_06
+  Path: hydratk/lib/network/soap/simplesoap/01_methods_ut.jedi
+  Name: ts_srqm_bind_var
+  Desc: Test class SoapRequestMessage method bind_var
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.soap.simplesoap import SoapRequestMessage
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_bind_var
+    Desc: Bind variables
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_bind_args
+      Desc: Bind from args
+      
+      Test: |
+        msg = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">' + \
+              '<soapenv:Header/><soapenv:Body><readCustomer><id>[id]</id><name>[name]</name></readCustomer></soapenv:Body></soapenv:Envelope>'
+ 
+        c = SoapRequestMessage(msg, 'str')
+        id, name = '1', 'Charlie Bowman'
+        c.bind_var({'id': id}, {'name': name})
+        res = c._content
+      
+      Validate: |
+        this.test_result = res
+        assert (id in res and name in res), '_content contains {0}, {1}'.format(id, name)     
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_bind_kwargs
+      Desc: Bind from kwargs
+      
+      Test: |
+        c._content = msg
+        c.bind_var({'id': id, 'name': name})
+        res = c._content
+      
+      Validate: |
+        this.test_result = res
+        assert (id in res and name in res), '_content contains {0}, {1}'.format(id, name)  
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_var
+      Desc: Invalid variable
+      
+      Test: |
+        c._content = msg
+        c.bind_var({'id2': id, 'name2': name})
+        res = c._content
+      
+      Validate: |
+        this.test_result = res
+        assert (res == msg), '_content = {0}'.format(msg)   
+        
+Test-Scenario-7:
+  Id: ts_07
+  Path: hydratk/lib/network/soap/simplesoap/01_methods_ut.jedi
+  Name: ts_srqm_xsd_validate
+  Desc: Test class SoapRequestMessage method xsd_validate
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.soap.simplesoap import SoapRequestMessage
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_xsd_validate
+    Desc: Validate according to XSD
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_valid
+      Desc: Valid request
+      
+      Test: |
+        msg = '<htk:read_customer xmlns:htk=\"http://hydratk.org/\"><id>0</id></htk:read_customer>' 
+        c = SoapRequestMessage(msg, 'str')
+        c.load_xsd_file('/var/local/hydratk/testenv/crm.xsd')
+        res, m = c.xsd_validate()
+      
+      Validate: |
+        this.test_result = res
+        assert (res), 'xsd_validate = True'     
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid
+      Desc: Invalid request
+      
+      Test: |
+        msg = '<read_customer><id>0</id></read_customer>' 
+        c._content = msg
+        res, m = c.xsd_validate()
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), 'xsd_validate = False' 
+        this.test_result = str(m)
+        assert (m != None), 'exception is not empty' 
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_xml
+      Desc: Invalid xml
+      
+      Test: |
+        msg = '<read_customer><id>0</id></read_customer' 
+        c._content = msg
+        res, m = c.xsd_validate()
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), 'xsd_validate = False' 
+        this.test_result = str(m)
+        assert (m != None), 'exception is not empty'   
+        
+Test-Scenario-8:
+  Id: ts_08
+  Path: hydratk/lib/network/soap/simplesoap/01_methods_ut.jedi
+  Name: ts_sc_init
+  Desc: Test SoapClient method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.soap.simplesoap import SoapClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize SoapClient
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_init
+      Desc: Initialize
+      
+      Test: |
+        c = SoapClient()
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'SoapClient'), '__init__ = SoapClient'
+        res = c._curl
+        this.test_result = str(res)
+        assert (res != None), '_curl != None'
+        
+Test-Scenario-9:
+  Id: ts_09
+  Path: hydratk/lib/network/soap/simplesoap/01_methods_ut.jedi
+  Name: ts_sc_props
+  Desc: Test SoapClient properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.soap.simplesoap import SoapClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_request
+      Desc: Getter request
+      
+      Test: |
+        c = SoapClient()
+        res = c.request
+      
+      Validate: |       
+        this.test_result = str(res)
+        exp = c._request
+        assert (res == exp), 'request = {0}'.format(exp)
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_response
+      Desc: Getter response
+      
+      Test: |
+        res = c.response
+      
+      Validate: |       
+        this.test_result = str(res)
+        exp = c._response
+        assert (res == exp), 'response = {0}'.format(exp)  
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_setters
+    Desc: Setter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_request
+      Desc: Setter request
+      
+      Test: |
+        c = SoapClient()
+        obj = 'test'
+        c.request = obj
+        res = c.request
+      
+      Validate: |      
+        this.test_result = res
+        assert (res == obj), 'request = {0}'.format(obj) 
+        
+Test-Scenario-10:
+  Id: ts_10
+  Path: hydratk/lib/network/soap/simplesoap/01_methods_ut.jedi
+  Name: ts_sc_set_auth
+  Desc: Test SoapClient method set_auth
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.soap.simplesoap import SoapClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_set_auth
+    Desc: Set authentication
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_set
+      Desc: Set
+      
+      Test: |
+        c = SoapClient() 
+        user, passw = 'test', 'test2'            
+        c.set_auth(user, passw)        
+        
+      Validate: |
+        assert True       
+        
+Test-Scenario-11:
+  Id: ts_11
+  Path: hydratk/lib/network/soap/simplesoap/01_methods_ut.jedi
+  Name: ts_sc_send
+  Desc: Test SoapClient method send
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.soap.simplesoap import SoapClient, SoapRequest, SoapRequestMessage
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_send
+    Desc: Send request
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_read
+      Desc: Send read request
+      
+      Test: |
+        msg = '<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:aut=\"http://autobot.bowman.com/\">' + \
+              '<soapenv:Header/><soapenv:Body><aut:readCustomer><id>0</id></aut:readCustomer></soapenv:Body></soapenv:Envelope>'
+        rqm = SoapRequestMessage(msg, 'str')
+        rq = SoapRequest()
+        rq.url = 'http://localhost:8080/Autobot/crm'
+        rq.message = rqm
+        c = SoapClient()
+        c.request = rq
+        c.send()
+        res = c._response.message.content
+      
+      Validate: |                                              
+        this.test_result = str(res)
+        assert ('Fault' in res), '_response contains Fault'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_create
+      Desc: Send create request
+      
+      Test: |
+        msg = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:aut="http://autobot.bowman.com/">' + \
+              '<soapenv:Header/><soapenv:Body><aut:createCustomer><name>Charlie Bowman</name><status>active</status><segment>2</segment>' + \
+              '</aut:createCustomer></soapenv:Body></soapenv:Envelope>'
+        rqm = SoapRequestMessage(msg, 'str')
+        rq = SoapRequest()
+        rq.url = 'http://localhost:8080/Autobot/crm'
+        rq.message = rqm
+        c = SoapClient()
+        c.request = rq
+        c.send()
+        res = c._response.message.content
+      
+      Validate: |                                              
+        this.test_result = str(res)
+        assert ('<id>' in res), '_response contains <id>'
+        
+Test-Scenario-12:
+  Id: ts_12
+  Path: hydratk/lib/network/soap/simplesoap/01_methods_ut.jedi
+  Name: ts_srr_init
+  Desc: Test SoapResponse method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.soap.simplesoap import SoapClient, SoapRequest, SoapRequestMessage
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize SoapResponse
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_init
+      Desc: Initialize
+      
+      Test: |
+        msg = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:aut="http://autobot.bowman.com/">' + \
+              '<soapenv:Header/><soapenv:Body><aut:createCustomer><name>Charlie Bowman</name><status>active</status><segment>2</segment>' + \
+              '</aut:createCustomer></soapenv:Body></soapenv:Envelope>'
+        rqm = SoapRequestMessage(msg, 'str')
+        rq = SoapRequest()
+        rq.url = 'http://localhost:8080/Autobot/crm'
+        rq.message = rqm
+        c = SoapClient()
+        c.request = rq
+        c.send()
+        resp = c._response
+        res = resp.__class__.__name__
+      
+      Validate: |                                              
+        this.test_result = res
+        assert (res == 'SoapResponse'), '__init__ = SoapResponse'
+        res = resp._info
+        this.test_result = str(res)
+        assert (len(res.keys()) > 0), '_info is not empty'
+        this.test_result = res = resp._resp_code
+        exp = resp._info['response_code']
+        assert (res == exp), '_resp_code = {0}'.format(exp)   
+        
+Test-Scenario-13:
+  Id: ts_13
+  Path: hydratk/lib/network/soap/simplesoap/01_methods_ut.jedi
+  Name: ts_srr_props
+  Desc: Test SoapResponse properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.soap.simplesoap import SoapClient, SoapRequest, SoapRequestMessage
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_response_code
+      Desc: Getter response_code
+      
+      Test: |
+        msg = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:aut="http://autobot.bowman.com/">' + \
+              '<soapenv:Header/><soapenv:Body><aut:createCustomer><name>Charlie Bowman</name><status>active</status><segment>2</segment>' + \
+              '</aut:createCustomer></soapenv:Body></soapenv:Envelope>'
+        rqm = SoapRequestMessage(msg, 'str')
+        rq = SoapRequest()
+        rq.url = 'http://localhost:8080/Autobot/crm'
+        rq.message = rqm
+        c = SoapClient()
+        c.request = rq
+        c.send()
+        resp = c._response
+        res = resp.response_code
+      
+      Validate: |                                              
+        this.test_result = str(res)
+        exp = resp._resp_code
+        assert (res == exp), 'response_code = {0}'.format(exp)   
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_info
+      Desc: Getter info
+      
+      Test: |
+        res = resp.info
+      
+      Validate: |                                              
+        this.test_result = str(res)
+        exp = resp._info
+        assert (res == exp), 'info = {0}'.format(exp)       
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_headers
+      Desc: Getter headers
+      
+      Test: |
+        res = resp.headers
+      
+      Validate: |                                              
+        this.test_result = str(res)
+        exp = resp._resp_headers
+        assert (res == exp), 'headers = {0}'.format(exp)    
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_msg
+      Desc: Getter msg
+      
+      Test: |
+        res = resp.msg
+      
+      Validate: |                                              
+        this.test_result = str(res)
+        exp = resp._msg
+        assert (res == exp), 'msg = {0}'.format(exp)   
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_message
+      Desc: Getter message
+      
+      Test: |
+        res = resp.message
+      
+      Validate: |                                              
+        this.test_result = str(res)
+        exp = resp._msg
+        assert (res == exp), 'message = {0}'.format(exp)   
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_setters
+    Desc: Setter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_msg
+      Desc: Setter msg
+      
+      Test: |
+        msg = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:aut="http://autobot.bowman.com/">' + \
+              '<soapenv:Header/><soapenv:Body><aut:createCustomer><name>Charlie Bowman</name><status>active</status><segment>2</segment>' + \
+              '</aut:createCustomer></soapenv:Body></soapenv:Envelope>'
+        rqm = SoapRequestMessage(msg, 'str')
+        rq = SoapRequest()
+        rq.url = 'http://localhost:8080/Autobot/crm'
+        rq.message = rqm
+        c = SoapClient()
+        c.request = rq
+        c.send()
+        resp = c._response
+        obj = 'test'
+        resp.msg = obj
+        res = resp.msg
+      
+      Validate: |                                              
+        this.test_result = str(res)
+        assert (res == obj), 'msg = {0}'.format(obj)      
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_message
+      Desc: Setter message
+      
+      Test: |
+        resp.message = obj
+        res = resp.message
+      
+      Validate: |                                              
+        this.test_result = str(res)
+        assert (res == obj), 'message = {0}'.format(obj) 
+        
+Test-Scenario-14:
+  Id: ts_14
+  Path: hydratk/lib/network/soap/simplesoap/01_methods_ut.jedi
+  Name: ts_srrm_init
+  Desc: Test SoapResponseMessage method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.soap.simplesoap import SoapClient, SoapRequest, SoapRequestMessage
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize SoapResponseMessage
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_init
+      Desc: Initialize
+      
+      Test: |
+        msg = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:aut="http://autobot.bowman.com/">' + \
+              '<soapenv:Header/><soapenv:Body><aut:createCustomer><name>Charlie Bowman</name><status>active</status><segment>2</segment>' + \
+              '</aut:createCustomer></soapenv:Body></soapenv:Envelope>'
+        rqm = SoapRequestMessage(msg, 'str')
+        rq = SoapRequest()
+        rq.url = 'http://localhost:8080/Autobot/crm'
+        rq.message = rqm
+        c = SoapClient()
+        c.request = rq
+        c.send()
+        resp = c._response._msg
+        res = resp.__class__.__name__
+      
+      Validate: |                                              
+        this.test_result = res
+        assert (res == 'SoapResponseMessage'), '__init__ = SoapResponseMessage'
+        this.test_result = res = resp._content
+        assert (res != None), '_content is not empty'     
+        
+Test-Scenario-15:
+  Id: ts_15
+  Path: hydratk/lib/network/soap/simplesoap/01_methods_ut.jedi
+  Name: ts_srrm_props
+  Desc: Test SoapResponseMessage properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.soap.simplesoap import SoapClient, SoapRequest, SoapRequestMessage
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_content
+      Desc: Getter content
+      
+      Test: |
+        msg = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:aut="http://autobot.bowman.com/">' + \
+              '<soapenv:Header/><soapenv:Body><aut:createCustomer><name>Charlie Bowman</name><status>active</status><segment>2</segment>' + \
+              '</aut:createCustomer></soapenv:Body></soapenv:Envelope>'
+        rqm = SoapRequestMessage(msg, 'str')
+        rq = SoapRequest()
+        rq.url = 'http://localhost:8080/Autobot/crm'
+        rq.message = rqm
+        c = SoapClient()
+        c.request = rq
+        c.send()
+        resp = c._response._msg
+        res = resp.content
+      
+      Validate: |                                              
+        this.test_result = res
+        exp = resp._content
+        assert (res == exp), 'content = {0}'.format(exp)       
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_setters
+    Desc: Setter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_content
+      Desc: Setter content
+      
+      Test: |
+        msg = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:aut="http://autobot.bowman.com/">' + \
+              '<soapenv:Header/><soapenv:Body><aut:createCustomer><name>Charlie Bowman</name><status>active</status><segment>2</segment>' + \
+              '</aut:createCustomer></soapenv:Body></soapenv:Envelope>'
+        rqm = SoapRequestMessage(msg, 'str')
+        rq = SoapRequest()
+        rq.url = 'http://localhost:8080/Autobot/crm'
+        rq.message = rqm
+        c = SoapClient()
+        c.request = rq
+        c.send()
+        resp = c._response._msg
+        obj = 'test'
+        resp.content = obj
+        res = resp.content
+      
+      Validate: |                                              
+        this.test_result = res
+        assert (res == obj), 'content = {0}'.format(obj)      
+        
+Test-Scenario-16:
+  Id: ts_16
+  Path: hydratk/lib/network/soap/simplesoap/01_methods_ut.jedi
+  Name: ts_xml_timestamp
+  Desc: Test method xml_timestamp
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.soap.simplesoap import xml_timestamp
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_timestamp
+    Desc: Get timestamp
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_get
+      Desc: Get
+      
+      Test: |
+        res = xml_timestamp('Europe/Prague')
+      
+      Validate: |            
+        this.test_result = res
+        exp = '+0'
+        assert (exp in res), 'xml_timestamp contains {0}'.format(exp)                                                            

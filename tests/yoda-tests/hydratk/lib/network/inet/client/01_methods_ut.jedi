@@ -1,0 +1,540 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/network/inet/client/01_methods_ut.jedi
+  Name: ts_init
+  Desc: Test method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.inet.client import Client
+    from sys import version_info
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize Client
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_tcp
+      Desc: TCP client
+      
+      Test: |
+        c = Client('IPv4', 'TCP')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'Client'), '__init__ = Client' 
+        this.test_result = res = c._client.__class__.__name__
+        exp = '_socketobject' if (version_info[0] == 2) else 'socket'
+        assert (res == exp), '_client = {0}'.format(exp) 
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_udp
+      Desc: UDP client
+      
+      Test: |
+        c = Client('IPv4', 'UDP')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'Client'), '__init__ = Client' 
+        this.test_result = res = c._client.__class__.__name__
+        assert (res == exp), '_client = {0}'.format(exp)
+        
+Test-Scenario-2:
+  Id: ts_02
+  Path: hydratk/lib/network/inet/client/01_methods_ut.jedi
+  Name: ts_props
+  Desc: Test properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.inet.client import Client
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_lay3_prot
+      Desc: Getter lay3_prot
+      
+      Test: |
+        c = Client()
+        c.connect('127.0.0.1', 22)
+        res = c.lay3_prot
+      
+      Validate: |                  
+        this.test_result = str(res)
+        exp = c._lay3_prot
+        assert (res == exp), 'lay3_prot = {0}'.format(exp)
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_lay4_prot
+      Desc: Getter lay4_prot
+      
+      Test: |
+        res = c.lay4_prot
+      
+      Validate: |                  
+        this.test_result = str(res)
+        exp = c._lay4_prot
+        assert (res == exp), 'lay4_prot = {0}'.format(exp)  
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_client
+      Desc: Getter client
+      
+      Test: |
+        res = c.client
+      
+      Validate: |                  
+        this.test_result = str(res)
+        exp = c._client
+        assert (res == exp), 'client = {0}'.format(exp)      
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_host
+      Desc: Getter host
+      
+      Test: |
+        res = c.host
+      
+      Validate: |                  
+        this.test_result = str(res)
+        exp = c._host
+        assert (res == exp), 'host = {0}'.format(exp)
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_port
+      Desc: Getter port
+      
+      Test: |
+        res = c.port
+      
+      Validate: |                  
+        this.test_result = str(res)
+        exp = c._port
+        assert (res == exp), 'port = {0}'.format(exp)
+        c.disconnect()     
+        
+Test-Scenario-3:
+  Id: ts_03
+  Path: hydratk/lib/network/inet/client/01_methods_ut.jedi
+  Name: ts_connect
+  Desc: Test method connect
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.inet.client import Client
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_connect
+    Desc: Connect to server
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_connect
+      Desc: Connect to server
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['inet_before_connect', 'inet_after_connect']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = Client()
+        host, port = '127.0.0.1', 22
+        res = c.connect(host, port)       
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'connect = True'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'connect fires {0}'.format(evs)
+        res = c._is_connected
+        this.test_result = res
+        assert (res), 'is_connected = True'
+        c.disconnect() 
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]     
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_host
+      Desc: Invalid host    
+    
+      Test: |
+        c = Client()
+        res = c.connect('1.1.1.1', 22)
+    
+      Validate: |
+        this.test_result = res
+        assert (not res), 'connect = False'     
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_port
+      Desc: Invalid port        
+        
+      Test: |
+        res = c.connect('127.0.0.1', 20)
+    
+      Validate: |
+        this.test_result = res
+        assert (not res), 'connect = False'  
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_udp
+      Desc: UDP protocol
+      
+      Test: |
+        c = Client('IPv4', 'UDP')
+        res = c.connect('', '')
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), 'connect = False'    
+        
+Test-Scenario-4:
+  Id: ts_04
+  Path: hydratk/lib/network/inet/client/01_methods_ut.jedi
+  Name: ts_disconnect
+  Desc: Test method disconnect
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.inet.client import Client
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_disconnect
+    Desc: Disconnect from server
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_disconnect
+      Desc: Disconnect
+      
+      Test: |
+        c = Client()
+        c.connect('127.0.0.1', 22)
+        res = c.disconnect()
+      
+      Validate: |           
+        this.test_result = res
+        assert (res), 'disconnect = True'  
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        c = Client()
+        res = c.disconnect()
+      
+      Validate: |          
+        this.test_resut = res
+        assert (not res), 'disconnect = False'     
+        
+Test-Scenario-5:
+  Id: ts_05
+  Path: hydratk/lib/network/inet/client/01_methods_ut.jedi
+  Name: ts_send
+  Desc: Test method send
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.inet.client import Client
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_send
+    Desc: Send data
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_tcp
+      Desc: Send data via TCP
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['inet_before_send', 'inet_after_send']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = Client('IPv4', 'TCP')
+        c.connect('127.0.0.1', 22)  
+        res = c.send('I am Hydra')     
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'send = True'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'send fires {0}'.format(evs)
+        c.disconnect() 
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]             
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_udp
+      Desc: Send data via UDP
+      
+      Test: |
+        c = Client('IPv4', 'UDP')
+        res = c.send('I am Hydra', '127.0.0.1', 10000)     
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'send = True'
+        c.disconnect()     
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_connected
+      Desc: Not connected to server    
+    
+      Test: |
+        c = Client()
+        res = c.send('xx')
+    
+      Validate: |     
+        this.test_result = res
+        assert (not res), 'send = False' 
+        
+Test-Scenario-6:
+  Id: ts_06
+  Path: hydratk/lib/network/inet/client/01_methods_ut.jedi
+  Name: ts_receive
+  Desc: Test method receive
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.inet.client import Client
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_receive
+    Desc: Receive data
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_tcp_1B
+      Desc: Receive 1B via TCP
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['inet_before_receive', 'inet_after_receive']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = Client('IPv4', 'TCP')
+        host, port, msg = '127.0.0.1', 22, 'I am Hydra'
+        c.connect(host, port)  
+        c.send(msg)    
+        res = c.receive(1) 
+      
+      Validate: |          
+        this.test_result = res
+        assert (len(res) == 1), 'receive contains 1B'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'receive fires {0}'.format(evs)
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_tcp
+      Desc: Receive data TCP
+      
+      Test: |
+        res = c.receive() 
+      
+      Validate: |          
+        this.test_result = res
+        exp = 'SSH'
+        assert (exp in res), 'receive contains {0}'.format(exp)
+        c.disconnect()            
+    
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_udp
+      Desc: Receive data via UDP
+      
+      Test: |
+        c = Client('IPv4', 'UDP')
+        port = 10000
+        c.send(msg, host, port)    
+        res = c.receive(1) 
+      
+      Validate: |          
+        this.test_result = res
+        assert (len(res) == 1), 'receive contains 1B'
+      
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_udp
+      Desc: Receive data via UDP
+      
+      Test: |    
+        c.send(msg, host, port)
+        res = c.receive() 
+      
+      Validate: |          
+        this.test_result = res
+        assert (res == msg), 'receive contains {0}'.format(msg)
+        c.disconnect()   
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        c = Client()
+        res = c.receive()
+      
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'receive is empty'  
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_tcp_timeout
+      Desc: TCP timeout
+      
+      Test: |
+        c = Client()
+        c.connect('127.0.0.1', 80)
+        res = c.receive()
+      
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'receive is empty'   
+        c.disconnect()
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_udp_timeout
+      Desc: UDP timeout
+      
+      Test: |
+        c = Client('IPv4', 'UDP')
+        c.send('xx', '127.0.0.1', 22)
+        res = c.receive()
+      
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'receive is empty'  
+        
+Test-Scenario-7:
+  Id: ts_07
+  Path: hydratk/lib/network/inet/client/01_methods_ut.jedi
+  Name: ts_ip2name
+  Desc: Test method ip2name
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.inet.client import Client
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_ip2name
+    Desc: Resolve IP address to DNS name
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_resolve
+      Desc: Reseolve
+      
+      Test: |
+        c = Client()
+        res = c.ip2name('127.0.0.1')
+      
+      Validate: |                   
+        this.test_result = res
+        exp = 'localhost'
+        assert (res == exp), 'ip2name = {0}'.format(exp)           
+        
+Test-Scenario-8:
+  Id: ts_08
+  Path: hydratk/lib/network/inet/client/01_methods_ut.jedi
+  Name: ts_name2ip
+  Desc: Test method name2ip
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.inet.client import Client
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_name2ip
+    Desc: Resolve DNS name to IP address
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_resolve
+      Desc: Resolve
+      
+      Test: |
+        c = Client()
+        res = c.name2ip('localhost')
+      
+      Validate: |                   
+        this.test_result = res
+        exp = '127.0.0.1'
+        assert (res == exp), 'ip2name = {0}'.format(exp)                                                                                     

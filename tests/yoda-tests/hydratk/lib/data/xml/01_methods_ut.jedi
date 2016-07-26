@@ -1,0 +1,227 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/data/xml/01_methods_ut.jedi
+  Name: ts_load_xsd
+  Desc: Test method load_xsd
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.data.xml import XMLValidate
+    from lxml.etree import XMLSyntaxError
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_load_xsd
+    Desc: Load XSD from string
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_valid
+      Desc: Valid XSD
+      
+      Test: |
+        path = '/var/local/hydratk/testenv/crm.xsd'
+        with open(path, 'r') as f:
+            doc = f.read()
+            
+        c = XMLValidate()
+        c.load_xsd(doc)
+        res = c._xml_schema
+      
+      Validate: |
+        this.test_result = str(res)
+        assert (res != None), '_xml_schema is not empty'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid
+      Desc: Invalid XSD
+      
+      Test: |
+        try:
+            c._xml_schema = None
+            c.load_xsd('xx')
+            ex = False
+        except XMLSyntaxError:
+            ex = True
+      
+      Validate: |
+        this.test_result = ex
+        assert (ex), 'load_xsd raises XMLSyntaxError'   
+        
+Test-Scenario-2:
+  Id: ts_02
+  Path: hydratk/lib/data/xml/01_methods_ut.jedi
+  Name: ts_load_xsd_file
+  Desc: Test method load_xsd_file
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.data.xml import XMLValidate
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_load_xsd_file
+    Desc: Load XSD from file
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_valid
+      Desc: Valid XSD file
+      
+      Test: |
+        c = XMLValidate()
+        c.load_xsd_file(path)
+        res = c._xml_schema
+      
+      Validate: |
+        this.test_result = str(res)
+        assert (res != None), '_xml_schema is not empty'  
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid
+      Desc: Invalid XSD file
+      
+      Test: |
+        c._xml_schema = None
+        c.load_xsd_file('xx')
+        res = c._xml_schema
+      
+      Validate: |
+        this.test_result = res
+        assert (res == None), '_xml_schema is empty'  
+        
+Test-Scenario-3:
+  Id: ts_03
+  Path: hydratk/lib/data/xml/01_methods_ut.jedi
+  Name: ts_xsd_validate
+  Desc: Test method xsd_validate
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.data.xml import XMLValidate
+    from lxml.etree import DocumentInvalid, XMLSyntaxError
+      
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_xsd_validate
+    Desc: Validate string according to XSD
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_valid
+      Desc: Valid document
+      
+      Test: |
+        try:
+            c = XMLValidate()
+            path = '/var/local/hydratk/testenv/crm.xsd'
+            c.load_xsd_file(path)
+            msg = '<htk:read_customer xmlns:htk=\"http://hydratk.org/\"><id>1</id></htk:read_customer>'
+            c.xsd_validate(msg)
+            ex = False
+        except (DocumentInvalid, XMLSyntaxError):
+            ex = True 
+      
+      Validate: |
+        this.test_result = ex
+        assert (not ex), 'xsd_validate not raises error'    
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid
+      Desc: Invalid document
+      
+      Test: |
+        try:
+            msg = '<read_customer><id>1</id></read_customer>'
+            c.xsd_validate(msg)
+            ex = False
+        except DocumentInvalid:
+            ex = True 
+      
+      Validate: |
+        this.test_result = ex
+        assert (ex), 'xsd_validate raises DocumentInvalid'  
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_xml
+      Desc: Invalid SMl
+      
+      Test: |
+        try:
+            msg = '<read_customer><id>1</id></read_customer'
+            c.xsd_validate(msg)
+            ex = False
+        except XMLSyntaxError:
+            ex = True 
+      
+      Validate: |
+        this.test_result = ex
+        assert (ex), 'xsd_validate raises XMLSyntaxError'  
+        
+Test-Scenario-4:
+  Id: ts_04
+  Path: hydratk/lib/data/xml/01_methods_ut.jedi
+  Name: ts_xsd_validate_file
+  Desc: Test method xsd_validate_file
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.data.xml import XMLValidate
+    from hydratk.lib.exceptions.inputerror import InputError
+    from lxml.etree import DocumentInvalid, XMLSyntaxError
+    from os import remove
+      
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_xsd_validate_file
+    Desc: Validate file according to XSD
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_valid
+      Desc: Valid file
+      
+      Test: |
+        try:                    
+            c = XMLValidate()
+            path = '/var/local/hydratk/testenv/crm.xsd'
+            c.load_xsd_file(path)
+            
+            path = '/var/local/hydratk/test.xml'
+            with open(path, 'w') as f:
+                msg = '<htk:read_customer xmlns:htk=\"http://hydratk.org/\"><id>1</id></htk:read_customer>'
+                f.write(msg)
+                
+            c.xsd_validate_file(path)
+            ex = False
+        except (DocumentInvalid, XMLSyntaxError):
+            ex = True 
+      
+      Validate: |
+        this.test_result = ex
+        assert (not ex), 'xsd_validate_file not raises error' 
+        remove(path)      
+
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid
+      Desc: Invalid file
+      
+      Test: |
+        try:                    
+            c.xsd_validate_file(path)
+            ex = False
+        except InputError:
+            ex = True 
+      
+      Validate: |
+        this.test_result = ex
+        assert (ex), 'xsd_validate_file raises InputError'                                                                            

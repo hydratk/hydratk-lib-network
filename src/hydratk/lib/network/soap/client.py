@@ -20,10 +20,17 @@ soap_after_request
 
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
-from suds import client, WebFault
-from lxml.etree import Element, SubElement, fromstring, tostring
+from suds import client, WebFault, MethodNotFound
+from suds.transport import TransportError
+from suds.cache import NoCache
+from lxml.etree import Element, SubElement, fromstring, tostring, XMLSyntaxError
 from logging import getLogger, StreamHandler, CRITICAL, DEBUG
 from sys import stderr
+
+try:
+    from urllib2 import URLError
+except ImportError:
+    from urllib.error import URLError    
 
 getLogger('suds.client').setLevel(CRITICAL)
 
@@ -117,7 +124,7 @@ class SOAPClient:
         return self._verbose                      
             
     def load_wsdl(self, url, location='remote', user=None, passw=None, endpoint=None, headers=None,
-                  transport=None): 
+                  transport=None, use_cache=True, timeout=10): 
         """Method loads wsdl
         
         Args:
@@ -128,6 +135,8 @@ class SOAPClient:
            endpoint (str): service endpoint, default endpoint from WSDL 
            headers (dict): HTTP headers
            transport (obj): HTTP transport
+           use_cache (bool): load WSDL from cache
+           timeout (int): timeout
 
         Returns:
            bool: result
@@ -151,7 +160,7 @@ class SOAPClient:
                 passw = ev.argv(3)
                 endpoint = ev.argv(4)
                 headers = ev.argv(5)
-                transport = ev.args(6)         
+                transport = ev.argv(6)         
         
             self._url = url
             self._location = location
@@ -174,8 +183,10 @@ class SOAPClient:
                     options['headers'] = self._headers
                 if (transport != None):
                     options['transport'] = transport
-        
-                self._client = client.Client(self._url, **options)  
+                if (timeout != None):
+                    options['timeout'] = timeout
+    
+                self._client = client.Client(self._url, **options) if (use_cache) else client.Client(self._url, cache=NoCache(), **options) 
                 self._wsdl = self._client.wsdl
                 
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_soap_wsdl_loaded'), self._mh.fromhere())
@@ -184,7 +195,7 @@ class SOAPClient:
                 
             return True
             
-        except WebFault as ex:
+        except (WebFault, TransportError, URLError, ValueError) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False 
         
@@ -204,6 +215,9 @@ class SOAPClient:
             for operation in self._wsdl.services[0].ports[0].methods.values():       
                 operations.append(operation.name)  
             return operations
+        else:
+            self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_soap_wsdl_not_loaded'), self._mh.fromhere())
+            return None
         
     def send_request(self, operation, body, headers=None):      
         """Method sends request
@@ -226,6 +240,10 @@ class SOAPClient:
             
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_soap_request', operation, body, headers),
                           self._mh.fromhere()) 
+            
+            if (self._wsdl == None):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_soap_wsdl_not_loaded'), self._mh.fromhere())
+                return None
             
             ev = event.Event('soap_before_request', operation, body, headers)
             if (self._mh.fire_event(ev) > 0):
@@ -258,6 +276,6 @@ class SOAPClient:
         
             return response
             
-        except WebFault as ex:
+        except (WebFault, TransportError, URLError, ValueError, XMLSyntaxError, MethodNotFound) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None                     

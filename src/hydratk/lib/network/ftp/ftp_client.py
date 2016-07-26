@@ -26,8 +26,12 @@ ftp_before_remove_dir
 
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
-from ftplib import FTP, FTP_TLS, all_errors
+from ftplib import FTP, all_errors
 from os import path, remove
+from sys import version_info
+
+if (not(version_info[0] == 2 and version_info[1] == 6)):
+    from ftplib import FTP_TLS
 
 class FTPClient:
     """Class FTPClient
@@ -36,12 +40,13 @@ class FTPClient:
     _mh = None
     _client = None
     _secured = None
-    _output = None
     _host = None
     _port = None
     _user = None
-    _path = None
+    _passw = None
+    _path = None    
     _verbose = None
+    _is_connected = None    
     
     def __init__(self, secured=False, verbose=False):
         """Class constructor
@@ -60,10 +65,13 @@ class FTPClient:
         if (not self._secured):            
             self._client = FTP()
         else: 
-            self._client = FTP_TLS()              
+            if (not(version_info[0] == 2 and version_info[1] == 6)):
+                self._client = FTP_TLS()
+            else:
+                raise NotImplementedError('Secured mode is not supported for Python 2.6')              
                          
-        self.verbose = verbose 
-        if (self.verbose): 
+        self._verbose = verbose 
+        if (self._verbose): 
             self._client.set_debuglevel(2) 
             
     @property
@@ -112,9 +120,15 @@ class FTPClient:
     def verbose(self):
         """ verbose mode property getter """ 
         
-        return self._verbose              
+        return self._verbose   
+    
+    @property
+    def is_connected(self):
+        """ is_connected property getter """ 
         
-    def connect(self, host, port=21, user=None, passw=None, path='/'):
+        return self._is_connected                   
+        
+    def connect(self, host, port=21, user=None, passw=None, path='/', timeout=10):
         """Method connects to server
         
         Args:
@@ -123,6 +137,7 @@ class FTPClient:
            user (str): username
            passw (str): password
            path (str): server path
+           timeout (int): timeout
            
         Returns:
            bool: result
@@ -135,31 +150,34 @@ class FTPClient:
         
         try:            
                    
-            message = '{0}/{1}@{2}:{3}{4}'.format(user, passw, host, port, path)                            
+            message = '{0}/{1}@{2}:{3}{4} timeout:{5}'.format(user, passw, host, port, path, timeout)                            
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_connecting', message), self._mh.fromhere())
             
-            ev = event.Event('ftp_before_connect', host, port, user, passw, path)
+            ev = event.Event('ftp_before_connect', host, port, user, passw, path, timeout)
             if (self._mh.fire_event(ev) > 0):
                 host = ev.argv(0)
                 port = ev.argv(1)
                 user = ev.argv(2)
                 passw = ev.argv(3)
                 path = ev.argv(4)
+                timeout = ev.argv(5)
                 
             self._host = host
             self._port = port
             self._user = user
             self._passw = passw
-            self._path = path                        
+            self._path = '/'                        
             
             if (ev.will_run_default()):    
-                self._client.connect(self._host, self._port)             
+                self._client.connect(self._host, self._port, timeout=timeout)             
             
                 if (self._user != None):
                     self._client.login(self._user, self._passw)    
                     
                 if (self._secured):
-                    self._client.prot_p()               
+                    self._client.prot_p() 
+                    
+                self._is_connected = True              
                 
                 self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_connected'), self._mh.fromhere())        
                 if (path != None):
@@ -186,10 +204,15 @@ class FTPClient:
         """           
          
         try:
-                                             
-            self._client.quit()            
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_disconnected'), self._mh.fromhere())  
-            return True
+                       
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_ftp_not_connected'), self._mh.fromhere()) 
+                return False
+            else:                                             
+                self._client.quit()
+                self._is_connected = False            
+                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_disconnected'), self._mh.fromhere())  
+                return True
             
         except all_errors as ex: 
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())       
@@ -209,6 +232,10 @@ class FTPClient:
         try: 
             
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_list_dir', self._path), self._mh.fromhere())
+        
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_ftp_not_connected'), self._mh.fromhere()) 
+                return False        
         
             names = self._client.nlst()
             if ('.' in names): names.remove('.')
@@ -238,15 +265,18 @@ class FTPClient:
             
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_change_dir', path), self._mh.fromhere())
             
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_ftp_not_connected'), self._mh.fromhere()) 
+                return False            
+            
             ev = event.Event('ftp_before_change_dir', path)
             if (self._mh.fire_event(ev) > 0):
                 path = ev.argv(0)             
             
             if (ev.will_run_default()):
                 self._client.cwd(path)
-                cur_dir = self._client.pwd()             
+                self._path = self._client.pwd()             
             
-            self._path = cur_dir
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_cur_dir', self._path), self._mh.fromhere())  
             return True
          
@@ -273,6 +303,10 @@ class FTPClient:
         try:
             
             self._mh.dmsg('htk_on_debug_info',self._mh._trn.msg('htk_ftp_downloading_file', remote_path), self._mh.fromhere())
+            
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_ftp_not_connected'), self._mh.fromhere()) 
+                return False            
             
             ev = event.Event('ftp_before_download_file', remote_path, local_path)
             if (self._mh.fire_event(ev) > 0):
@@ -322,6 +356,10 @@ class FTPClient:
             
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_uploading_file', local_path), self._mh.fromhere())
             
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_ftp_not_connected'), self._mh.fromhere()) 
+                return False            
+            
             ev = event.Event('ftp_before_upload_file', local_path, remote_path)
             if (self._mh.fire_event(ev) > 0):
                 local_path = ev.argv(0)
@@ -335,7 +373,7 @@ class FTPClient:
             rpath = filename if (remote_path == None) else path.join(remote_path, filename)            
             
             if (ev.will_run_default()):
-                with open(local_path, 'r') as f:                   
+                with open(local_path, 'rb') as f:                   
                     self._client.storbinary('STOR ' + rpath, f)   
  
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_file_uploaded'), self._mh.fromhere()) 
@@ -365,6 +403,10 @@ class FTPClient:
         try:
 
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_deleting_file', path), self._mh.fromhere())
+            
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_ftp_not_connected'), self._mh.fromhere()) 
+                return False            
             
             ev = event.Event('ftp_before_delete_file', path)
             if (self._mh.fire_event(ev) > 0):
@@ -398,6 +440,10 @@ class FTPClient:
             
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_making_dir', path), self._mh.fromhere())
             
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_ftp_not_connected'), self._mh.fromhere()) 
+                return False            
+            
             ev = event.Event('ftp_before_make_dir', path)
             if (self._mh.fire_event(ev) > 0):
                 path = ev.argv(0)            
@@ -429,6 +475,10 @@ class FTPClient:
         try:
             
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_removing_dir', path), self._mh.fromhere())  
+            
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_ftp_not_connected'), self._mh.fromhere()) 
+                return False            
             
             ev = event.Event('ftp_before_remove_dir', path)
             if (self._mh.fire_event(ev) > 0):

@@ -27,5 +27,6 @@ msg = {
     'htk_java_started'         : ["JVM was successfully started"],
     'htk_java_not_started'     : ["JVM was not started yet"],
     'htk_java_stopping_jvm'    : ["Stopping JVM"],
+    'htk_java_stopped'         : ["JVM was stopped"],
     'htk_java_unknown_type'    : ["Unknown datatype: '{0}'"]
 }

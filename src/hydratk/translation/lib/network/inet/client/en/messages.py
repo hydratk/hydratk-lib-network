@@ -26,6 +26,7 @@ msg = {
     'htk_inet_connected'      : ["Connected successfully"],
     'htk_inet_disconnecting'  : ["Disconnecting from server"],
     'htk_inet_disconnected'   : ["Disconnected from server"],
+    'htk_inet_not_connected'  : ["Not connected to server"],
     'htk_inet_sending_data'   : ["Sending data: '{0}'"],
     'htk_inet_data_sent'      : ["Data sent"],
     'htk_inet_receiving_data' : ["Receiving data up to size: '{0}'"],

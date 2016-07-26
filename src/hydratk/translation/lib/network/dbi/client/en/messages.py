@@ -27,6 +27,7 @@ msg = {
     'htk_dbi_connecting_error'   : ["Error occured during connecting to server"],
     'htk_dbi_disconnecting'      : ["Disconnecting from server"],
     'htk_dbi_disconnected'       : ["Disconnected from server"],
+    'htk_dbi_not_connected'      : ["Not connected to server"],
     'htk_dbi_disconnecting_error': ["Error occured during disconnecting from server"],
     'htk_dbi_executing_query'    : ["Executing query: '{0}'"],
     'htk_dbi_query_executed'     : ["Query executed"],

@@ -21,7 +21,10 @@ dbi_after_exec_query
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
 from MySQLdb import Error, connect
-from string import replace
+from sys import version_info
+
+if (version_info[0] == 2):
+    from string import replace
 
 class DBClient():
     """Class DBClient
@@ -34,6 +37,7 @@ class DBClient():
     _sid = None
     _user = None
     _passw = None
+    _is_connected = None
     
     def __init__(self):
         """Class constructor
@@ -80,9 +84,15 @@ class DBClient():
     def passw(self):
         """ user password property getter """
         
-        return self._passw           
+        return self._passw      
+    
+    @property
+    def is_connected(self):
+        """ is_connected property getter """
         
-    def connect(self, host=None, port=3306, sid=None, user=None, passw=None):
+        return self._is_connected              
+        
+    def connect(self, host=None, port=3306, sid='', user='', passw='', timeout=10):
         """Method connects to database
         
         Args:            
@@ -91,6 +101,7 @@ class DBClient():
            sid (str): db instance
            user (str): username
            passw (str): password
+           timeout (int): timeout
              
         Returns:
            bool: result
@@ -103,16 +114,17 @@ class DBClient():
         
         try:
                     
-            message = '{0}/{1}@{2}:{3}/{4}'.format(user, passw, host, port, sid)
+            message = '{0}/{1}@{2}:{3}/{4} timeout:{5}'.format(user, passw, host, port, sid, timeout)
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_dbi_connecting', message), self._mh.fromhere())
             
-            ev = event.Event('dbi_before_connect', host, port, sid, user, passw)
+            ev = event.Event('dbi_before_connect', host, port, sid, user, passw, timeout)
             if (self._mh.fire_event(ev) > 0):
                 host = ev.argv(0)
                 port = ev.argv(1)
                 sid = ev.argv(2)
                 user = ev.argv(3)
-                passw = ev.argv(4)            
+                passw = ev.argv(4) 
+                timeout = ev.argv(5)           
             
             if (ev.will_run_default()):
                 self._host = host     
@@ -122,7 +134,8 @@ class DBClient():
                 self._passw = passw
                 
                 self._client = connect(host=self._host, port=self._port, db=self._sid, user=self._user, 
-                                       passwd=self._passw)                    
+                                       passwd=self._passw, connect_timeout=timeout) 
+                self._is_connected = True                   
 
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_dbi_connected'), self._mh.fromhere())
             ev = event.Event('dbi_after_connect')
@@ -147,10 +160,14 @@ class DBClient():
         
         try:
         
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_dbi_disconnected'), self._mh.fromhere())
-            self._client.close()
-            
-            return True
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_dbi_not_connected'), self._mh.fromhere()) 
+                return False 
+            else:                      
+                self._client.close()
+                self._is_connected = False
+                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_dbi_disconnected'), self._mh.fromhere())            
+                return True
         
         except Error as ex:
             self._mh.dmsg('htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
@@ -179,6 +196,10 @@ class DBClient():
             message = query + ' binding: {0}'.format(bindings) if (bindings != None) else query
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_dbi_executing_query', message), self._mh.fromhere())
             
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_dbi_not_connected'), self._mh.fromhere()) 
+                return False, None             
+            
             ev = event.Event('dbi_before_exec_query', query, bindings, fetch_one)
             if (self._mh.fire_event(ev) > 0):
                 query = ev.argv(0)
@@ -189,15 +210,15 @@ class DBClient():
                 cur = self._client.cursor()    
                 
                 if (bindings != None):
-                    query = replace(query, '?', '%s')
+                    query = replace(query, '?', '%s') if (version_info[0] == 2) else query.replace('?', '%s')
                     cur.execute(query, tuple(bindings))
                 else:
                     cur.execute(query)
 
-                if (cur.description == None):
-                    return True, None
-                columns = [i[0].lower() for i in cur.description]                    
-                rows = [dict(zip(columns, row)) for row in cur]          
+                rows = None
+                if (cur.description != None):
+                    columns = [i[0].lower() for i in cur.description]                    
+                    rows = [dict(zip(columns, row)) for row in cur]          
                 
                 if (fetch_one):
                     rows = rows[0] if (len(rows) > 0) else []
@@ -232,7 +253,7 @@ class DBClient():
            autocommit (bool): autocommit            
              
         Returns:
-           tuple: result (bool) (for function only), params (list)
+           tuple: result (bool) (for function only), params (dict)
            
         Raises:
            event: dbi_before_call_proc
@@ -244,6 +265,10 @@ class DBClient():
         
             message = p_name + ' param: {0}'.format(i_values) if (len(i_values) > 0) else p_name
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_dbi_calling_proc', message), self._mh.fromhere())
+            
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_dbi_not_connected'), self._mh.fromhere()) 
+                return None             
             
             ev = event.Event('dbi_before_call_proc', p_name, param_names, i_values, o_types, type, ret_type)
             if (self._mh.fire_event(ev) > 0):
@@ -274,7 +299,7 @@ class DBClient():
                     cur.callproc(p_name, params)
                 
                     query = 'SELECT '                    
-                    for i in xrange(0, len(params)):
+                    for i in range(0, len(params)):
                         query += '@_{0}_{1},'.format(p_name, i)   
                     cur.execute(query[:-1])
                     params = cur.fetchone()
@@ -286,15 +311,16 @@ class DBClient():
                                                     
                     if (name in o_types and o_types[name] == 'int' and param != None):
                         param = int(param)
-                        
-                    output[name] = param
+                       
+                    if (name in o_types):   
+                        output[name] = param if (param.__class__.__name__ != 'bytes') else param.decode()
                     i = i+1  
                     
                 if (autocommit):
                     self._client.commit()            
             
             cur.close()  
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_dbi_proc_called'), self._mh.fromhere())
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_dbi_proc_called', output), self._mh.fromhere())
             
             if (type in ('func', 'function')): 
                 ev = event.Event('dbi_after_call_proc', result, output) 
@@ -308,4 +334,52 @@ class DBClient():
         except Error as ex:
             self._client.rollback()                        
             self._mh.dmsg('htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
-            return None          
+            return None        
+        
+    def commit(self):
+        """Method commits transaction
+        
+        Args:            
+           none
+             
+        Returns:
+           bool: result
+                
+        """    
+        
+        try:
+            
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_dbi_not_connected'), self._mh.fromhere()) 
+                return False  
+            else:            
+                self._client.commit()
+                return True
+            
+        except Error as ex:
+            self._mh.dmsg('htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
+            return False    
+        
+    def rollback(self):
+        """Method rollbacks transaction
+        
+        Args:            
+           none
+             
+        Returns:
+           bool: result
+                
+        """    
+        
+        try:
+            
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_dbi_not_connected'), self._mh.fromhere()) 
+                return False  
+            else:            
+                self._client.rollback()
+                return True
+            
+        except Error as ex:
+            self._mh.dmsg('htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
+            return False                                             

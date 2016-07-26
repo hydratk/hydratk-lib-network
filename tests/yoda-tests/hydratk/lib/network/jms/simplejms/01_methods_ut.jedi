@@ -1,0 +1,487 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/network/jms/simplejms/01_methods_ut.jedi
+  Name: ts_jrq_init
+  Desc: Test class JMSRequest method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.jms.simplejms import JMSRequest
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize JMSRequest
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_init
+      Desc: Initialize
+      
+      Test: |
+        queue, jms_type = 'xxx', 'test'
+        c = JMSRequest(queue, jms_type)
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'JMSRequest'), '__init__ = JMSRequest'
+        res = [c._destination_queue, c._jms_type]
+        exp = [queue, jms_type]
+        this.test_result = str(res)
+        assert (res == exp), '_destination_queue, jms_type = {0}'.format(exp)
+        
+Test-Scenario-2:
+  Id: ts_02
+  Path: hydratk/lib/network/jms/simplejms/01_methods_ut.jedi
+  Name: ts_jrq_props
+  Desc: Test class JMSRequest properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.jms.simplejms import JMSRequest
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_destination_queue
+      Desc: Getter destination_queue
+      
+      Test: |
+        c = JMSRequest(None, None)
+        res = c.destination_queue
+      
+      Validate: |       
+        this.test_result = str(res)
+        exp = c._destination_queue
+        assert (res == exp), 'destination_queue = {0}'.format(exp)
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_jms_type
+      Desc: Getter jms_type
+      
+      Test: |
+        res = c.jms_type
+      
+      Validate: |       
+        this.test_result = str(res)
+        exp = c._jms_type
+        assert (res == exp), 'jms_type = {0}'.format(exp) 
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_msg
+      Desc: Getter msg
+      
+      Test: |
+        res = c.msg
+      
+      Validate: |       
+        this.test_result = str(res)
+        exp = c._msg
+        assert (res == exp), 'msg = {0}'.format(exp)        
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_message
+      Desc: Getter message
+      
+      Test: |
+        res = c.message
+      
+      Validate: |       
+        this.test_result = str(res)
+        exp = c._msg
+        assert (res == exp), 'message = {0}'.format(exp)              
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_setters
+    Desc: Setter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_destination_queue
+      Desc: Setter destination_queue
+      
+      Test: |
+        c = JMSRequest(None, None)
+        obj = 'test'
+        c.destination_queue = obj
+        res = c.destination_queue
+      
+      Validate: |      
+        this.test_result = res
+        assert (res == obj), 'destination_queue = {0}'.format(obj) 
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_jms_type
+      Desc: Setter jms_type
+      
+      Test: |
+        c.jms_type = obj
+        res = c.jms_type
+      
+      Validate: |      
+        this.test_result = res
+        assert (res == obj), 'jms_type = {0}'.format(obj)        
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_msg
+      Desc: Setter msg
+      
+      Test: |
+        c.msg = obj
+        res = c.msg
+      
+      Validate: |      
+        this.test_result = res
+        assert (res == obj), 'msg = {0}'.format(obj)  
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_message
+      Desc: Setter message
+      
+      Test: |
+        c.message = obj
+        res = c.message
+      
+      Validate: |      
+        this.test_result = res
+        assert (res == obj), 'message = {0}'.format(obj)    
+        
+Test-Scenario-3:
+  Id: ts_03
+  Path: hydratk/lib/network/jms/simplejms/01_methods_ut.jedi
+  Name: ts_jrqm_init
+  Desc: Test class JMSRequestMessage method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.jms.simplejms import JMSRequestMessage
+    from os import remove
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize JMSRequestMessage
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_str
+      Desc: Initialize from string
+      
+      Test: |
+        msg = '<readCustomer><id>1</id></readCustomer>'
+        c = JMSRequestMessage(msg, source='str')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'JMSRequestMessage'), '__init__ = JMSRequestMessage'
+        this.test_result = res = c._content
+        assert (res == msg), '_content = {0}'.format(msg)
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_file
+      Desc: Initialize from file
+      
+      Test: |
+        path = '/var/local/hydratk/test.xml'
+        with open(path, 'w') as f:
+            f.write(msg)
+            
+        c = JMSRequestMessage(path, source='file')
+        res = c._content
+      
+      Validate: |                                 
+        this.test_result = res
+        assert (res == msg), '_content = {0}'.format(msg)
+        remove(path)    
+        
+Test-Scenario-4:
+  Id: ts_04
+  Path: hydratk/lib/network/jms/simplejms/01_methods_ut.jedi
+  Name: ts_jrqm_props
+  Desc: Test class JMSRequestMessage properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.jms.simplejms import JMSRequestMessage
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_content
+      Desc: Getter content       
+      
+      Test: |
+        c = JMSRequestMessage()
+        res = c.content
+      
+      Validate: |
+        this.test_result = res
+        exp = c._content
+        assert (res == exp), 'content = {0}'.format(exp)
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_setters
+    Desc: Setter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_content
+      Desc: Setter content       
+      
+      Test: |
+        c = JMSRequestMessage()
+        obj = 'test'
+        c.content = obj
+        res = c.content
+      
+      Validate: |
+        this.test_result = res
+        assert (res == obj), 'content = {0}'.format(obj) 
+        
+Test-Scenario-5:
+  Id: ts_05
+  Path: hydratk/lib/network/jms/simplejms/01_methods_ut.jedi
+  Name: ts_jrqm_load_from_file
+  Desc: Test class JMSRequestMessage method load_from_file
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.jms.simplejms import JMSRequestMessage
+    from os import remove
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_load
+    Desc: Load message
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_load
+      Desc: Load
+      
+      Test: |
+        msg = '<readCustomer><id>1</id></readCustomer>'
+        path = '/var/local/hydratk/test.xml'
+        with open(path, 'w') as f:
+            f.write(msg)
+                          
+        c = JMSRequestMessage()
+        c.load_from_file(path)
+        res = c._content
+      
+      Validate: |
+        this.test_result = res
+        assert (res == msg), '_content = {0}'.format(msg)
+        remove(path)   
+        
+Test-Scenario-6:
+  Id: ts_06
+  Path: hydratk/lib/network/jms/simplejms/01_methods_ut.jedi
+  Name: ts_jrqm_bind_var
+  Desc: Test class JMSRequestMessage method bind_var
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.jms.simplejms import JMSRequestMessage
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_bind_var
+    Desc: Bind variables
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_bind_args
+      Desc: Bind from args
+      
+      Test: |
+        msg = '<readCustomer><id>[id]</id><name>[name]</name></readCustomer>'
+ 
+        c = JMSRequestMessage(msg, 'str')
+        id, name = '1', 'Charlie Bowman'
+        c.bind_var({'id': id}, {'name': name})
+        res = c._content
+      
+      Validate: |
+        this.test_result = res
+        assert (id in res and name in res), '_content contains {0}, {1}'.format(id, name)     
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_bind_kwargs
+      Desc: Bind from kwargs
+      
+      Test: |
+        c._content = msg
+        c.bind_var({'id': id, 'name': name})
+        res = c._content
+      
+      Validate: |
+        this.test_result = res
+        assert (id in res and name in res), '_content contains {0}, {1}'.format(id, name)  
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_var
+      Desc: Invalid variable
+      
+      Test: |
+        c._content = msg
+        c.bind_var({'id2': id, 'name2': name})
+        res = c._content
+      
+      Validate: |
+        this.test_result = res
+        assert (res == msg), '_content = {0}'.format(msg) 
+        
+Test-Scenario-7:
+  Id: ts_07
+  Path: hydratk/lib/network/jms/simplejms/01_methods_ut.jedi
+  Name: ts_jc_init
+  Desc: Test JMSClient method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.jms.simplejms import JMSClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize JMSClient
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_init
+      Desc: Initialize
+      
+      Test: |
+        jvm_path = '/usr/local/app/java/jdk1.8.0_51/jre/lib/amd64/server/libjvm.so'
+        c = JMSClient(True, jvm_path)
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'JMSClient'), '__init__ = JMSClient'
+        
+Test-Scenario-8:
+  Id: ts_08
+  Path: hydratk/lib/network/jms/simplejms/01_methods_ut.jedi
+  Name: ts_jc_props
+  Desc: Test JMSClient properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.jms.simplejms import JMSClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_request
+      Desc: Getter request
+      
+      Test: |
+        res = c.request
+      
+      Validate: |       
+        this.test_result = str(res)
+        exp = c._request
+        assert (res == exp), 'request = {0}'.format(exp)
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_response
+      Desc: Getter response
+      
+      Test: |
+        res = c.response
+      
+      Validate: |       
+        this.test_result = str(res)
+        exp = c._response
+        assert (res == exp), 'response = {0}'.format(exp)  
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_setters
+    Desc: Setter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_request
+      Desc: Setter request
+      
+      Test: |
+        obj = 'test'
+        c.request = obj
+        res = c.request
+      
+      Validate: |      
+        this.test_result = res
+        assert (res == obj), 'request = {0}'.format(obj) 
+        
+Test-Scenario-9:
+  Id: ts_09
+  Path: hydratk/lib/network/jms/simplejms/01_methods_ut.jedi
+  Name: ts_jc_send
+  Desc: Test JMSClient method send
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.jms.simplejms import JMSClient, JMSRequest, JMSRequestMessage
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_send
+    Desc: Send request
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_read
+      Desc: Send read request
+      
+      Test: |
+        msg = '<readCustomer><id>0</id></readCustomer>'
+        rqm = JMSRequestMessage(msg, 'str')
+        rq = JMSRequest('dynamicQueues/HydraQueue', 'test')
+        rq.message = rqm
+        c.request = rq
+        properties = {'provider_url': 'tcp://127.0.0.1:61616',
+                      'initial_context_factory': 'org.apache.activemq.jndi.ActiveMQInitialContextFactory'}
+        c.connect('ConnectionFactory', properties) 
+        res = c.send('1234')
+      
+      Validate: |                                              
+        this.test_result = res
+        assert (res), 'send = True'                                                                        

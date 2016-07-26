@@ -1,0 +1,636 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/network/inet/packet/01_methods_ut.jedi
+  Name: ts_packet
+  Desc: Test method Packet
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.inet.packet import Packet
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_packet
+    Desc: Create packet
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_ether
+      Desc: Ethernet packet
+      
+      Test: |
+        p = Packet('Ether')
+        res = p.__repr__()
+      
+      Validate: |
+        this.test_result = res
+        exp = 'Ether'
+        assert (exp in res), 'Packet contains {0}'.format(exp)
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_ip
+      Desc: IP packet
+      
+      Test: |
+        p = Packet('IP', dst='google.com')
+        res = p.__repr__()
+      
+      Validate: |
+        this.test_result = res
+        exp = ['IP', 'google.com']
+        assert (exp[0] in res and exp[1] in res), 'Packet contains {0}'.format(exp)    
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_tcp
+      Desc: TCP packet
+      
+      Test: |
+        p = Packet('TCP', dport=80)
+        res = p.__repr__()
+      
+      Validate: |
+        this.test_result = res
+        exp = ['TCP', 'http']
+        assert (exp[0] in res and exp[1] in res), 'Packet contains {0}'.format(exp) 
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_invalid
+      Desc: Invalid protocol
+      
+      Test: |
+        try:
+            Packet('xx')
+            ex = False
+        except NotImplementedError:
+            ex = True
+            
+      Validate: |
+        this.test_result = ex
+        assert (ex), 'Packet raises NotImplementedError'   
+        
+Test-Scenario-2:
+  Id: ts_02
+  Path: hydratk/lib/network/inet/packet/01_methods_ut.jedi
+  Name: ts_compose_packet
+  Desc: Test method compose_acket
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.inet.packet import compose_packet, Packet
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_compose_packet
+    Desc: Compose packet
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_1_packet
+      Desc: Compose 1 packet
+      
+      Test: |
+        p = [Packet('IP', dst='google.com')]
+        c = compose_packet(p)
+        res = c.__repr__()                           
+        
+      Validate: |
+        this.test_result = res
+        exp = ['IP', 'google.com']
+        assert (exp[0] in res and exp[1] in res), 'compose_packet contains {0}'.format(exp)     
+    
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_2_packets
+      Desc: Compose 2 packets
+      
+      Test: |
+        p = [Packet('IP', dst='google.com'), Packet('TCP', dport=80)]
+        c = compose_packet(p)
+        res = c.__repr__()                           
+        
+      Validate: |
+        this.test_result = res
+        exp = ['IP', 'google.com', 'TCP', 'http']
+        assert (exp[0] in res and exp[1] in res and exp[2] in res and exp[3] in res), 'compose_packet contains {0}'.format(exp)   
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_payload
+      Desc: Packet with paylod
+      
+      Test: |
+        payload = 'test'
+        c = compose_packet(p, payload)
+        res = c.__repr__()                           
+        
+      Validate: |
+        this.test_result = res
+        exp = ['IP', 'google.com', 'TCP', 'http', payload]
+        assert (exp[0] in res and exp[1] in res and exp[2] in res and exp[3] in res and exp[4] in res), 'compose_packet contains {0}'.format(exp)
+        
+Test-Scenario-3:
+  Id: ts_03
+  Path: hydratk/lib/network/inet/packet/01_methods_ut.jedi
+  Name: ts_dump
+  Desc: Test method dump
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.inet.packet import Packet, dump
+    import sys
+    
+    try:
+        from StringIO import StringIO
+    except ImportError:
+        from io import StringIO     
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_dump
+    Desc: Dump packet
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_hex
+      Desc: Hexdump
+      
+      Test: |
+        old = sys.stdout
+        sys.stdout = res = StringIO()      
+        p = Packet('IP', dst='google.com')
+        dump(p, False)
+        res = res.getvalue()
+        sys.stdout = old          
+      
+      Validate: |          
+        this.test_result = res
+        exp = 'google.com'
+        assert (exp in res), 'dump prints {0}'.format(exp)   
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_raw
+      Desc: Hexdump
+      
+      Test: |
+        old = sys.stdout
+        sys.stdout = res = StringIO()           
+        dump(p, True)
+        res = res.getvalue()
+        sys.stdout = old           
+      
+      Validate: |          
+        this.test_result = res
+        exp = '0000'
+        assert (exp in res), 'dump prints {0}'.format(exp) 
+        
+Test-Scenario-4:
+  Id: ts_04
+  Path: hydratk/lib/network/inet/packet/01_methods_ut.jedi
+  Name: ts_send_packet
+  Desc: Test method send_packet
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.inet.packet import Packet, compose_packet, send_packet
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_send_packet
+    Desc: Send packet
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_send
+      Desc: Send packet
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['inet_before_send_packet', 'inet_after_send_packet']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        p = [Packet('IP', dst='127.0.0.1'), Packet('TCP', dport=22)] 
+        pck = compose_packet(p, 'I am Hydra')
+        send_packet(pck)    
+      
+      Validate: |          
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'send_packet fires {0}'.format(evs)
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_iface
+      Desc: Send via interface
+      
+      Test: |
+        send_packet(pck, iface='eth1')
+      
+      Validate: |                   
+        this.test_result = pck.__repr__()
+        assert True      
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_verbose
+      Desc: Verbose mode
+      
+      Test: |
+        send_packet(pck, verbose=True)
+      
+      Validate: |                   
+        this.test_result = pck.__repr__()
+        assert True       
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_invalid_iface
+      Desc: Invalid interface
+      
+      Test: |
+        send_packet(pck, iface='eth8')    
+      
+      Validate: |          
+        this.test_result = pck.__repr__()
+        assert True        
+        
+Test-Scenario-5:
+  Id: ts_05
+  Path: hydratk/lib/network/inet/packet/01_methods_ut.jedi
+  Name: ts_send_recv_packet
+  Desc: Test method send_recv_packet
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.inet.packet import Packet, compose_packet, send_recv_packet
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_send_recv_packet
+    Desc: Send and receive packet
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_answered
+      Desc: Packets answered
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['inet_before_sendrecv_packet', 'inet_after_sendrecv_packet']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        p = [Packet('IP', dst='google.com'), Packet('TCP', dport=80)] 
+        pck = compose_packet(p, 'I am Hydra')
+        ans, unans = send_recv_packet(pck)    
+      
+      Validate: |      
+        res = ans, unans
+        this.test_result = str(res)
+        assert (len(ans) > 0 and len(unans) == 0), 'all packets answered'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'send_recv_packet fires {0}'.format(evs)
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_not_answered
+      Desc: Packets not answered
+      
+      Test: |
+        p = [Packet('IP', dst='127.0.0.1'), Packet('TCP', dport=22)] 
+        pck = compose_packet(p, 'I am Hydra')
+        ans, unans = send_recv_packet(pck)    
+      
+      Validate: |      
+        res = ans, unans
+        this.test_result = str(res)
+        assert (len(ans) == 0 and len(unans) > 0), 'all packets not answered'   
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_iface
+      Desc: Send via interface
+      
+      Test: |
+        p = [Packet('IP', dst='google.com'), Packet('TCP', dport=80)] 
+        pck = compose_packet(p, 'I am Hydra')      
+        ans, unans = send_recv_packet(pck, iface='eth1')
+      
+      Validate: |                   
+        res = ans, unans
+        this.test_result = str(res)
+        assert (len(ans) == 0 and len(unans) > 0), 'packets not answered'
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_verbose
+      Desc: Verbose mode
+      
+      Test: |
+        ans, unans = send_recv_packet(pck, verbose=True)
+      
+      Validate: |                   
+        res = ans, unans
+        this.test_result = str(res)
+        assert (len(ans) > 0 and len(unans) == 0), 'packets answered'     
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_invalid_iface
+      Desc: Invalid interface
+      
+      Test: |
+        ans, unans = send_recv_packet(pck, iface='eth8')    
+      
+      Validate: |          
+        res = ans, unans
+        this.test_result = str(res)
+        assert (ans == None and unans == None), 'packets empty' 
+        
+Test-Scenario-6:
+  Id: ts_06
+  Path: hydratk/lib/network/inet/packet/01_methods_ut.jedi
+  Name: ts_ping
+  Desc: Test method ping
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.inet.packet import ping
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_ping
+    Desc: Ping
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_icmp
+      Desc: ICMP
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['inet_before_ping', 'inet_after_ping']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        host = 'google.com'
+        res = ping(host, 'ICMP')  
+      
+      Validate: |      
+        this.test_result = res
+        assert (res), 'ping = True'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'ping fires {0}'.format(evs)
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]   
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_tcp
+      Desc: TCP
+      
+      Test: |
+        port = 80
+        res = ping(host, 'TCP', 80)  
+      
+      Validate: |      
+        this.test_result = res
+        assert (res), 'ping = True'
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_host
+      Desc: Invalid host
+      
+      Test: |
+        host = '1.1.1.1'
+        res = ping(host)
+        
+      Validate: |
+        this.test_result = res
+        assert (not res), 'ping = False'
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_invalid_port
+      Desc: Invalid port
+      
+      Test: |
+        host, port = '127.0.0.1', 20
+        res = ping(host, 'TCP', port)
+        
+      Validate: |
+        this.test_result = res
+        assert (not res), 'ping = False'        
+                                        
+Test-Scenario-7:
+  Id: ts_07
+  Path: hydratk/lib/network/inet/packet/01_methods_ut.jedi
+  Name: ts_traceroute
+  Desc: Test method traceroute
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.inet.packet import traceroute
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_traceroute
+    Desc: Traceroute
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_icmp
+      Desc: ICMP
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['inet_before_traceroute', 'inet_after_traceroute']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        host = 'google.com'
+        res = traceroute(host, 'ICMP')  
+      
+      Validate: |      
+        this.test_result = res
+        assert (res), 'traceroute = True'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'traceroute fires {0}'.format(evs)
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]     
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_tcp
+      Desc: TCP
+      
+      Test: |
+        port = 80
+        res = traceroute(host, 'TCP', 80)
+      
+      Validate: |    
+        this.test_result = res
+        assert (res), 'traceroute = True'     
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_host
+      Desc: Invalid host
+      
+      Test: |
+        host = '1.1.1.1'
+        res = traceroute(host)
+        
+      Validate: |
+        this.test_result = res
+        assert (not res), 'traceroute = False'
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_invalid_port
+      Desc: Invalid port
+      
+      Test: |
+        host, port = '127.0.0.1', 20
+        res = traceroute(host, 'TCP', port)
+        
+      Validate: |
+        this.test_result = res
+        assert (not res), 'traceroute = False'   
+        
+Test-Scenario-8:
+  Id: ts_08
+  Path: hydratk/lib/network/inet/packet/01_methods_ut.jedi
+  Name: ts_sniffer
+  Desc: Test method sniffer
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.inet.packet import sniffer
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+    from os import path, remove
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_sniffer
+    Desc: Traffic sniffer
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_all
+      Desc: Sniff all traffic
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['inet_before_sniff', 'inet_after_sniff']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        file = '/var/local/hydratk/test.pcap'
+        sniffer(file)  
+      
+      Validate: |      
+        this.test_result = res = path.exists(file)
+        assert (res), 'file {0} created'.format(file)
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'sniffer fires {0}'.format(evs)
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]                                                                        
+        remove(file)
+    
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_iface
+      Desc: Sniff traffic on interface
+      
+      Test: |
+        sniffer(file, iface='eth0')  
+      
+      Validate: |      
+        this.test_result = res = path.exists(file)
+        assert (res), 'file {0} created'.format(file)                                                                       
+        remove(file)   
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_filter
+      Desc: Traffic filter
+      
+      Test: |
+        sniffer(file, filter='icmp and host google.com')  
+      
+      Validate: |      
+        this.test_result = res = path.exists(file)
+        assert (res), 'file {0} created'.format(file)                                                                       
+        remove(file)  
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_invalid_iface
+      Desc: Invalid interface
+      
+      Test: |
+        sniffer(file, iface='eth8')  
+      
+      Validate: |      
+        this.test_result = res = path.exists(file)
+        assert (not res), 'file {0} not created'.format(file)  
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_filtered
+      Desc: All traffic filtered
+      
+      Test: |
+        sniffer(file, filter='tcp and port 110')  
+      
+      Validate: |      
+        this.test_result = res = path.exists(file)
+        assert (not res), 'file {0} not created'.format(file)         
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_invalid_filter
+      Desc: Invalid filter
+      
+      Test: |
+        sniffer(file, filter='xx')  
+      
+      Validate: |      
+        this.test_result = res = path.exists(file)
+        assert (not res), 'file {0} not created'.format(file)                                                                                              

@@ -95,7 +95,7 @@ class SoapResponse(object):
     
     @msg.setter
     def msg(self, data):
-        """ msg property getter """
+        """ msg property setter """
         self._msg = data       
                      
     @property
@@ -106,7 +106,7 @@ class SoapResponse(object):
 
     @message.setter
     def message(self, data):
-        """ message property getter """
+        """ message property setter """
         self._msg = data    
  
     def _extract_info(self, curl_obj):
@@ -342,12 +342,12 @@ class SoapRequestMessage(XMLValidate):
     
         """
                 
-        import lxml        
+        from lxml.etree import DocumentInvalid, XMLSyntaxError       
         result = True
         msg    = None
         try:
             XMLValidate.xsd_validate(self, self._content)
-        except lxml.etree.DocumentInvalid as e:
+        except (DocumentInvalid, XMLSyntaxError) as e:
             msg    = e
             result = False
             
@@ -428,7 +428,7 @@ class SoapClient():
         
         self._curl.perform()        
         self._response = SoapResponse(self._curl)
-        self._response.msg = SoapResponseMessage(buff.getvalue())
+        self._response.msg = SoapResponseMessage(buff.getvalue().decode())
         self._curl.close()
 
          

@@ -25,6 +25,7 @@ msg = {
     'htk_term_connecting'        : ["Connecting to server: '{0}'"],
     'htk_term_connected'         : ["Connected successfully"],
     'htk_term_disconnected'      : ["Disconnected from server"],
+    'htk_term_not_connected'     : ["Not connected to server"],
     'htk_term_executing_command' : ["Executing command: '{0}'"],
     'htk_term_command_executed'  : ["Command executed"]
 }

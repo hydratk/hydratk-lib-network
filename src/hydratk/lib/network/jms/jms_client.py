@@ -36,6 +36,7 @@ class JMSClient:
     _verbose = None
     _connection_factory = None
     _properties = None
+    _is_connected = None
     
     def __init__(self, verbose=False, jvm_path=None, classpath=None, options=[]):
         """Class constructor
@@ -70,11 +71,11 @@ class JMSClient:
            none
         
         Returns:
-           void
+           bool
                 
         """  
         
-        self._bridge.stop()          
+        return self._bridge.stop()          
          
     @property
     def bridge(self):
@@ -104,7 +105,13 @@ class JMSClient:
     def properties(self):
         """ connection properties property getter """
         
-        return self._properties                
+        return self._properties               
+    
+    @property
+    def is_connected(self):
+        """ is_connected property getter """
+        
+        return self._is_connected         
         
     def connect(self, connection_factory, properties={}):
         """Method connects to server
@@ -135,8 +142,8 @@ class JMSClient:
         
             ev = event.Event('jms_before_connect', connection_factory, properties)
             if (self._mh.fire_event(ev) > 0):
-                connection_factory = ev.argv[0]
-                properties = ev.argv[1]                 
+                connection_factory = ev.argv(0)
+                properties = ev.argv(1)           
         
             self._connection_factory = connection_factory
             self._properties = properties
@@ -146,6 +153,7 @@ class JMSClient:
                 result = bool(self._client.connect(self._connection_factory, hashmap))
         
             if (result):
+                self._is_connected = True
                 self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_connected'), self._mh.fromhere()) 
                 ev = event.Event('jms_after_connect')
                 self._mh.fire_event(ev)         
@@ -173,8 +181,13 @@ class JMSClient:
         
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_disconnecting'), self._mh.fromhere())
                 
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_jms_not_connected'), self._mh.fromhere()) 
+                return False                  
+                
             result = bool(self._client.disconnect())
             if (result):
+                self._is_connected = False
                 self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_disconnected'), self._mh.fromhere())    
             else:
                 self._mh.dmsg('htk_on_error', self._mh._trn.msg('htk_jms_disconnecting_error'), self._mh.fromhere())   
@@ -213,12 +226,16 @@ class JMSClient:
                   destination_type, headers)
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_sending_msg', msg), self._mh.fromhere())         
         
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_jms_not_connected'), self._mh.fromhere()) 
+                return False          
+        
             ev = event.Event('jms_before_send', destination_name, message, destination_type, headers)
             if (self._mh.fire_event(ev) > 0):        
-                destination_name = ev.args[0]
-                message = ev.args[1]
-                destination_type = ev.args[2]
-                headers = ev.args[3]
+                destination_name = ev.argv(0)
+                message = ev.argv(1)
+                destination_type = ev.argv(2)
+                headers = ev.argv(3)
         
             if (ev.will_run_default()): 
                 hashmap = self._bridge.init_hashmap(headers)
@@ -258,10 +275,14 @@ class JMSClient:
             msg = 'destination_name:{0}, count:{1}'.format(destination_name, cnt)
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_receiving_msg', msg), self._mh.fromhere())         
         
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_jms_not_connected'), self._mh.fromhere()) 
+                return None          
+        
             ev = event.Event('jms_before_receive', destination_name, cnt)
             if (self._mh.fire_event(ev) > 0):        
-                destination_name = ev.args[0]
-                cnt = ev.args[1]
+                destination_name = ev.argv(0)
+                cnt = ev.argv(1)
         
             if (ev.will_run_default()): 
                 jms_messages = self._client.receive(destination_name, cnt)
@@ -314,12 +335,16 @@ class JMSClient:
                   destination_name, cnt, jms_correlation_id, jms_type)
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_browsing', msg), self._mh.fromhere())         
         
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_jms_not_connected'), self._mh.fromhere()) 
+                return None          
+        
             ev = event.Event('jms_before_browse', destination_name, cnt, jms_correlation_id, jms_type)
             if (self._mh.fire_event(ev) > 0):        
-                destination_name = ev.args[0]
-                cnt = ev.args[1]
-                jms_correlation_id = ev.args[2]
-                jms_type = ev.args[3]
+                destination_name = ev.argv(0)
+                cnt = ev.argv(1)
+                jms_correlation_id = ev.argv(2)
+                jms_type = ev.argv(3)
         
             if (ev.will_run_default()): 
                 jms_messages = self._client.browse(destination_name, cnt, jms_correlation_id, jms_type)

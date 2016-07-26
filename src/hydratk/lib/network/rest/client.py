@@ -18,9 +18,11 @@ rest_after_request
 
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
-from httplib2 import Http, debuglevel, HttpLib2Error
+import httplib2 
 from simplejson import loads
+from simplejson.scanner import JSONDecodeError
 from lxml import objectify
+from lxml.etree import XMLSyntaxError
 from socket import error
 
 try:
@@ -46,7 +48,7 @@ class RESTClient:
     _res_body = None
     _verbose = None
     
-    def __init__(self, verbose=False, cache=False, ignore_cert=True, timeout=60):
+    def __init__(self, verbose=False, cache=False, ignore_cert=True, timeout=10):
         """Class constructor
            
         Called when the object is initialized 
@@ -63,13 +65,13 @@ class RESTClient:
         self._mh.find_module('hydratk.lib.network.rest.client', None)  
         
         if (cache):
-            self._client = Http('.cache', disable_ssl_certificate_validation=ignore_cert, timeout=timeout)
+            self._client = httplib2.Http('.cache', disable_ssl_certificate_validation=ignore_cert, timeout=timeout)
         else:
-            self._client = Http(disable_ssl_certificate_validation=ignore_cert, timeout=timeout)     
+            self._client = httplib2.Http(disable_ssl_certificate_validation=ignore_cert, timeout=timeout)     
         
         self._verbose = verbose
         if (self._verbose):
-            debuglevel = 2
+            httplib2.debuglevel = 2
             
     @property
     def client(self):
@@ -151,28 +153,34 @@ class RESTClient:
                     if (headers == None):
                         headers = {}
                     headers['Content-Type'] = mime_types[content_type]
-
-                self._res_header, self._res_body = self._client.request(url, method, body, headers)
+  
+                header = None
+                header, body = self._client.request(url, method, body, headers)
             
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_rest_response', self._res_header, 
-                           self._res_body), self._mh.fromhere()) 
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_rest_response', header, body), self._mh.fromhere()) 
             ev = event.Event('rest_after_request')
             self._mh.fire_event(ev)              
             
+            self._res_header = header
             content_type = self.get_header('Content-Type')
             if (content_type != None):
-                if ('json' in content_type and len(self._res_body) > 0):
-                    self._res_body = loads(self._res_body)
-                elif ('xml' in content_type and len(self._res_body) > 0):              
-                    self._res_body = objectify.fromstring(self._res_body)                                             
-                
-            return (self._res_header.status, self._res_body)
+                if ('json' in content_type and len(body) > 0):
+                    body = loads(body)
+                elif ('xml' in content_type and len(body) > 0):              
+                    body = objectify.fromstring(body)       
             
-        except (HttpLib2Error, error) as ex:
+            if (body.__class__.__name__ == 'bytes'):
+                body = body.decode('latin-1')                    
+            self._res_body = body                                       
+                
+            return (int(header.status), body)
+            
+        except (httplib2.HttpLib2Error, error, JSONDecodeError, XMLSyntaxError) as ex:
             if (str(ex) == 'WWW-Authenticate'):
                 return (401, None)
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
-            return None   
+            status = int(header.status) if (header != None and 'status' in header) else None
+            return status, self._res_body   
         
     def get_header(self, title):
         """Method gets response header
@@ -203,3 +211,16 @@ class RESTClient:
         """               
         
         return self._res_body                                                                                              
+
+    def reset_debug(self):
+        """Method resets debug level
+        
+        Args:
+           none
+
+        Returns:
+           void
+                
+        """    
+        
+        httplib2.debuglevel = 0        

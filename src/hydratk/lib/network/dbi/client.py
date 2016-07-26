@@ -31,7 +31,7 @@ def DBClient(engine='SQLITE', *args, **kwargs):
         obj: DBClient
        
     Raises:
-        error: ValueError
+        error: NotImplementedError
                 
     """       
 
@@ -42,5 +42,4 @@ def DBClient(engine='SQLITE', *args, **kwargs):
         mh.find_module('hydratk.lib.network.dbi.client', None)                 
         return mod.DBClient(*args, **kwargs)
     else:
-        raise ValueError('Unknown engine:{0}'.format(engine))
-        return None                           
+        raise NotImplementedError('Unknown engine:{0}'.format(engine))                       

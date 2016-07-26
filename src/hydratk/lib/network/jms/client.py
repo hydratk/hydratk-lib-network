@@ -29,7 +29,7 @@ def JMSClient(protocol='JMS', *args, **kwargs):
         obj: JMSClient
        
     Raises:
-        error: ValueError
+        error: NotImplementedError
                 
     """       
 
@@ -40,5 +40,4 @@ def JMSClient(protocol='JMS', *args, **kwargs):
         mh.find_module('hydratk.lib.network.jms.client', None)                   
         return mod.JMSClient(*args, **kwargs)
     else:
-        raise ValueError('Unknown protocol:{0}'.format(protocol))
-        return None                           
+        raise NotImplementedError('Unknown protocol:{0}'.format(protocol))                          

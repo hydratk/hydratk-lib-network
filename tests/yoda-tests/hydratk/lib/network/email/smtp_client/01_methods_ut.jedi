@@ -1,0 +1,566 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/network/email/smtp_client/01_methods_ut.jedi
+  Name: ts_init
+  Desc: Test method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.email.client import EmailClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize EmailClient
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_secured
+      Desc: Not secured protocol
+      
+      Test: |
+        c = EmailClient('SMTP', False)
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'EmailClient'), '__init__ = EmailClient'
+        res = [c._client.__class__.__name__, c._secured]
+        this.test_result = str(res)
+        assert (res == ['SMTP', False]), '_client, _secured = SMTP, False'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_secured
+      Desc: Secured protocol
+      
+      Test: |
+        c = EmailClient('SMTP', True)
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'EmailClient'), '__init__ = EmailClient'
+        res = [c._client.__class__.__name__, c._secured]
+        this.test_result = str(res)
+        assert (res == ['SMTP_SSL', True]), '_client, _secured = SMTP_SSL, True' 
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_not_verbose
+      Desc: Not verbose mode
+      
+      Test: |
+        c = EmailClient('SMTP', verbose=False)
+        res = c._verbose          
+
+      Validate: |
+        this.test_result = res
+        assert (not res), '_verbose = False'
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_verbose
+      Desc: Verbose mode
+      
+      Test: |
+        c = EmailClient('SMTP', verbose=True)
+        res = c._verbose          
+
+      Validate: |
+        this.test_result = res
+        assert (res), '_verbose = True'   
+        
+Test-Scenario-2:
+  Id: ts_02
+  Path: hydratk/lib/network/email/smtp_client/01_methods_ut.jedi
+  Name: ts_props
+  Desc: Test properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.email.client import EmailClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_client
+      Desc: Getter client
+      
+      Test: |
+        c = EmailClient('SMTP', False, True)
+        c.connect('smtp.seznam.cz', 25, 'lynushydra', 'bowman1234')
+        res = c.client.__class__.__name__
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._client.__class__.__name__
+        assert (res == exp), 'client = {0}'.format(exp)
+                 
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_secured
+      Desc: Getter secured
+      
+      Test: |
+        res = c.secured
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._secured
+        assert (res == exp), 'secured = {0}'.format(exp)        
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_host
+      Desc: Getter host
+      
+      Test: |
+        res = c.host
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._host
+        assert (res == exp), 'host = {0}'.format(exp)
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_port
+      Desc: Getter port
+      
+      Test: |
+        res = c.port
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._port
+        assert (res == exp), 'port = {0}'.format(exp)
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_user
+      Desc: Getter user
+      
+      Test: |
+        res = c.user
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._user
+        assert (res == exp), 'user = {0}'.format(exp)
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_passw
+      Desc: Getter passw
+      
+      Test: |
+        res = c.passw
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._passw
+        assert (res == exp), 'passw = {0}'.format(exp) 
+        
+    Test-Condition-7: 
+      Id: tco_07
+      Name: tco_verbose
+      Desc: Getter verbose
+      
+      Test: |
+        res = c.verbose
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._verbose
+        assert (res == exp), 'verbose = {0}'.format(exp)
+        
+    Test-Condition-8: 
+      Id: tco_08
+      Name: tco_is_connected
+      Desc: Getter is_connected
+      
+      Test: |
+        res = c.is_connected
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._is_connected
+        assert (res == exp), 'is_connected = {0}'.format(exp)        
+        c.disconnect()    
+        
+Test-Scenario-3:
+  Id: ts_03
+  Path: hydratk/lib/network/email/smtp_client/01_methods_ut.jedi
+  Name: ts_connect
+  Desc: Test method connect
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.email.client import EmailClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_connect
+    Desc: Connect to server
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_secured
+      Desc: Connect to server via SMTP 
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['email_before_connect', 'email_after_connect']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = EmailClient('SMTP')
+        host, port, user, passw = 'smtp.seznam.cz', 25, 'lynushydra', 'bowman1234' 
+        res = c.connect(host, port, user, passw)       
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'connect = True'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'connect fires {0}'.format(evs)
+        res = [c.host, c.port, c.user, c.passw, c.is_connected]
+        this.test_result = str(res)
+        exp = [host, port, user, passw, True]
+        assert (res == exp), 'host, port, user, passw, is_connected = {0}'.format(exp)
+        c.disconnect()
+        del mh._event_hooks[evs[0]]
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]   
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_secured
+      Desc: Connect to server via SMTPS 
+      
+      Test: |
+        c = EmailClient('SMTP', True)
+        port = 465
+        res = c.connect(host, port, user, passw)       
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'connect = True'
+        res = [c.host, c.port, c.user, c.passw, c.is_connected]
+        this.test_result = str(res)
+        exp = [host, port, user, passw, True]
+        assert (res == exp), 'host, port, user, passw, is_connected = {0}'.format(exp)
+        c.disconnect()   
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_host
+      Desc: Invalid host
+      
+      Test: |
+        c = EmailClient('SMTP')
+        res = c.connect('1.1.1.1')
+      
+      Validate: |                                                                               
+        this.test_result = res
+        assert (not res), 'connect = False'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_port
+      Desc: Invalid port
+      
+      Test: |
+        res = c.connect('smtp.seznam.cz', 2000)
+      
+      Validate: |                                                                               
+        this.test_result = res
+        assert (not res), 'connect = False'   
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_user
+      Desc: Invalid user
+      
+      Test: |
+        res = c.connect('smtp.seznam.cz', 25, 'xxx', 'xxx')
+      
+      Validate: |                                                                               
+        this.test_result = res
+        assert (not res), 'connect = False'             
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_invalid_not_secured_port
+      Desc: Invalid port for SMTP
+      
+      Test: |
+        res = c.connect('smtp.seznam.cz', 465, 'lynushydra', 'bowman1234')
+      
+      Validate: |                                                                               
+        this.test_result = res
+        assert (not res), 'connect = False'  
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_invalid_secured_port
+      Desc: Invalid port for SMTPS
+      
+      Test: |
+        c = EmailClient('SMTP', True)
+        res = c.connect('smtp.seznam.cz', 25, 'lynushydra', 'bowman1234')
+      
+      Validate: |                                                                               
+        this.test_result = res
+        assert (not res), 'connect = False'     
+        
+Test-Scenario-4:
+  Id: ts_04
+  Path: hydratk/lib/network/email/smtp_client/01_methods_ut.jedi
+  Name: ts_disconnect
+  Desc: Test method disconnect
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.email.client import EmailClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_disconnect
+    Desc: Disconnect from server
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_secured
+      Desc: Disconnect via SMTP
+      
+      Test: |
+        c = EmailClient('SMTP', False)
+        c.connect('smtp.seznam.cz', 25, 'lynushydra', 'bowman1234')
+        res = c.disconnect()
+      
+      Validate: |                   
+        this.test_result = res
+        assert (res), 'disconnect = True'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_secured
+      Desc: Disconnect via SMTPS
+      
+      Test: |
+        c = EmailClient('SMTP', True)
+        c.connect('smtp.seznam.cz', 465, 'lynushydra', 'bowman1234')
+        res = c.disconnect()
+      
+      Validate: |                   
+        this.test_result = res
+        assert (res), 'disconnect = True'   
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        c = EmailClient('SMTP')
+        res = c.disconnect()
+      
+      Validate: |           
+        this.test_result = res
+        assert (not res), 'disconnect = False'  
+        
+Test-Scenario-5:
+  Id: ts_05
+  Path: hydratk/lib/network/email/smtp_client/01_methods_ut.jedi
+  Name: ts_send_email
+  Desc: Test method send_email
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.email.client import EmailClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_send_email
+    Desc: Send email
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_send_not_secured
+      Desc: Send email via SMTP
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['email_before_send_email', 'email_after_send_email']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = EmailClient('SMTP')
+        host, port, user, passw = 'smtp.seznam.cz', 25, 'lynushydra', 'bowman1234' 
+        subject, message, sender = 'test', 'test msg', 'lynushydra@seznam.cz'
+        c.connect(host, port, user, passw)    
+        res = c.send_email(subject, message, sender)   
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'send_email = True'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'send_email fires {0}'.format(evs)
+        c.disconnect()   
+        del mh._event_hooks[evs[0]]
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]              
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_send_secured
+      Desc: Send email via SMTPS
+      
+      Test: |
+        c = EmailClient('SMTP', True)
+        port = 465 
+        c.connect(host, port, user, passw)    
+        res = c.send_email(subject, message, sender)   
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'send_email = True'
+        c.disconnect()              
+    
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_single_to
+      Desc: Single recipient
+      
+      Test: |
+        c = EmailClient('SMTP')
+        port = 25
+        c.connect(host, port, user, passw)    
+        res = c.send_email(subject, message, sender, recipients=[sender])   
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'send_email = True'   
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_mult_to
+      Desc: Multiple recipients
+      
+      Test: |   
+        res = c.send_email(subject, message, sender, recipients=[sender, 'hydratk@hydratk.org'])   
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'send_email = True'            
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_cc
+      Desc: Recipient on CC
+      
+      Test: |   
+        res = c.send_email(subject, message, sender, recipients=[sender], cc=['hydratk@hydratk.org'])   
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'send_email = True'            
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_bcc
+      Desc: Recipient on BCC
+      
+      Test: |   
+        res = c.send_email(subject, message, sender, recipients=[sender], bcc=['hydratk@hydratk.org'])   
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'send_email = True'
+        c.disconnect() 
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases    
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_no_from
+      Desc: Missing sender
+      
+      Test: |
+        c = EmailClient('SMTP')
+        host, port, user, passw = 'smtp.seznam.cz', 25, 'lynushydra', 'bowman1234' 
+        subject, message, sender = 'test', 'test msg', 'hydra@hydratk.org'
+        c.connect(host, port, user, passw)    
+        res = c.send_email(subject, message, sender)   
+      
+      Validate: |          
+        this.test_result = res
+        assert (not res), 'send_email = False'           
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_no_to
+      Desc: Missing recipient
+      
+      Test: | 
+        sender = 'lynushydra@seznam.cz'
+        res = c.send_email(subject, message, sender, [])   
+      
+      Validate: |          
+        this.test_result = res
+        assert (not res), 'send_email = False'  
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_to
+      Desc: Invalid recipient
+      
+      Test: | 
+        recipient = ['hydra']
+        res = c.send_email(subject, message, sender, recipient)   
+      
+      Validate: |          
+        this.test_result = res
+        assert (not res), 'send_email = False'     
+        c.disconnect()
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: | 
+        res = c.send_email(subject, message, sender, recipient)   
+      
+      Validate: |          
+        this.test_result = res
+        assert (not res), 'send_email = False'                                                                      

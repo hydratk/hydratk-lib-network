@@ -24,7 +24,7 @@ msg = {
     'htk_inet_sending_packet'      : ["Sending packet, iface: '{0}'"],   
     'htk_inet_packet_sent'         : ["Packet sent"], 
     'htk_inet_sending_recv_packet' : ["Sending and receiving packets, iface: '{0}', retry: '{1}', timeout: '{2}'"],   
-    'htk_inet_packet_sent'         : ["Packets sent and received"],
+    'htk_inet_packet_sent_recv'    : ["Packets sent and received"],
     'htk_inet_ping'                : ["Ping to destination: '{0}', protocol: '{1}', port: '{2}'"],
     'htk_inet_ping_ok'             : ["Ping was successful"],
     'htk_inet_ping_nok'            : ["Ping was not successful"],

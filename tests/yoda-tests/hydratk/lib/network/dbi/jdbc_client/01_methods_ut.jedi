@@ -1,0 +1,641 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/network/dbi/jdbc_client/01_methods_ut.jedi
+  Name: ts_init
+  Desc: Test method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.dbi.client import DBClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize DBClient
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_init
+      Desc: Initialize
+      
+      Test: |
+        jvm_path = '/usr/local/app/java/jdk1.8.0_51/jre/lib/amd64/server/libjvm.so'
+        c = DBClient('JDBC', True, jvm_path)
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'DBClient'), '__init__ = DBClient'     
+        
+Test-Scenario-2:
+  Id: ts_02
+  Path: hydratk/lib/network/dbi/jdbc_client/01_methods_ut.jedi
+  Name: ts_props
+  Desc: Test properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_bridge
+      Desc: Getter bridge
+      
+      Test: |
+        res = c.bridge.__class__.__name__
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._bridge.__class__.__name__
+        assert (res == exp), 'bridge = {0}'.format(exp)       
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_client
+      Desc: Getter client
+      
+      Test: |
+        res = c.client.__class__.__name__
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._client.__class__.__name__
+        assert (res == exp), 'client = {0}'.format(exp)
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_verbose
+      Desc: Getter verbose
+      
+      Test: |
+        res = c.verbose
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._verbose
+        assert (res == exp), 'verbose = {0}'.format(exp)        
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_driver
+      Desc: Getter driver
+      
+      Test: |
+        res = c.driver
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._driver
+        assert (res == exp), 'driver = {0}'.format(exp)        
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_conn_str
+      Desc: Getter conn_str
+      
+      Test: |
+        res = c.conn_str
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._conn_str
+        assert (res == exp), 'conn_str = {0}'.format(exp)        
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_user
+      Desc: Getter user
+      
+      Test: |
+        res = c.user
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._user
+        assert (res == exp), 'user = {0}'.format(exp)        
+        
+    Test-Condition-7: 
+      Id: tco_07
+      Name: tco_passw
+      Desc: Getter passw
+      
+      Test: |
+        res = c.passw
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._passw
+        assert (res == exp), 'passw = {0}'.format(exp)    
+        
+    Test-Condition-8: 
+      Id: tco_08
+      Name: tco_is_connected
+      Desc: Getter is_connected
+      
+      Test: |
+        res = c.is_connected
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._is_connected
+        assert (res == exp), 'is_connected = {0}'.format(exp)            
+        
+Test-Scenario-3:
+  Id: ts_03
+  Path: hydratk/lib/network/dbi/jdbc_client/01_methods_ut.jedi
+  Name: ts_connect
+  Desc: Test method connect
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.dbi.client import DBClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_connect
+    Desc: Connect to server
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_connect
+      Desc: Connect to server
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['dbi_before_connect', 'dbi_after_connect']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        driver, conn_str, user, passw = 'oracle.jdbc.driver.OracleDriver', 'jdbc:oracle:thin:@127.0.0.1:49161/XE', 'crm', 'crm'        
+        res = c.connect(driver, conn_str, user, passw)       
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'connect = True'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'connect fires {0}'.format(evs)
+        res = [c.driver, c.conn_str, c.user, c.passw]
+        this.test_result = str(res)
+        exp = [driver, conn_str, user, passw]
+        assert (res == exp), 'driver, conn_str, user, passw = {0}'.format(exp) 
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0] 
+        c.disconnect()
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_driver
+      Desc: Invalid host
+      
+      Test: |      
+        conn_str = 'jdbc:oracle:thin:@127.0.0.1:49161/XE'
+        res = c.connect('xx', conn_str)
+      
+      Validate: |               
+        this.test_result = res
+        assert (not res), 'connect = False'     
+    
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_host
+      Desc: Invalid host
+      
+      Test: |      
+        conn_str = 'jdbc:oracle:thin:@1.1.1.1:49161/XE'
+        res = c.connect(driver, conn_str)
+      
+      Validate: |               
+        this.test_result = res
+        assert (not res), 'connect = False'      
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_port
+      Desc: Invalid port
+      
+      Test: |
+        conn_str = 'jdbc:oracle:thin:@127.0.0.1:20/XE'
+        res = c.connect(driver, conn_str)
+      
+      Validate: |               
+        this.test_result = res
+        assert (not res), 'connect = False'           
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_invalid_sid
+      Desc: Invalid sid
+      
+      Test: |
+        conn_str = 'jdbc:oracle:thin:@127.0.0.1:49161/X'
+        res = c.connect(driver, conn_str)
+      
+      Validate: |               
+        this.test_result = res
+        assert (not res), 'connect = False'   
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_invalid_user
+      Desc: Invalid user
+      
+      Test: |
+        conn_str = 'jdbc:oracle:thin:@127.0.0.1:49161/XE'
+        res = c.connect(driver, conn_str, 'xx', 'xx')
+      
+      Validate: |               
+        this.test_result = res
+        assert (not res), 'connect = False'         
+        
+Test-Scenario-4:
+  Id: ts_04
+  Path: hydratk/lib/network/dbi/jdbc_client/01_methods_ut.jedi
+  Name: ts_disconnect
+  Desc: Test method disconnect
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_disconnect
+    Desc: Disconnect from server
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_disconnect
+      Desc: Disconnect
+      
+      Test: |
+        driver, conn_str, user, passw = 'oracle.jdbc.driver.OracleDriver', 'jdbc:oracle:thin:@localhost:49161/XE', 'crm', 'crm'        
+        c.connect(driver, conn_str, user, passw) 
+        res = c.disconnect()
+      
+      Validate: |     
+        this.test_result = res
+        assert (res), 'disconnect = True'     
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_connected
+      Desc: Not connected to server
+    
+      Test: |
+        res = c.disconnect()
+    
+      Validate: |           
+        this.test_result = res
+        assert (not res), 'disconnect = False' 
+        
+Test-Scenario-5:
+  Id: ts_05
+  Path: hydratk/lib/network/dbi/jdbc_client/01_methods_ut.jedi
+  Name: ts_exec_query
+  Desc: Test method exec_query
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_exec_query
+    Desc: Execute query
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_select_single
+      Desc: Select single record
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['dbi_before_exec_query', 'dbi_after_exec_query']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])      
+        driver, conn_str, user, passw = 'oracle.jdbc.driver.OracleDriver', 'jdbc:oracle:thin:@127.0.0.1:49161/XE', 'crm', 'crm'        
+        res = c.connect(driver, conn_str, user, passw)
+        query = 'SELECT * FROM customer a , payer b WHERE a.id = b.customer'
+        res, rows = c.exec_query(query, fetch_one=True)        
+                
+      Validate: |
+        this.test_result = res
+        assert (res), 'exec_query = True'
+        exp = ['1', 'Charlie Bowman', '1234']
+        res = [rows['id'], rows['name'], rows['reg_no']]
+        this.test_result = str(res)
+        assert (res == exp), 'rows = {0}'.format(exp)
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'exec_query fires {0}'.format(evs)
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]      
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_select_mult
+      Desc: Select multiple records
+      
+      Test: |
+        res, rows = c.exec_query(query, fetch_one=False)        
+                
+      Validate: |
+        this.test_result = res
+        assert (res), 'exec_query = True'
+        this.test_result = str(rows)
+        assert (len(rows) > 1), 'rows has more than 1 record'
+        exp = ['2', 'Charlie Bowman', '1234']
+        res = [rows[1]['id'], rows[1]['name'], rows[1]['reg_no']]
+        this.test_result = str(res)
+        assert (res == exp), 'rows[1] = {0}'.format(exp)         
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_select_zero
+      Desc: Select no record     
+      
+      Test: |
+        query = 'SELECT * FROM customer WHERE id = 999999'
+        res, rows = c.exec_query(query)
+      
+      Validate: |    
+        this.test_result = str(rows)
+        assert (len(rows) == 0), 'rows has no record' 
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_binding
+      Desc: Select with bindings
+      
+      Test: |
+        query = 'SELECT id, name, reg_no FROM customer WHERE id = ? AND name = ?'
+        res, rows = c.exec_query(query, [2, 'Charlie Bowman'])
+      
+      Validate: |  
+        exp = ['2', 'Charlie Bowman', '1234']
+        res = [rows[0]['id'], rows[0]['name'], rows[0]['reg_no']]
+        this.test_result = str(res)
+        assert (res == exp), 'rows = {0}'.format(exp)   
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_insert
+      Desc: Insert record
+      
+      Test: |
+        query = 'INSERT INTO customer (id, name, status, segment) VALUES (customer_seq.nextval, ?, ?, ?)'
+        bindings = ['test test', 3, 2]
+        res, rows = c.exec_query(query, bindings)
+      
+      Validate: |                                                                 
+        this.test_result = res
+        assert (res), 'exec_query = True'
+        res, rows = c.exec_query('SELECT id FROM customer WHERE name = ?', ['test test'], True)
+        id = int(rows['id'])
+        assert (id > 0), 'id {0} > 0'.format(id)
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_update
+      Desc: Update record
+      
+      Test: |
+        query = 'UPDATE customer SET reg_no = ? WHERE id = ?'
+        reg_no = '1234'
+        bindings = [reg_no, id]
+        res, rows = c.exec_query(query, bindings)
+      
+      Validate: |                                                                 
+        this.test_result = res
+        assert (res), 'exec_query = True'
+        res, rows = c.exec_query('SELECT reg_no FROM customer WHERE id = ?', [id], True)
+        assert (rows['reg_no'] == reg_no), 'reg_no = {0}'.format(reg_no) 
+        
+    Test-Condition-7: 
+      Id: tco_07
+      Name: tco_delete
+      Desc: Delete record
+      
+      Test: |
+        query = 'DELETE FROM customer WHERE id = ?'
+        res, rows = c.exec_query(query, [id])            
+        
+      Validate: |
+        this.test_result = res
+        assert (res), 'exec_query = True'
+        res, rows = c.exec_query('SELECT reg_no FROM customer WHERE id = ?', [id])
+        assert (len(rows) == 0), 'record {0} deleted'.format(id)   
+        c.disconnect()     
+
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_table
+      Desc: Invalid table
+      
+      Test: |    
+        driver, conn_str, user, passw = 'oracle.jdbc.driver.OracleDriver', 'jdbc:oracle:thin:@127.0.0.1:49161/XE', 'crm', 'crm'        
+        res = c.connect(driver, conn_str, user, passw)
+        res, rows = c.exec_query('SELECT * FROM xxx')         
+        
+      Validate: |
+        this.test_result = res
+        assert (not res), 'exec_query = False'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_column
+      Desc: Invalid column
+      
+      Test: |     
+        res, rows = c.exec_query('SELECT xx FROM customer')         
+        
+      Validate: |
+        this.test_result = res
+        assert (not res), 'exec_query = False'     
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_syntax
+      Desc: Invalid syntax
+      
+      Test: |     
+        res, rows = c.exec_query('SELECT * FRO customer')         
+        
+      Validate: |
+        this.test_result = res
+        assert (not res), 'exec_query = False'             
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_invalid_constraint
+      Desc: Invalid constaint
+      
+      Test: |     
+        res, rows = c.exec_query('INSERT INTO customer (id, name, status, segment) VALUES (customer_seq.nextval, \'test test\', 0, 2)')         
+        
+      Validate: |
+        this.test_result = res
+        assert (not res), 'exec_query = False'
+        c.disconnect()    
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        res, rows = c.exec_query('')
+      
+      Validate: |     
+        this.test_result = res
+        assert (not res), 'exec_query = False'         
+        
+Test-Scenario-6:
+  Id: ts_06
+  Path: hydratk/lib/network/dbi/jdbc_client/01_methods_ut.jedi
+  Name: ts_commit
+  Desc: Test method commit
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_commit
+    Desc: Commit transaction
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_commit
+      Desc: Commit
+      
+      Test: |    
+        driver, conn_str, user, passw = 'oracle.jdbc.driver.OracleDriver', 'jdbc:oracle:thin:@127.0.0.1:49161/XE', 'crm', 'crm'        
+        res = c.connect(driver, conn_str, user, passw)
+        c.exec_query('INSERT INTO customer (id, name, status, segment) VALUES (customer_seq.nextval, ?, ?, ?)', ['test test', 1, 2], autocommit=False)
+        res = c.commit()
+        
+      Validate: |                         
+        this.test_result = res
+        assert (res), 'commit = True'
+        c.disconnect()       
+        c.connect(driver, conn_str, user, passw)
+        res, rows = c.exec_query('SELECT id FROM customer WHERE name = ?', ['test test'], fetch_one=True)
+        id = int(rows['id'])
+        assert (id > 0), 'id {0} > 0'.format(id)
+        c.exec_query('DELETE FROM customer WHERE id = ?', [id])
+        c.disconnect()
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases   
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        res = c.commit()
+      
+      Validate: |     
+        this.test_result = res
+        assert (not res), 'commit = False'   
+        
+Test-Scenario-7:
+  Id: ts_07
+  Path: hydratk/lib/network/dbi/jdbc_client/01_methods_ut.jedi
+  Name: ts_rollback
+  Desc: Test method rollback
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_rollback
+    Desc: Rollback transaction
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_rollback
+      Desc: Rollback
+      
+      Test: |    
+        driver, conn_str, user, passw = 'oracle.jdbc.driver.OracleDriver', 'jdbc:oracle:thin:@127.0.0.1:49161/XE', 'crm', 'crm'        
+        res = c.connect(driver, conn_str, user, passw)
+        c.exec_query('INSERT INTO customer (id, name, status, segment) VALUES (customer_seq.nextval, ?, ?, ?)', ['test test', 1, 2], autocommit=False)
+        res = c.rollback()
+        
+      Validate: |                         
+        this.test_result = res
+        assert (res), 'rollback = True'
+        c.disconnect()
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases   
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        res = c.rollback()
+      
+      Validate: |     
+        this.test_result = res
+        assert (not res), 'rollback = False'         
+        
+Test-Scenario-8:
+  Id: ts_08
+  Path: hydratk/lib/network/dbi/jdbc_client/01_methods_ut.jedi
+  Name: ts_close
+  Desc: Test method close
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_close
+    Desc: Close JVM
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_close
+      Desc: Close
+      
+      Test: |
+        res = c.close()
+      
+      Validate: |     
+        this.test_result = res
+        assert (res), 'close = True'                      

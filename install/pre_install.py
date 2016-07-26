@@ -4,6 +4,8 @@ from install.config import config as cfg
 import install.command as cmd
 from sys import version_info
 from time import sleep
+from os import system
+from pkgutil import find_loader
 
 def run_pre_install(argv):   
     
@@ -30,6 +32,14 @@ def version_update(requires):
     major, minor = version_info[0], version_info[1]
     
     if (major == 3):
+        del requires[requires.index('httplib2>=0.9.1')]
+        if (find_loader('httplib2') == None):
+            system('pip install git+https://github.com/httplib2/httplib2.git@master#egg=httplib2')          
+        
+        del requires[requires.index('tftpy>=0.6.2')]
+        if (find_loader('tftpy') == None):
+            system('pip install git+https://github.com/ZuljinSBK/tftpy.git@master#egg=tftpy')   
+        
         del cfg['modules'][cfg['modules'].index('stompest>=2.1.6')]
         cfg['modules'][cfg['modules'].index('MySQL-python>=1.2.3')] = 'mysqlclient>=1.3.7'
         cfg['libs']['mysqlclient>=1.3.7'] = cfg['libs']['MySQL-python>=1.2.3']

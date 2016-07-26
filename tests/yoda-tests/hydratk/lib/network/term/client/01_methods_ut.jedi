@@ -1,0 +1,57 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/network/term/client/01_methods_ut.jedi
+  Name: ts_termclient
+  Desc: Test method TermClient
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.term.client import TermClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize TermClient
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_ssh
+      Desc: SSH protocol
+    
+      Test: |
+        c = TermClient('SSH')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'TermClient'), 'TermClient = TermClient'    
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_ssh_args
+      Desc: SSH with arguments
+    
+      Test: |
+        c = TermClient('SSH', True)
+        res = c._verbose
+      
+      Validate: |
+        this.test_result = res
+        assert (res), '_verbose = True'            
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid
+      Desc: Invalid protocol
+      
+      Test: |
+        try:
+            c = TermClient('')
+            ex = False
+        except NotImplementedError:
+            ex = True
+      
+      Validate: |          
+        this.test_result = ex
+        assert (ex), 'TermClient raises NotImplementedError'

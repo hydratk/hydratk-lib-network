@@ -83,7 +83,7 @@ class TermClient:
     def passw(self):
         """ user password property getter """
         
-        return self._passw
+        return self._passw  
     
     @property
     def verbose(self):
@@ -97,7 +97,7 @@ class TermClient:
         
         return self._is_connected                
                 
-    def connect(self, host, port=22, user=None, passw=None):
+    def connect(self, host, port=22, user=None, passw=None, timeout=10):
         """Method connects to server
         
         Args:
@@ -105,6 +105,7 @@ class TermClient:
            port (int): server port, default protocol port
            user (str): username
            passw (str): password
+           timeout (int): timeout           
            
         Returns:
            bool: result
@@ -117,15 +118,16 @@ class TermClient:
         
         try:
             
-            message = '{0}/{1}@{2}:{3}'.format(user, passw, host, port)                            
+            message = '{0}/{1}@{2}:{3} timeout:{4}'.format(user, passw, host, port, timeout)                            
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_term_connecting', message), self._mh.fromhere())
             
-            ev = event.Event('term_before_connect', host, port, user, passw)
+            ev = event.Event('term_before_connect', host, port, user, passw, timeout)
             if (self._mh.fire_event(ev) > 0):
                 host = ev.argv(0)
                 port = ev.argv(1)
                 user = ev.argv(2)
                 passw = ev.argv(3)                    
+                timeout = ev.argv(4)
             
             self._host = host
             self._port = port
@@ -134,7 +136,7 @@ class TermClient:
             
             if (ev.will_run_default()):                  
                 self._client.set_missing_host_key_policy(AutoAddPolicy())
-                self._client.connect(self._host, self._port, self._user, self._passw)                
+                self._client.connect(self._host, self._port, self._user, self._passw, timeout=timeout)                
                 self._is_connected = True
                 
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_term_connected'), self._mh.fromhere()) 
@@ -160,11 +162,15 @@ class TermClient:
         """           
          
         try:                                                 
-                
-            self._client.close()
-            self._is_connected = False
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_term_disconnected'), self._mh.fromhere())  
-            return True  
+            
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_term_not_connected'), self._mh.fromhere()) 
+                return False
+            else:                
+                self._client.close()
+                self._is_connected = False
+                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_term_disconnected'), self._mh.fromhere())  
+                return True  
     
         except (SSHException, NoValidConnectionsError, error) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
@@ -189,6 +195,10 @@ class TermClient:
         try:
         
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_term_executing_command', command), self._mh.fromhere())              
+            
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_term_not_connected'), self._mh.fromhere()) 
+                return False            
             
             ev = event.Event('term_before_exec_command', command)
             if (self._mh.fire_event(ev) > 0):

@@ -1,0 +1,640 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/network/email/pop_client/01_methods_ut.jedi
+  Name: ts_init
+  Desc: Test method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.email.client import EmailClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize EmailClient
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_secured
+      Desc: Not secured protocol
+      
+      Test: |
+        c = EmailClient('POP', False)
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'EmailClient'), '__init__ = EmailClient'
+        this.test_result = res = c._secured
+        assert (not res), '_secured = False'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_secured
+      Desc: Secured protocol
+      
+      Test: |
+        c = EmailClient('POP', True)
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'EmailClient'), '__init__ = EmailClient'
+        this.test_result = res = c._secured
+        assert (res), '=_secured = True' 
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_not_verbose
+      Desc: Not verbose mode
+      
+      Test: |
+        c = EmailClient('POP', verbose=False)
+        res = c._verbose          
+
+      Validate: |
+        this.test_result = res
+        assert (not res), '_verbose = False'
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_verbose
+      Desc: Verbose mode
+      
+      Test: |
+        c = EmailClient('POP', verbose=True)
+        res = c._verbose          
+
+      Validate: |
+        this.test_result = res
+        assert (res), '_verbose = True'   
+        
+Test-Scenario-2:
+  Id: ts_02
+  Path: hydratk/lib/network/email/pop_client/01_methods_ut.jedi
+  Name: ts_props
+  Desc: Test properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.email.client import EmailClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_client
+      Desc: Getter client
+      
+      Test: |
+        c = EmailClient('POP', False, True)
+        c.connect('pop3.seznam.cz', 110, 'lynushydra', 'bowman1234')
+        res = c.client.__class__.__name__
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._client.__class__.__name__
+        assert (res == exp), 'client = {0}'.format(exp)
+                 
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_secured
+      Desc: Getter secured
+      
+      Test: |
+        res = c.secured
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._secured
+        assert (res == exp), 'secured = {0}'.format(exp)        
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_host
+      Desc: Getter host
+      
+      Test: |
+        res = c.host
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._host
+        assert (res == exp), 'host = {0}'.format(exp)
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_port
+      Desc: Getter port
+      
+      Test: |
+        res = c.port
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._port
+        assert (res == exp), 'port = {0}'.format(exp)
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_user
+      Desc: Getter user
+      
+      Test: |
+        res = c.user
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._user
+        assert (res == exp), 'user = {0}'.format(exp)
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_passw
+      Desc: Getter passw
+      
+      Test: |
+        res = c.passw
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._passw
+        assert (res == exp), 'passw = {0}'.format(exp) 
+        
+    Test-Condition-7: 
+      Id: tco_07
+      Name: tco_verbose
+      Desc: Getter verbose
+      
+      Test: |
+        res = c.verbose
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._verbose
+        assert (res == exp), 'verbose = {0}'.format(exp)
+        
+    Test-Condition-8: 
+      Id: tco_08
+      Name: tco_is_connected
+      Desc: Getter is_connected
+      
+      Test: |
+        res = c.is_connected
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._is_connected
+        assert (res == exp), 'is_connected = {0}'.format(exp)        
+        c.disconnect()    
+        
+Test-Scenario-3:
+  Id: ts_03
+  Path: hydratk/lib/network/email/pop_client/01_methods_ut.jedi
+  Name: ts_connect
+  Desc: Test method connect
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.email.client import EmailClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_connect
+    Desc: Connect to server
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_secured
+      Desc: Connect to server via POP 
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['email_before_connect', 'email_after_connect']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = EmailClient('POP')
+        host, port, user, passw = 'pop3.seznam.cz', 110, 'lynushydra', 'bowman1234' 
+        res = c.connect(host, port, user, passw)       
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'connect = True'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'connect fires {0}'.format(evs)
+        res = [c.host, c.port, c.user, c.passw, c.is_connected]
+        this.test_result = str(res)
+        exp = [host, port, user, passw, True]
+        assert (res == exp), 'host, port, user, passw, is_connected = {0}'.format(exp)
+        c.disconnect()   
+        del mh._event_hooks[evs[0]]
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]      
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_secured
+      Desc: Connect to server via POPS 
+      
+      Test: |
+        c = EmailClient('POP', True)
+        port = 995
+        res = c.connect(host, port, user, passw)       
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'connect = True'
+        res = [c.host, c.port, c.user, c.passw, c.is_connected]
+        this.test_result = str(res)
+        exp = [host, port, user, passw, True]
+        assert (res == exp), 'host, port, user, passw, is_connected = {0}'.format(exp)
+        c.disconnect()   
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_host
+      Desc: Invalid host
+      
+      Test: |
+        c = EmailClient('POP')
+        res = c.connect('1.1.1.1')
+      
+      Validate: |                                                                               
+        this.test_result = res
+        assert (not res), 'connect = False'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_port
+      Desc: Invalid port
+      
+      Test: |
+        res = c.connect('pop3.seznam.cz', 100)
+      
+      Validate: |                                                                               
+        this.test_result = res
+        assert (not res), 'connect = False'   
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_user
+      Desc: Invalid user
+      
+      Test: |
+        res = c.connect('pop3.seznam.cz', 110, 'xxx', 'xxx')
+      
+      Validate: |                                                                               
+        this.test_result = res
+        assert (not res), 'connect = False'             
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_invalid_not_secured_port
+      Desc: Invalid port for POP
+      
+      Test: |
+        res = c.connect('pop3.seznam.cz', 995, 'lynushydra', 'bowman1234')
+      
+      Validate: |                                                                               
+        this.test_result = res
+        assert (not res), 'connect = False'  
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_invalid_secured_port
+      Desc: Invalid port for POPS
+      
+      Test: |
+        c = EmailClient('POP', True)
+        res = c.connect('pop3.seznam.cz', 110, 'lynushydra', 'bowman1234')
+      
+      Validate: |                                                                               
+        this.test_result = res
+        assert (not res), 'connect = False'       
+        
+Test-Scenario-4:
+  Id: ts_04
+  Path: hydratk/lib/network/email/pop_client/01_methods_ut.jedi
+  Name: ts_disconnect
+  Desc: Test method disconnect
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.email.client import EmailClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_disconnect
+    Desc: Disconnect from server
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_secured
+      Desc: Disconnect via POP
+      
+      Test: |
+        c = EmailClient('POP', False)
+        c.connect('pop3.seznam.cz', 110, 'lynushydra', 'bowman1234')
+        res = c.disconnect()
+      
+      Validate: |                   
+        this.test_result = res
+        assert (res), 'disconnect = True'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_secured
+      Desc: Disconnect via POPS
+      
+      Test: |
+        c = EmailClient('POP', True)
+        c.connect('pop3.seznam.cz', 995, 'lynushydra', 'bowman1234')
+        res = c.disconnect()
+      
+      Validate: |                   
+        this.test_result = res
+        assert (res), 'disconnect = True'   
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        c = EmailClient('POP')
+        res = c.disconnect()
+      
+      Validate: |           
+        this.test_result = res
+        assert (not res), 'disconnect = False'  
+        
+Test-Scenario-5:
+  Id: ts_05
+  Path: hydratk/lib/network/email/pop_client/01_methods_ut.jedi
+  Name: ts_email_count
+  Desc: Test method email_count
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.email.client import EmailClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_email_count
+    Desc: Count emails
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_secured
+      Desc: Count emails via POP
+      
+      Test: |
+        c = EmailClient('POP', False)
+        host, port, user, passw = 'pop3.seznam.cz', 110, 'lynushydra', 'bowman1234'
+        c.connect(host, port, user, passw)
+        res = c.email_count()
+      
+      Validate: |                   
+        this.test_result = res
+        assert (res > 0), 'email_count is not empty'  
+        c.disconnect()     
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_secured
+      Desc: Count emails via POPS
+      
+      Test: |
+        c = EmailClient('POP', True)
+        port = 995
+        c.connect(host, port, user, passw)
+        res = c.email_count()
+      
+      Validate: |                   
+        this.test_result = res
+        assert (res > 0), 'email_count is not empty'  
+        c.disconnect()
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases  
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        c = EmailClient('POP')
+        res = c.email_count()
+      
+      Validate: |            
+        this.test_result = res
+        assert (res == None), 'email_count = None'  
+        
+Test-Scenario-6:
+  Id: ts_06
+  Path: hydratk/lib/network/email/pop_client/01_methods_ut.jedi
+  Name: ts_list_emails
+  Desc: Test method list_emails
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.email.client import EmailClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_list_emails
+    Desc: List emails
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_secured
+      Desc: List emails via POP
+      
+      Test: |
+        c = EmailClient('POP', False)
+        host, port, user, passw = 'pop3.seznam.cz', 110, 'lynushydra', 'bowman1234'
+        c.connect(host, port, user, passw)
+        res = c.list_emails()
+      
+      Validate: |                   
+        this.test_result = str(res)
+        exp = []
+        for i in range(0, len(res)):
+            exp.append(str(i+1))
+        
+        assert (res == exp), 'list_emails = {0}'.format(exp)  
+        c.disconnect()   
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_secured
+      Desc: List emails via POPS
+      
+      Test: |
+        c = EmailClient('POP', True)
+        port = 995
+        c.connect(host, port, user, passw)
+        res = c.list_emails()
+      
+      Validate: |                   
+        this.test_result = str(res)        
+        assert (res == exp), 'list_emails = {0}'.format(exp)  
+        c.disconnect()        
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases  
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        c = EmailClient('POP')
+        res = c.list_emails()
+      
+      Validate: |            
+        this.test_result = res
+        assert (res == None), 'list_emails = None' 
+        
+Test-Scenario-7:
+  Id: ts_07
+  Path: hydratk/lib/network/email/pop_client/01_methods_ut.jedi
+  Name: ts_receive_email
+  Desc: Test method receive_email
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.email.client import EmailClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_receive_emails
+    Desc: Receive email
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_secured
+      Desc: Receive email via POP
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['email_before_receive_email', 'email_after_receive_email']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])      
+        c = EmailClient('POP', False)
+        host, port, user, passw = 'pop3.seznam.cz', 110, 'lynushydra', 'bowman1234'
+        c.connect(host, port, user, passw)
+        res = c.receive_email(1)
+      
+      Validate: |                   
+        this.test_result = str(res)
+        exp = ['From: lynushydra@seznam.cz', 'To: hydra@hydratk.org', 'Subject: test']
+        assert (exp[0] in res[4] and exp[1] in res[4] and exp[2] in res[4]), 'receive_email contains {0}'.format(exp)
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'receive_email fires {0}'.format(evs)        
+        c.disconnect() 
+        del mh._event_hooks[evs[0]]
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]                       
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_secured
+      Desc: Receive email via POPS
+      
+      Test: |
+        c = EmailClient('POP', True)
+        port = 995
+        c.connect(host, port, user, passw)
+        res = c.receive_email(1)
+      
+      Validate: |                   
+        this.test_result = str(res)
+        assert (exp[0] in res[4] and exp[1] in res[4] and exp[2] in res[4]), 'receive_email contains {0}'.format(exp)
+        c.disconnect() 
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_last_email
+      Desc: Receive last email
+      
+      Test: |
+        c = EmailClient('POP', False)
+        port = 110
+        c.connect(host, port, user, passw)
+        cnt = c.email_count()
+        res = c.receive_email(cnt)
+      
+      Validate: |                   
+        this.test_result = str(res)
+        exp = ['From: lynushydra@seznam.cz', 'Subject: test']
+        assert (exp[0] in res[4] and exp[1] in res[4]), 'receive_email contains {0}'.format(exp)
+        c.disconnect()     
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases  
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_email
+      Desc: Receive invalid email
+      
+      Test: |
+        c = EmailClient('POP', False)
+        host, port, user, passw = 'pop3.seznam.cz', 110, 'lynushydra', 'bowman1234'
+        c.connect(host, port, user, passw)
+        res = c.receive_email(999999)
+      
+      Validate: |                   
+        this.test_result = res
+        assert (res == None), 'receive_email = None'  
+        c.disconnect()     
+    
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        c = EmailClient('POP')
+        res = c.email_count()
+      
+      Validate: |            
+        this.test_result = res
+        assert (res == None), 'receive_email = None'                                                           

@@ -26,12 +26,14 @@ inet_after_sniff
 
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
+from hydratk.lib.network.inet.client import Client
 from logging import getLogger, ERROR
+from socket import error
 from importlib import import_module
 
 getLogger('scapy.runtime').setLevel(ERROR)
 
-from scapy.all import error
+from scapy.error import Scapy_Exception
 
 mh = MasterHead.get_head()
 
@@ -48,7 +50,7 @@ def Packet(protocol, **kwargs):
        obj: Packet
         
     Raises:
-       error: ValueError
+       error: NotImplementedError
                 
     """       
     
@@ -60,9 +62,9 @@ def Packet(protocol, **kwargs):
                         
         return packet
     
-    except ImportError as ex:
+    except KeyError as ex:
         
-        raise ValueError('Unknown protocol: {0}'.format(protocol))        
+        raise NotImplementedError('Unknown protocol: {0}'.format(protocol))        
 
 def compose_packet(packets, payload=None):
     """Method composes packet from partial packets
@@ -92,7 +94,7 @@ def compose_packet(packets, payload=None):
         else:
             return None
         
-    except error as ex:
+    except Scapy_Exception as ex:
         mh.dmsg('htk_on_error', ex, mh.fromhere())
         return None 
 
@@ -116,7 +118,7 @@ def dump(packet, raw=False):
             from scapy.all import hexdump
             hexdump(packet)            
         
-    except error as ex:
+    except Scapy_Exception as ex:
         mh.dmsg('htk_on_error', ex, mh.fromhere())
         return None         
 
@@ -143,13 +145,14 @@ def send_packet(packet, iface=None, verbose=False):
         
         mh.dmsg('htk_on_debug_info', mh._trn.msg('htk_inet_sending_packet', iface), mh.fromhere())
 
-        ev = event.Event('inet_before_send_packet', iface)
+        ev = event.Event('inet_before_send_packet', iface, verbose)
         if (mh.fire_event(ev) > 0):
             iface = ev.argv(0)
+            verbose = ev.argv(1)
 
         if (ev.will_run_default()):
             if (iface != None):
-                sendp(packet, iface=iface)
+                sendp(packet, iface=iface, verbose=verbose)
             else:
                 send(packet, verbose=verbose) 
          
@@ -157,7 +160,7 @@ def send_packet(packet, iface=None, verbose=False):
         ev = event.Event('inet_after_send_packet')
         mh.fire_event(ev)          
             
-    except error as ex:
+    except (Scapy_Exception, error) as ex:
         mh.dmsg('htk_on_error', ex, mh.fromhere())           
         
 def send_recv_packet(packet, iface=None, retry=3, timeout=1, verbose=False):
@@ -184,7 +187,7 @@ def send_recv_packet(packet, iface=None, retry=3, timeout=1, verbose=False):
         
         from scapy.all import sr, srp      
           
-        mh.dmsg('htk_on_debug_info', mh._trn.msg('htk_inet_sending_rcv_packet', iface, retry, timeout), 
+        mh.dmsg('htk_on_debug_info', mh._trn.msg('htk_inet_sending_recv_packet', iface, retry, timeout), 
                 mh.fromhere())
 
         ev = event.Event('inet_before_sendrecv_packet', iface, retry, timeout)
@@ -199,13 +202,14 @@ def send_recv_packet(packet, iface=None, retry=3, timeout=1, verbose=False):
             else:
                 ans, unans = sr(packet, retry=retry, timeout=timeout, verbose=verbose)     
         
-        mh.dmsg('htk_on_debug_info', mh._trn.msg('htk_inet_packet_received'), mh.fromhere())
+        mh.dmsg('htk_on_debug_info', mh._trn.msg('htk_inet_packet_sent_recv'), mh.fromhere())
         ev = event.Event('inet_after_sendrecv_packet')
         mh.fire_event(ev)           
         
         return ans, unans
         
-    except error as ex:
+    except (Scapy_Exception, error) as ex:
+        return None, None
         mh.dmsg('htk_on_error', ex, mh.fromhere())
     
 def ping(destination, protocol='ICMP', port=None, verbose=False):
@@ -251,9 +255,9 @@ def ping(destination, protocol='ICMP', port=None, verbose=False):
             packet = compose_packet(packets)
             answers = send_recv_packet(packet, verbose=verbose)[0]                
             
-        if (len(answers) > 0):
+        if (len(answers) > 0 and (protocol == 'ICMP' or hasattr(answers[0][1], 'load'))):
             mh.dmsg('htk_on_debug_info', mh._trn.msg('htk_inet_ping_ok'), mh.fromhere())
-            result = True
+            result = True              
         else:
             mh.dmsg('htk_on_debug_info', mh._trn.msg('htk_inet_ping_nok'), mh.fromhere())
             result = False
@@ -263,11 +267,11 @@ def ping(destination, protocol='ICMP', port=None, verbose=False):
     
         return result
     
-    except error as ex:
+    except Scapy_Exception as ex:
         mh.dmsg('htk_on_error', ex, mh.fromhere()) 
         return False
         
-def traceroute(destination, protocol='ICMP', port=None, max_hops=10, verbose=False):  
+def traceroute(destination, protocol='ICMP', port=None, max_hops=30, verbose=False):  
     """Method executes traceroute
         
     Args:            
@@ -302,6 +306,8 @@ def traceroute(destination, protocol='ICMP', port=None, max_hops=10, verbose=Fal
 
         if (ev.will_run_default()):          
         
+            destination = Client().name2ip(destination)
+        
             packets = [Packet('IP', dst=destination, ttl=(1, max_hops))]
             if (protocol == 'ICMP'):
                 packets.append(Packet(protocol))
@@ -317,12 +323,12 @@ def traceroute(destination, protocol='ICMP', port=None, max_hops=10, verbose=Fal
         if (len(answers) > 0):
             last_ip = None
             for packet in answers:
-                
                 if (packet[1].src != last_ip):
                     last_ip = packet[1].src
                     print('{0}: {1}'.format(packet[0].ttl, last_ip))  
                 else:
-                    destination_reached = True
+                    if (last_ip == destination and (protocol == 'ICMP' or hasattr(packet[1], 'load'))):
+                        destination_reached = True
                     break;
                 
         if (destination_reached):
@@ -337,7 +343,7 @@ def traceroute(destination, protocol='ICMP', port=None, max_hops=10, verbose=Fal
         
         return result                                   
         
-    except error as ex:
+    except Scapy_Exception as ex:
         mh.dmsg('htk_on_error', ex, mh.fromhere())   
         return False  
         
@@ -363,14 +369,15 @@ def sniffer(output, iface='all', filter=None, timeout=10):
         
         from scapy.all import sniff, wrpcap
         
-        mh.dmsg('htk_on_debug_info', mh._trn.msg('htk_sniffer_started', output, iface, filter, timeout), 
+        mh.dmsg('htk_on_debug_info', mh._trn.msg('htk_inet_sniffer_started', output, iface, filter, timeout), 
                 mh.fromhere())
         
-        ev = event.Event('inet_before_sniff', iface, filter, timeout)
+        ev = event.Event('inet_before_sniff', output, iface, filter, timeout)
         if (mh.fire_event(ev) > 0):
-            iface = ev.argv(0)
-            filter = ev.argv(1)
-            timeout = ev.argv(2)
+            output = ev.argv(0)
+            iface = ev.argv(1)
+            filter = ev.argv(2)
+            timeout = ev.argv(3)
 
         if (ev.will_run_default()):        
         
@@ -386,5 +393,5 @@ def sniffer(output, iface='all', filter=None, timeout=10):
         ev = event.Event('inet_after_sniff')
         mh.fire_event(ev)             
         
-    except error as ex:
+    except (Scapy_Exception, error) as ex:
         mh.dmsg('htk_on_error', ex, mh.fromhere())                  

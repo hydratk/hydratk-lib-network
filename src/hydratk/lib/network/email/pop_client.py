@@ -21,8 +21,11 @@ email_after_receive_email
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
 from poplib import POP3, POP3_SSL, error_proto
-from socket import error
-from string import replace
+from socket import error, setdefaulttimeout
+from sys import version_info
+
+if (version_info[0] == 2):
+    from string import replace
 
 class EmailClient:
     """Class EmailClient
@@ -36,6 +39,7 @@ class EmailClient:
     _user = None
     _passw = None
     _verbose = None
+    _is_connected = None
     
     def __init__(self, secured=False, verbose=False):
         """Class constructor
@@ -92,9 +96,15 @@ class EmailClient:
     def verbose(self):
         """ verbose mode property getter """
         
-        return self._verbose                    
+        return self._verbose        
+    
+    @property
+    def is_connected(self):
+        """ is_connected property getter """
+        
+        return self._is_connected                    
                 
-    def connect(self, host, port=None, user=None, passw=None):
+    def connect(self, host, port=None, user=None, passw=None, timeout=10):
         """Method connects to server
         
         Args:
@@ -102,6 +112,7 @@ class EmailClient:
            port (str): server port, default protocol port
            user (str): username
            passw (str): password
+           timeout (int): timeout
 
         Returns:
            bool: result         
@@ -117,15 +128,16 @@ class EmailClient:
             if (port == None):
                 port = 110 if (not self._secured) else 995
                 
-            message = '{0}/{1}@{2}:{3}'.format(user, passw, host, port)                            
+            message = '{0}/{1}@{2}:{3} timeout:{4}'.format(user, passw, host, port, timeout)                            
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_email_connecting', message), self._mh.fromhere())
             
-            ev = event.Event('email_before_connect', host, port, user, passw)
+            ev = event.Event('email_before_connect', host, port, user, passw, timeout)
             if (self._mh.fire_event(ev) > 0):
                 host = ev.argv(0)
                 port = ev.argv(1)
                 user = ev.argv(2)
                 passw = ev.argv(3)               
+                timeout = ev.argv(4)
             
             self._host = host
             self._port = port
@@ -135,16 +147,22 @@ class EmailClient:
             if (ev.will_run_default()):  
                                 
                 if (not self._secured):
-                    self._client = POP3(self._host, self._port) 
+                    self._client = POP3(self._host, self._port, timeout=timeout) 
                 else:
-                    self._client = POP3_SSL(self._host, self._port) 
+                    if (version_info[0] == 2):
+                        setdefaulttimeout(timeout)
+                        self._client = POP3_SSL(self._host, self._port)
+                    else:
+                        self._client = POP3_SSL(self._host, self._port, timeout=timeout) 
                            
                 if (self._verbose):
                     self._client.set_debuglevel(2)                                          
                     
                 if (self._user != None):
                     self._client.user(self._user)
-                    self._client.pass_(self._passw)                        
+                    self._client.pass_(self._passw) 
+                    
+                self._is_connected = True                       
                 
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_email_connected'), self._mh.fromhere()) 
             ev = event.Event('email_after_connect')
@@ -168,10 +186,15 @@ class EmailClient:
         """           
          
         try:                                                 
-                
-            self._client.quit()                
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_email_disconnected'), self._mh.fromhere())  
-            return True  
+              
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_email_not_connected'), self._mh.fromhere()) 
+                return False
+            else:                
+                self._client.quit()    
+                self._is_connected = False            
+                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_email_disconnected'), self._mh.fromhere())  
+                return True  
     
         except (error_proto, error) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
@@ -190,13 +213,18 @@ class EmailClient:
                 
         try:
             
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_email_counting'), self._mh.fromhere())              
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_email_counting'), self._mh.fromhere()) 
+            
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_email_not_connected'), self._mh.fromhere()) 
+                return None            
+                         
             count = self._client.stat()[0]        
               
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_email_count', count), self._mh.fromhere())      
             return count              
             
-        except (error_proto, error), ex: 
+        except (error_proto, error) as ex: 
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None      
         
@@ -213,12 +241,23 @@ class EmailClient:
                 
         try:
             
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_email_listing'), self._mh.fromhere())          
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_email_listing'), self._mh.fromhere())  
+            
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_email_not_connected'), self._mh.fromhere()) 
+                return None                    
             
             msg_list = self._client.list()[1]                                 
             emails = []
             for msg in msg_list:
-                emails.append(msg.split(' ')[0])                                                                                                   
+                if (version_info[0] == 2):
+                    emails.append(msg.split(' ')[0])     
+                else:
+                    emails.append(msg.split(b' ')[0])    
+                    
+            if (version_info[0] == 3):
+                for i in range(0, len(emails)):
+                    emails[i] = emails[i].decode()                                                                                                                    
             
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_email_listed'), self._mh.fromhere())         
             return emails
@@ -244,7 +283,11 @@ class EmailClient:
                 
         try:
             
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_email_receiving', msg_id), self._mh.fromhere())  
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_email_receiving', msg_id), self._mh.fromhere()) 
+            
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_email_not_connected'), self._mh.fromhere()) 
+                return None             
             
             ev = event.Event('email_before_receive_email', msg_id)
             if (self._mh.fire_event(ev) > 0):
@@ -262,20 +305,22 @@ class EmailClient:
             
             for line in msg:
                 if (not msg_found):
+                    if (version_info[0] == 3):
+                        line = line.decode()                    
                     if ('From: ' in line):
-                        sender = replace(line, ('From: '), '')
+                        sender = replace(line, ('From: '), '') if (version_info[0] == 2) else line.replace('From: ', '')
                     elif ('To: ' in line):
-                        recipients = replace(line, ('To: '), '')
+                        recipients = replace(line, ('To: '), '') if (version_info[0] == 2) else line.replace('To: ', '')
                         recipients = recipients.split(',') 
                     elif ('CC: ' in line):
-                        cc = replace(line, ('CC: '), '') 
+                        cc = replace(line, ('CC: '), '') if (version_info[0] == 2) else line.replace('CC: ', '')
                         cc = cc.split(',') 
                     elif ('Subject: ' in line):
-                        subject = replace(line, ('Subject: '), '')
+                        subject = replace(line, ('Subject: '), '') if (version_info[0] == 2) else line.replace('Subject: ', '')
                     elif ('Inbound message' in line):
                         msg_found = True
                 else:
-                        message += line + '\r\n'            
+                        message += str(line) + '\r\n'            
                 
             ev = event.Event('email_after_receive_email')
             self._mh.fire_event(ev)

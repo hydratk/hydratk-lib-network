@@ -1,0 +1,119 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/network/jms/client/01_methods_ut.jedi
+  Name: ts_termclient
+  Desc: Test method TermClient
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.jms.client import JMSClient
+    from sys import version_info
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize JMSClient
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_stomp
+      Desc: STOMP protocol
+    
+      Test: |
+        if (version_info[0] == 2):
+            c = JMSClient('STOMP')
+            res = c.__class__.__name__
+        else:
+            try:
+                c = JMSClient('STOMP')
+                ex = False
+            except NotImplementedError:
+                ex = True
+      
+      Validate: |
+        if (version_info[0] == 2):
+            this.test_result = res
+            assert (res == 'JMSClient'), 'JMSClient = JMSClient'
+        else:
+            this.test_result = ex
+            assert (ex), 'JMSClient raises NotImplementedError'    
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_stomp_args
+      Desc: STOMP with arguments
+    
+      Test: |
+        if (version_info[0] == 2):
+            c = JMSClient('STOMP', True)
+            res = c._verbose
+        else:
+            try:
+                c = JMSClient('STOMP')
+                ex = False
+            except NotImplementedError:
+                ex = True            
+      
+      Validate: |
+        if (version_info[0] == 2):
+            this.test_result = res
+            assert (res), '_verbose = True'   
+        else:
+            this.test_result = ex
+            assert (ex), 'JMSClient raises NotImplementedError'             
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_amqp
+      Desc: AMQP protocol
+    
+      Test: |
+        c = JMSClient('AMQP')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'JMSClient'), 'JMSClient = JMSClient'    
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_amqp_args
+      Desc: AMQP with arguments
+    
+      Test: |
+        c = JMSClient('AMQP', True)
+        res = c._verbose
+      
+      Validate: |
+        this.test_result = res
+        assert (res), '_verbose = True'  
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_jms
+      Desc: JMS protocol
+    
+      Test: |
+        c = JMSClient('JMS', False, '/usr/local/app/java/jdk1.8.0_51/jre/lib/amd64/server/libjvm.so')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'JMSClient'), 'JMSClient = JMSClient'                           
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_invalid
+      Desc: Invalid protocol
+      
+      Test: |
+        try:
+            c = JMSClient('')
+            ex = False
+        except NotImplementedError:
+            ex = True
+      
+      Validate: |          
+        this.test_result = ex
+        assert (ex), 'JMSClient raises NotImplementedError'

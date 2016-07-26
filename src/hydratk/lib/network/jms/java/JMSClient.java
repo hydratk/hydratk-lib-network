@@ -146,7 +146,7 @@ public class JMSClient {
             if (!connected) {
                 
                 System.out.println("INFO - Client is not connected to JMS server");
-                return true;
+                return false;
                 
             }            
         

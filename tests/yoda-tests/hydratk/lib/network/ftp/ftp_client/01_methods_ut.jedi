@@ -1,0 +1,1087 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/network/ftp/ftp_client/01_methods_ut.jedi
+  Name: ts_init
+  Desc: Test method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.ftp.client import FTPClient
+    from sys import version_info
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize FTPClient
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_secured
+      Desc: Not secured mode
+      
+      Test: |
+        c = FTPClient('FTP', False)
+        res = c.__class__.__name__
+                      
+      Validate: |
+        this.test_result = res
+        assert (res == 'FTPClient'), '__init__ = FTPClient'          
+        res = c._secured
+        this.test_result = res
+        assert (not res), '_secured = False'    
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_secured
+      Desc: Secured mode
+      
+      Test: |
+        if (not(version_info[0] == 2 and version_info[1] == 6)): 
+            c = FTPClient('FTP', True)
+            res = c.__class__.__name__
+        else:
+            this.test_result = True    
+                      
+      Validate: |
+        if (not(version_info[0] == 2 and version_info[1] == 6)): 
+            this.test_result = res
+            assert (res == 'FTPClient'), '__init__ = FTPClient'          
+            res = c._secured
+            this.test_result = res
+            assert (res), '_secured = True'
+        else:
+            assert True          
+    
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_not_verbose
+      Desc: Not verbose mode
+      
+      Test: |
+        c = FTPClient('FTP', False, False)
+        res = c._verbose
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), '_verbose = False'
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_verbose
+      Desc: Verbose mode
+      
+      Test: |
+        c = FTPClient('FTP', False, True)
+        res = c._verbose          
+
+      Validate: |
+        this.test_result = res
+        assert (res), '_verbose = True'   
+        
+Test-Scenario-2:
+  Id: ts_02
+  Path: hydratk/lib/network/ftp/ftp_client/01_methods_ut.jedi
+  Name: ts_props
+  Desc: Test properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.ftp.client import FTPClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_client
+      Desc: Getter client
+      
+      Test: |
+        c = FTPClient('FTP', False)
+        c.connect('test.rebex.net', 21, 'demo', 'password')
+        res = c.client.__class__.__name__
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._client.__class__.__name__
+        assert (res == exp), 'client = {0}'.format(exp) 
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_secured
+      Desc: Getter secured
+      
+      Test: |
+        res = c.secured
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._secured
+        assert (res == exp), 'secured = {0}'.format(exp)            
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_host
+      Desc: Getter host
+      
+      Test: |
+        res = c.host
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._host
+        assert (res == exp), 'host = {0}'.format(exp)
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_port
+      Desc: Getter port
+      
+      Test: |
+        res = c.port
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._port
+        assert (res == exp), 'port = {0}'.format(exp)
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_user
+      Desc: Getter user
+      
+      Test: |
+        res = c.user
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._user
+        assert (res == exp), 'user = {0}'.format(exp)
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_passw
+      Desc: Getter passw
+      
+      Test: |
+        res = c.passw
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._passw
+        assert (res == exp), 'passw = {0}'.format(exp) 
+        
+    Test-Condition-7: 
+      Id: tco_07
+      Name: tco_path
+      Desc: Getter path
+      
+      Test: |
+        res = c.path
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._path
+        assert (res == exp), 'path = {0}'.format(exp)         
+        
+    Test-Condition-8: 
+      Id: tco_08
+      Name: tco_verbose
+      Desc: Getter verbose
+      
+      Test: |
+        res = c.verbose
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._verbose
+        assert (res == exp), 'verbose = {0}'.format(exp)
+        
+    Test-Condition-9: 
+      Id: tco_09
+      Name: tco_is_connected
+      Desc: Getter is_connected
+      
+      Test: |
+        res = c.is_connected
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._is_connected
+        assert (res == exp), 'is_connected = {0}'.format(exp)        
+        c.disconnect()    
+        
+Test-Scenario-3:
+  Id: ts_03
+  Path: hydratk/lib/network/ftp/ftp_client/01_methods_ut.jedi
+  Name: ts_connect
+  Desc: Test method connect
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.ftp.client import FTPClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+    from sys import version_info
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_connect
+    Desc: Connect to server
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_secured
+      Desc: Connect to server via FTP 
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['ftp_before_connect', 'ftp_after_connect']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = FTPClient('FTP', False)
+        host, port, user, passw = 'test.rebex.net', 21, 'demo', 'password' 
+        res = c.connect(host, port, user, passw)       
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'connect = True'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'connect fires {0}'.format(evs)
+        res = [c.host, c.port, c.user, c.passw, c.path, c.is_connected]
+        this.test_result = str(res)
+        exp = [host, port, user, passw, '/', True]
+        assert (res == exp), 'host, port, user, passw, path, is_connected = {0}'.format(exp)
+        c.disconnect()   
+        del mh._event_hooks[evs[0]]
+        del mh._event_hooks[evs[1]]
+        del events[0]           
+        del events[0]
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_secured
+      Desc: Connect to server via FTPS 
+      
+      Test: |
+        if (not(version_info[0] == 2 and version_info[1] == 6)): 
+            c = FTPClient('FTP', True)
+            host, port, user, passw = 'test.rebex.net', 21, 'demo', 'password' 
+            res = c.connect(host, port, user, passw)
+        else:
+            this.test_result = True       
+      
+      Validate: |    
+        if (not(version_info[0] == 2 and version_info[1] == 6)):       
+            this.test_result = res
+            assert (res), 'connect = True'
+            res = [c.host, c.port, c.user, c.passw, c.path, c.is_connected]
+            this.test_result = str(res)
+            exp = [host, port, user, passw, '/', True]
+            assert (res == exp), 'host, port, user, passw, path, is_connected = {0}'.format(exp)
+            c.disconnect()
+        else:
+            assert True            
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_path
+      Desc: Set server path 
+      
+      Test: |
+        c = FTPClient('FTP')
+        host, port, user, passw, path = 'test.rebex.net', 21, 'demo', 'password', '/pub'
+        res = c.connect(host, port, user, passw, path)       
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'connect = True'
+        res = [c.host, c.port, c.user, c.passw, c.path, c.is_connected]
+        this.test_result = str(res)
+        exp = [host, port, user, passw, path, True]
+        assert (res == exp), 'host, port, user, passw, path, is_connected = {0}'.format(exp)
+        c.disconnect()   
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_invalid_path
+      Desc: Invalid server path 
+      
+      Test: |
+        c._path = None
+        res = c.connect(host, port, user, passw, '/xxx')       
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'connect = True'
+        res = [c.host, c.port, c.user, c.passw, c.path, c.is_connected]
+        this.test_result = str(res)
+        exp = [host, port, user, passw, '/', True]
+        assert (res == exp), 'host, port, user, passw, path, is_connected = {0}'.format(exp)
+        c.disconnect()                      
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_host
+      Desc: Invalid host
+      
+      Test: |
+        c = FTPClient('FTP')
+        res = c.connect('1.1.1.1')
+      
+      Validate: |                                                                               
+        this.test_result = res
+        assert (not res), 'connect = False'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_port
+      Desc: Invalid port
+      
+      Test: |
+        res = c.connect('test.rebex.net', 2000)
+      
+      Validate: |                                                                               
+        this.test_result = res
+        assert (not res), 'connect = False'   
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_user
+      Desc: Invalid user
+      
+      Test: |
+        res = c.connect('test.rebex.net', 21, 'xxx', 'xxx')
+      
+      Validate: |                                                                               
+        this.test_result = res
+        assert (not res), 'connect = False'              
+        
+Test-Scenario-4:
+  Id: ts_04
+  Path: hydratk/lib/network/ftp/ftp_client/01_methods_ut.jedi
+  Name: ts_disconnect
+  Desc: Test method disconnect
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.ftp.client import FTPClient
+    from sys import version_info
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_disconnect
+    Desc: Disconnect from server
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_secured
+      Desc: Disconnect from server via FTP
+      
+      Test: |
+        c = FTPClient('FTP', False)
+        c.connect('test.rebex.net', 21, 'demo', 'password')
+        res = c.disconnect()
+      
+      Validate: |                   
+        this.test_result = res
+        assert (res), 'disconnect = True' 
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_secured
+      Desc: Disconnect from server via FTPS
+      
+      Test: |
+        if (not(version_info[0] == 2 and version_info[1] == 6)):   
+            c = FTPClient('FTP', True)
+            c.connect('test.rebex.net', 21, 'demo', 'password')
+            res = c.disconnect()
+        else:
+            this.test_result = True
+      
+      Validate: |                  
+        if (not(version_info[0] == 2 and version_info[1] == 6)):    
+            this.test_result = res
+            assert (res), 'disconnect = True'
+        else:
+            assert True         
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        c = FTPClient('FTP')
+        res = c.disconnect()
+      
+      Validate: |           
+        this.test_result = res
+        assert (not res), 'disconnect = False' 
+        
+Test-Scenario-5:
+  Id: ts_05
+  Path: hydratk/lib/network/ftp/ftp_client/01_methods_ut.jedi
+  Name: ts_list_dir
+  Desc: Test method list_dir
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.ftp.client import FTPClient
+    from sys import version_info
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_list_dir
+    Desc: List directory
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_secured
+      Desc: List directory via FTP
+      
+      Test: |
+        c = FTPClient('FTP', False)
+        c.connect('test.rebex.net', 21, 'demo', 'password')
+        res = c.list_dir()
+      
+      Validate: |                  
+        this.test_result = str(res)
+        assert (len(res) > 0), 'list_dir is not empty'         
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_secured
+      Desc: List directory via FTP
+      
+      Test: |
+        if (not(version_info[0] == 2 and version_info[1] == 6)):   
+            c = FTPClient('FTP', True)
+            c.connect('test.rebex.net', 21, 'demo', 'password')
+            res = c.list_dir()
+        else:
+            this.test_result = True
+      
+      Validate: |              
+        if (not(version_info[0] == 2 and version_info[1] == 6)):       
+            this.test_result = str(res)
+            assert (len(res) > 0), 'list_dir is not empty'
+        else:
+            assert True         
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        c = FTPClient('FTP')
+        res = c.list_dir()
+      
+      Validate: |           
+        this.test_result = res
+        assert (not res), 'list_dir = None'  
+        
+Test-Scenario-6:
+  Id: ts_06
+  Path: hydratk/lib/network/ftp/ftp_client/01_methods_ut.jedi
+  Name: ts_change_dir
+  Desc: Test method change_dir
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.ftp.client import FTPClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+    from sys import version_info
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_change_dir
+    Desc: Change directory
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_secured
+      Desc: Change directory via FTP
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = 'ftp_before_change_dir'
+        reg_ev_hook(mh, evs)
+        c = FTPClient('FTP', False)
+        c.connect('test.rebex.net', 21, 'demo', 'password')
+        path = '/pub'
+        res = c.change_dir(path)       
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'change_dir = True'
+        this.test_result = res = events[0]._id
+        assert (res == evs), 'change_dir fires {0}'.format(evs)
+        res = [c.host, c.port, c.user, c.passw, c.path, c.is_connected]
+        this.test_result = res = c._path
+        assert (res == path), '_path = {0}'.format(path)
+        c.disconnect()   
+        del mh._event_hooks[evs]         
+        del events[0]
+        del events[0]
+        
+    Test-Condition-2: 
+      Id: tco_01
+      Name: tco_secured
+      Desc: Change directory via FTPS
+      
+      Test: |
+        if (not(version_info[0] == 2 and version_info[1] == 6)):   
+            c = FTPClient('FTP', True)
+            c.connect('test.rebex.net', 21, 'demo', 'password')
+            path = '/pub'
+            res = c.change_dir(path)
+        else:
+            this.test_result = True       
+      
+      Validate: |          
+        if (not(version_info[0] == 2 and version_info[1] == 6)):   
+            this.test_result = res
+            assert (res), 'change_dir = True'
+            res = [c.host, c.port, c.user, c.passw, c.path, c.is_connected]
+            this.test_result = res = c._path
+            assert (res == path), '_path = {0}'.format(path)
+            c.disconnect()
+        else:
+            assert True           
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_path
+      Desc: Invalid path
+      
+      Test: |
+        c = FTPClient('FTP')
+        c.connect('test.talia.net', 21, 'anonymous', 'password')
+        path = '/private'
+        res = c.change_dir(path)
+      
+      Validate: |                  
+        this.test_result = res
+        assert (not res), 'change_dir = False'
+        c.disconnect()   
+    
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        c = FTPClient('FTP')
+        res = c.list_dir()
+      
+      Validate: |           
+        this.test_result = res
+        assert (not res), 'list_dir = None'  
+        
+Test-Scenario-7:
+  Id: ts_07
+  Path: hydratk/lib/network/ftp/sftp_client/01_methods_ut.jedi
+  Name: ts_download_file
+  Desc: Test method download_file
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.ftp.client import FTPClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+    from os import path, remove
+    from sys import version_info
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_download_file
+    Desc: Download file
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_secured
+      Desc: Download file via FTP
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['ftp_before_download_file', 'ftp_after_download_file']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])        
+        c = FTPClient('FTP', False)
+        c.connect('test.rebex.net', 21, 'demo', 'password')
+        file = 'readme.txt'
+        res = c.download_file(file)       
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'download_file = True'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'download_file fires {0}'.format(evs)
+        this.test_result = res = (path.exists('./'+file))
+        assert (res), 'file {0} downloaded'.format(file)
+        remove(file) 
+        del mh._event_hooks[evs[0]]
+        del mh._event_hooks[evs[1]]
+        del events[0]           
+        del events[0]
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_secured
+      Desc: Download file via FTPS
+      
+      Test: |       
+        if (not(version_info[0] == 2 and version_info[1] == 6)):   
+            c = FTPClient('FTP', True)
+            c.connect('test.rebex.net', 21, 'demo', 'password')
+            res = c.download_file(file)
+        else:
+            this.test_result = True       
+      
+      Validate: |          
+        if (not(version_info[0] == 2 and version_info[1] == 6)):   
+            this.test_result = res
+            assert (res), 'download_file = True'
+            this.test_result = res = (path.exists('./'+file))
+            assert (res), 'file {0} downloaded'.format(file)
+            remove(file)
+        else:
+            assert True        
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_local_path
+      Desc: Set local path
+      
+      Test: |
+        c = FTPClient('FTP', False)
+        c.connect('test.rebex.net', 21, 'demo', 'password')      
+        file = 'readme.txt'
+        res = c.download_file(file, './')       
+      
+      Validate: |        
+        this.test_result = res
+        assert (res), 'download_file = True'          
+        this.test_result = res = (path.exists('./'+file))
+        assert (res), 'file {0} downloaded'.format(file)
+        c.disconnect()
+        remove(file)         
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_rpath
+      Desc: Invalid remote path
+      
+      Test: |
+        c = FTPClient('FTP')
+        c.connect('test.rebex.net', 21, 'demo', 'password')
+        res = c.download_file('/test.txt')
+      
+      Validate: |                               
+        this.test_result = res
+        assert (not res), 'download_file = False' 
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_lpath
+      Desc: Invalid local path
+      
+      Test: |
+        file = 'welcome.msg'
+        res = c.download_file(file, '/private')    
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), 'download_file = False' 
+        c.disconnect()
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        res = c.download_file(file)
+      
+      Validate: |                        
+        this.test_result = res
+        assert (not res), 'download_file = False'
+        
+Test-Scenario-8:
+  Id: ts_08
+  Path: hydratk/lib/network/ftp/fftp_client/01_methods_ut.jedi
+  Name: ts_upload_file
+  Desc: Test method upload_file
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.ftp.client import FTPClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+    from os import path, remove
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_upload_file
+    Desc: Upload file
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_upload
+      Desc: Upload
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['ftp_before_upload_file', 'ftp_after_upload_file']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        
+        lpath = '/var/local/hydratk/yoda/'
+        file = 'test.txt'
+        with open(lpath+file, 'w') as f:
+            f.write('test')
+        
+        c = FTPClient('FTP')
+        c.connect('srv8.endora.cz', 21, 'lynus', 'Bowmanlop1', '/lynus.cekuj.net/web')
+        res = c.upload_file(lpath+file)       
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'upload_file = True'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'upload_file fires {0}'.format(evs)
+        del mh._event_hooks[evs[0]]
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0] 
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_remote_path
+      Desc: Set remote path
+      
+      Test: |
+        res = c.upload_file(lpath+file, './')       
+      
+      Validate: |        
+        this.test_result = res
+        assert (res), 'upload_file = True'          
+        c.disconnect()        
+        remove(lpath+file)  
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_lpath
+      Desc: Invalid local path
+      
+      Test: |
+        c = FTPClient('FTP')
+        c.connect('srv8.endora.cz', 21, 'lynus', 'Bowmanlop1')
+        res = c.upload_file('/private/test.txt')
+      
+      Validate: |                               
+        this.test_result = res
+        assert (not res), 'upload_file = False' 
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_rpath
+      Desc: Invalid remote path
+      
+      Test: |
+        lpath = '/var/local/hydratk/yoda/'
+        file = 'test.txt'
+        with open(lpath+file, 'w') as f:
+            f.write('test')  
+            
+        res = c.upload_file(lpath+file, '/private')    
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), 'upload_file = False' 
+        c.disconnect()
+        remove(lpath+file) 
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        res = c.upload_file(lpath+file)
+      
+      Validate: |                        
+        this.test_result = res
+        assert (not res), 'upload_file = False'  
+        
+Test-Scenario-9:
+  Id: ts_09
+  Path: hydratk/lib/network/ftp/ftp_client/01_methods_ut.jedi
+  Name: ts_delete_file
+  Desc: Test method delete_file
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.ftp.client import FTPClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+    from os import path
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_delete_file
+    Desc: Upload file
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_delete
+      Desc: Delete
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = 'ftp_before_delete_file'
+        reg_ev_hook(mh, evs)
+        
+        rpath = '/var/local/hydratk/yoda/test.txt'
+        with open(rpath, 'w') as f:
+            f.write('test')
+        
+        c = FTPClient('FTP')
+        c.connect('srv8.endora.cz', 21, 'lynus', 'Bowmanlop1', '/lynus.cekuj.net/web')
+        c.upload_file(rpath)
+        res = c.delete_file('/lynus.cekuj.net/web/test.txt')       
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'upload_file = True'
+        this.test_result = res = events[0]._id
+        assert (res == evs), 'delete_file fires {0}'.format(evs)   
+        del mh._event_hooks[evs]
+        del events[0]             
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_file
+      Desc: Invalid file
+      
+      Test: |
+        c = FTPClient('FTP')
+        c.connect('srv8.endora.cz', 21, 'lynus', 'Bowmanlop1')
+        res = c.delete_file('/private/test.txt')
+      
+      Validate: |                               
+        this.test_result = res
+        assert (not res), 'delete_file = False' 
+        c.disconnect()
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        res = c.delete_file('/private/test.txt')
+      
+      Validate: |                        
+        this.test_result = res
+        assert (not res), 'delete_file = False' 
+        
+Test-Scenario-10:
+  Id: ts_10
+  Path: hydratk/lib/network/ftp/ftp_client/01_methods_ut.jedi
+  Name: ts_make_dir
+  Desc: Test method make_dir
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.ftp.client import FTPClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_make_dir
+    Desc: Make directory
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_make
+      Desc: Make
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = 'ftp_before_make_dir'
+        reg_ev_hook(mh, evs)
+        c = FTPClient('FTP')
+        c.connect('srv8.endora.cz', 21, 'lynus', 'Bowmanlop1')
+        rpath = '/lynus.cekuj.net/web/test'
+        res = c.make_dir(rpath)       
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'make_dir = True'
+        this.test_result = res = events[0]._id
+        assert (res == evs), 'make_dir fires {0}'.format(evs)
+        c.disconnect()   
+        del mh._event_hooks[evs]
+        del events[0]               
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_path
+      Desc: Invalid path
+      
+      Test: |
+        c = FTPClient('FTP')
+        c.connect('srv8.endora.cz', 21, 'lynus', 'Bowmanlop1')
+        res = c.make_dir('/test')
+      
+      Validate: |                               
+        this.test_result = res
+        assert (not res), 'make_dir = False' 
+        c.disconnect()
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        res = c.make_dir('/test')
+      
+      Validate: |                        
+        this.test_result = res
+        assert (not res), 'make_dir = False'           
+        
+Test-Scenario-11:
+  Id: ts_11
+  Path: hydratk/lib/network/ftp/ftp_client/01_methods_ut.jedi
+  Name: ts_remove_dir
+  Desc: Test method remove_dir
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.ftp.client import FTPClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_remove_dir
+    Desc: Remove directory
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_remove
+      Desc: Remove
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = 'ftp_before_remove_dir'
+        reg_ev_hook(mh, evs)                     
+        c = FTPClient('FTP')
+        c.connect('srv8.endora.cz', 21, 'lynus', 'Bowmanlop1')
+        rpath = '/lynus.cekuj.net/web/test' 
+        c.make_dir(rpath)        
+        res = c.remove_dir(rpath)       
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'make_dir = True'
+        this.test_result = res = events[0]._id
+        assert (res == evs), 'make_dir fires {0}'.format(evs)
+        c.disconnect()   
+        del mh._event_hooks[evs]
+        del events[0]               
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_path
+      Desc: Invalid path
+      
+      Test: |
+        c = FTPClient('FTP')
+        c.connect('srv8.endora.cz', 21, 'lynus', 'Bowmanlop1')
+        res = c.remove_dir('/dev/null/test')
+      
+      Validate: |                               
+        this.test_result = res
+        assert (not res), 'remove_dir = False' 
+        c.disconnect()
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        res = c.remove_dir('/test')
+      
+      Validate: |                        
+        this.test_result = res
+        assert (not res), 'remove_dir = False'                                                                           

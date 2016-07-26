@@ -1,0 +1,807 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/network/dbi/mysql_client/01_methods_ut.jedi
+  Name: ts_init
+  Desc: Test method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.dbi.client import DBClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize DBClient
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_init
+      Desc: Initialize
+      
+      Test: |
+        c = DBClient('MYSQL')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'DBClient'), '__init__ = DBClient'     
+        
+Test-Scenario-2:
+  Id: ts_02
+  Path: hydratk/lib/network/dbi/mysql_client/01_methods_ut.jedi
+  Name: ts_props
+  Desc: Test properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.dbi.client import DBClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_client
+      Desc: Getter client
+      
+      Test: |
+        c = DBClient('MYSQL')
+        c.connect('127.0.0.1', 3306, 'mysql', 'root', 'root')
+        res = c.client.__class__.__name__
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._client.__class__.__name__
+        assert (res == exp), 'client = {0}'.format(exp)       
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_host
+      Desc: Getter host
+      
+      Test: |
+        res = c.host
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._host
+        assert (res == exp), 'host = {0}'.format(exp)
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_port
+      Desc: Getter port
+      
+      Test: |
+        res = c.port
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._port
+        assert (res == exp), 'port = {0}'.format(exp)        
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_sid
+      Desc: Getter sid
+      
+      Test: |
+        res = c.sid
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._sid
+        assert (res == exp), 'sid = {0}'.format(exp)        
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_user
+      Desc: Getter user
+      
+      Test: |
+        res = c.user
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._user
+        assert (res == exp), 'user = {0}'.format(exp)        
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_passw
+      Desc: Getter passw
+      
+      Test: |
+        res = c.passw
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._passw
+        assert (res == exp), 'passw = {0}'.format(exp)        
+        
+    Test-Condition-7: 
+      Id: tco_07
+      Name: tco_is_connected
+      Desc: Getter is_connected
+      
+      Test: |
+        res = c.is_connected
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._is_connected
+        assert (res == exp), 'is_connected = {0}'.format(exp)        
+        c.disconnect() 
+        
+Test-Scenario-3:
+  Id: ts_03
+  Path: hydratk/lib/network/dbi/mysql_client/01_methods_ut.jedi
+  Name: ts_connect
+  Desc: Test method connect
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.dbi.client import DBClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_connect
+    Desc: Connect to server
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_connect
+      Desc: Connect to server
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['dbi_before_connect', 'dbi_after_connect']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = DBClient('MYSQL')
+        host, port, sid, user, passw = '127.0.0.1', 3306, 'mysql', 'root', 'root'
+        res = c.connect(host, port, sid, user, passw)       
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'connect = True'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'connect fires {0}'.format(evs)
+        res = [c.host, c.port, c.sid, c.user, c.passw, c.is_connected]
+        this.test_result = str(res)
+        exp = [host, port, sid, user, passw, True]
+        assert (res == exp), 'host, port, sid, user, passw, is_connected = {0}'.format(exp)
+        c.disconnect() 
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0] 
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_host
+      Desc: Invalid host
+      
+      Test: |
+        c = DBClient('MYSQL')
+        res = c.connect('1.1.1.1')
+      
+      Validate: |               
+        this.test_result = res
+        assert (not res), 'connect = False'      
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_port
+      Desc: Invalid port
+      
+      Test: |
+        res = c.connect('127.0.0.1', 20)
+      
+      Validate: |               
+        this.test_result = res
+        assert (not res), 'connect = False'           
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_sid
+      Desc: Invalid sid
+      
+      Test: |
+        res = c.connect('127.0.0.1', 3306, 'xx')
+      
+      Validate: |               
+        this.test_result = res
+        assert (not res), 'connect = False'   
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_invalid_user
+      Desc: Invalid user
+      
+      Test: |
+        res = c.connect('127.0.0.1', 3306, 'mysql', 'xx', 'xx')
+      
+      Validate: |               
+        this.test_result = res
+        assert (not res), 'connect = False'  
+        
+Test-Scenario-4:
+  Id: ts_04
+  Path: hydratk/lib/network/dbi/mysql_client/01_methods_ut.jedi
+  Name: ts_disconnect
+  Desc: Test method disconnect
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.dbi.client import DBClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_disconnect
+    Desc: Disconnect from server
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_disconnect
+      Desc: Disconnect from server
+      
+      Test: |
+        c = DBClient('MYSQL')
+        host, port, sid, user, passw = '127.0.0.1', 3306, 'mysql', 'root', 'root'
+        c.connect(host, port, sid, user, passw)
+        res = c.disconnect()       
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'disconnect = True' 
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        c = DBClient('MYSQL')
+        res = c.disconnect()
+      
+      Validate: |  
+        this.test_result = res
+        assert (not res), 'disconnect = False'
+        
+Test-Scenario-5:
+  Id: ts_05
+  Path: hydratk/lib/network/dbi/mysql_client/01_methods_ut.jedi
+  Name: ts_exec_query
+  Desc: Test method exec_query
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.dbi.client import DBClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_exec_query
+    Desc: Execute query
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_select_single
+      Desc: Select single record
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['dbi_before_exec_query', 'dbi_after_exec_query']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])      
+        c = DBClient('MYSQL')
+        host, port, sid, user, passw = '127.0.0.1', 3306, 'mysql', 'root', 'root'
+        c.connect(host, port, sid, user, passw) 
+        query = 'SELECT * FROM customer a , payer b WHERE a.id = b.customer'
+        res, rows = c.exec_query(query, fetch_one=True)        
+                
+      Validate: |
+        this.test_result = res
+        assert (res), 'exec_query = True'
+        exp = [1, 'Charlie Bowman', '1234']
+        res = [rows['id'], rows['name'], rows['reg_no']]
+        this.test_result = str(res)
+        assert (res == exp), 'rows = {0}'.format(exp)
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'connect fires {0}'.format(evs)
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]      
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_select_mult
+      Desc: Select multiple records
+      
+      Test: |
+        res, rows = c.exec_query(query, fetch_one=False)        
+                
+      Validate: |
+        this.test_result = res
+        assert (res), 'exec_query = True'
+        this.test_result = str(rows)
+        assert (len(rows) > 1), 'rows has more than 1 record'
+        exp = [2, 'Charlie Bowman', '1234']
+        res = [rows[1]['id'], rows[1]['name'], rows[1]['reg_no']]
+        this.test_result = str(res)
+        assert (res == exp), 'rows[1] = {0}'.format(exp)         
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_select_zero
+      Desc: Select no record     
+      
+      Test: |
+        query = 'SELECT * FROM customer WHERE id = 999999'
+        res, rows = c.exec_query(query)
+      
+      Validate: |    
+        this.test_result = str(rows)
+        assert (len(rows) == 0), 'rows has no record' 
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_binding
+      Desc: Select with bindings
+      
+      Test: |
+        query = 'SELECT id, name, reg_no FROM customer WHERE id = ? AND name = ?'
+        res, rows = c.exec_query(query, [2, 'Charlie Bowman'])
+      
+      Validate: |  
+        exp = [2, 'Charlie Bowman', '1234']
+        res = [rows[0]['id'], rows[0]['name'], rows[0]['reg_no']]
+        this.test_result = str(res)
+        assert (res == exp), 'rows = {0}'.format(exp)   
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_insert
+      Desc: Insert record
+      
+      Test: |
+        query = 'INSERT INTO customer (name, status, segment) VALUES (?, ?, ?)'
+        bindings = ['test test', 3, 2]
+        res, rows = c.exec_query(query, bindings)
+      
+      Validate: |                                                                 
+        this.test_result = res
+        assert (res), 'exec_query = True'
+        res, rows = c.exec_query('SELECT id FROM customer WHERE name = ?', ['test test'], True)
+        id = rows['id']
+        assert (id > 0), 'id {0} > 0'.format(id)
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_update
+      Desc: Update record
+      
+      Test: |
+        query = 'UPDATE customer SET reg_no = ? WHERE id = ?'
+        reg_no = '1234'
+        bindings = [reg_no, id]
+        res, rows = c.exec_query(query, bindings)
+      
+      Validate: |                                                                 
+        this.test_result = res
+        assert (res), 'exec_query = True'
+        res, rows = c.exec_query('SELECT reg_no FROM customer WHERE id = ?', [id], True)
+        assert (rows['reg_no'] == reg_no), 'reg_no = {0}'.format(reg_no) 
+        
+    Test-Condition-7: 
+      Id: tco_07
+      Name: tco_delete
+      Desc: Delete record
+      
+      Test: |
+        query = 'DELETE FROM customer WHERE id = ?'
+        res, rows = c.exec_query(query, [id])            
+        
+      Validate: |
+        this.test_result = res
+        assert (res), 'exec_query = True'
+        res, rows = c.exec_query('SELECT reg_no FROM customer WHERE id = ?', [id])
+        assert (len(rows) == 0), 'record {0} deleted'.format(id)   
+        
+    Test-Condition-8: 
+      Id: tco_08
+      Name: tco_no_commit
+      Desc: Disabled autocommit            
+      
+      Test: |
+        query = 'INSERT INTO customer (name, status, segment) VALUES (?, ?, ?)'
+        bindings = ['test test', 3, 2]
+        res, rows = c.exec_query(query, bindings, autocommit=False)        
+      
+      Validate: |
+        this.test_result = res
+        assert (res), 'exec_query = True'
+        res, rows = c.exec_query('SELECT id FROM customer WHERE name = ?', ['test test'], True)
+        id = rows['id']
+        assert (id > 0), 'id {0} > 0'.format(id)  
+        c.disconnect()
+        c.connect(host, port, sid, user, passw)
+        res, rows = c.exec_query('SELECT id FROM customer WHERE name = ?', ['test test'])
+        this.test_result = str(rows)
+        assert (len(rows) == 0), 'record {0} not commited'.format(id)
+        c.disconnect()      
+
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_table
+      Desc: Invalid table
+      
+      Test: |    
+        c = DBClient('MYSQL')
+        host, port, sid, user, passw = '127.0.0.1', 3306, 'mysql', 'root', 'root'
+        c.connect(host, port, sid, user, passw) 
+        res, rows = c.exec_query('SELECT * FROM xxx')         
+        
+      Validate: |
+        this.test_result = res
+        assert (not res), 'exec_query = False'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_column
+      Desc: Invalid column
+      
+      Test: |     
+        res, rows = c.exec_query('SELECT xx FROM customer')         
+        
+      Validate: |
+        this.test_result = res
+        assert (not res), 'exec_query = False'     
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_syntax
+      Desc: Invalid syntax
+      
+      Test: |     
+        res, rows = c.exec_query('SELECT * FRO customer')         
+        
+      Validate: |
+        this.test_result = res
+        assert (not res), 'exec_query = False'             
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_invalid_constraint
+      Desc: Invalid constaint
+      
+      Test: |     
+        res, rows = c.exec_query('INSERT INTO customer (name, status, segment) VALUES (\'test test\', 0, 2)')         
+        
+      Validate: |
+        this.test_result = res
+        assert (not res), 'exec_query = False'
+        c.disconnect()    
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        res, rows = c.exec_query('')
+      
+      Validate: |     
+        this.test_result = res
+        assert (not res), 'exec_query = False' 
+        
+Test-Scenario-6:
+  Id: ts_06
+  Path: hydratk/lib/network/dbi/mysql_client/01_methods_ut.jedi
+  Name: ts_commit
+  Desc: Test method commit
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.dbi.client import DBClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_commit
+    Desc: Commit transaction
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_commit
+      Desc: Commit
+      
+      Test: |    
+        c = DBClient('MYSQL')
+        host, port, sid, user, passw = '127.0.0.1', 3306, 'mysql', 'root', 'root'
+        c.connect(host, port, sid, user, passw) 
+        c.exec_query('INSERT INTO customer (name, status, segment) VALUES (?, ?, ?)', ['test test', 1, 2], autocommit=False)
+        res = c.commit()
+        
+      Validate: |                         
+        this.test_result = res
+        assert (res), 'commit = True'
+        c.disconnect()
+        c.connect(host, port, sid, user, passw)
+        res, rows = c.exec_query('SELECT id FROM customer WHERE name = ?', ['test test'], fetch_one=True)
+        id = rows['id']
+        assert (id > 0), 'id {0} > 0'.format(id)
+        c.exec_query('DELETE FROM customer WHERE id = ?', [id])
+        c.disconnect()
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases   
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        res = c.commit()
+      
+      Validate: |     
+        this.test_result = res
+        assert (not res), 'commit = False'   
+        
+Test-Scenario-7:
+  Id: ts_07
+  Path: hydratk/lib/network/dbi/mysql_client/01_methods_ut.jedi
+  Name: ts_rollback
+  Desc: Test method rollback
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.dbi.client import DBClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_rollback
+    Desc: Rollback transaction
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_rollback
+      Desc: Rollback
+      
+      Test: |    
+        c = DBClient('MYSQL')
+        host, port, sid, user, passw = '127.0.0.1', 3306, 'mysql', 'root', 'root'
+        c.connect(host, port, sid, user, passw) 
+        c.exec_query('INSERT INTO customer (name, status, segment) VALUES (?, ?, ?)', ['test test', 1, 2], autocommit=False)
+        res = c.rollback()
+        
+      Validate: |                         
+        this.test_result = res
+        assert (res), 'rollback = True'
+        c.disconnect()
+        c.connect(host, port, sid, user, passw)
+        res, rows = c.exec_query('SELECT id FROM customer WHERE name = ?', ['test test'])
+        assert (len(rows) == 0), 'record not inserted'
+        c.disconnect()
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases   
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        res = c.rollback()
+      
+      Validate: |     
+        this.test_result = res
+        assert (not res), 'rollback = False'  
+        
+Test-Scenario-8:
+  Id: ts_08
+  Path: hydratk/lib/network/dbi/mysql_client/01_methods_ut.jedi
+  Name: ts_call_proc
+  Desc: Test method call_proc
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.dbi.client import DBClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_call_proc
+    Desc: Call procedure
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_read
+      Desc: Call read procedure
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['dbi_before_call_proc', 'dbi_after_call_proc']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])      
+        c = DBClient('MYSQL')
+        host, port, sid, user, passw = '127.0.0.1', 3306, 'mysql', 'root', 'root'
+        c.connect(host, port, sid, user, passw)
+        id = 1 
+        param_names = ['id', 'name', 'status', 'segment', 'birth_no', 'reg_no', 'tax_no', 'err']      
+        input_values = {'id': id}
+        output_types = {'name': 'string', 'status': 'int', 'segment': 'int',
+                        'birth_no': 'string', 'reg_no': 'string', 'tax_no': 'string', 'err': 'string'}                
+        res = c.call_proc('read_customer', param_names, input_values, output_types, 'proc')        
+                
+      Validate: |
+        this.test_result = str(res)
+        exp = {'name': 'Charlie Bowman', 'status': 3, 'segment': 2, 'birth_no': '700101/0001',
+               'reg_no': '1234', 'tax_no': 'CZ1234', 'err': 'OK'}
+        assert (res == exp), 'output = {0}'.format(exp)
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'connect fires {0}'.format(evs)
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]         
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_write
+      Desc: Call write procedure
+      
+      Test: |
+        param_names = ['id', 'name', 'status', 'segment', 'birth_no', 'reg_no', 'tax_no', 'err'] 
+        id, name, status, segment, birth_no, reg_no, tax_no = 66, 'test test', 3, 2, '700101/0001', '1234', 'CZ1234'     
+        input_values = {'id': id, 'name': name, 'status': status, 'segment': segment, 'birth_no': birth_no, 
+                        'reg_no': reg_no, 'tax_no': tax_no}
+        output_types = {'err': 'string'}                
+        res = c.call_proc('create_customer', param_names, input_values, output_types, 'proc')        
+                
+      Validate: |
+        this.test_result = str(res)
+        exp = {'err': 'OK'}
+        assert (res == exp), 'output = {0}'.format(exp)  
+        res, rows = c.exec_query('SELECT id FROM customer WHERE name = ?', ['test test'], True) 
+        this.test_result = str(rows)
+        assert (rows['id'] == id), 'record id {0} created'.format(id)
+        c.exec_query('DELETE FROM customer WHERE id = ?', [id]) 
+        c.disconnect()
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_proc
+      Desc: Invalid procedure
+      
+      Test: |    
+        c = DBClient('MYSQL')
+        host, port, sid, user, passw = '127.0.0.1', 3306, 'mysql', 'root', 'root'
+        c.connect(host, port, sid, user, passw) 
+        res = c.call_proc('xx')        
+        
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'call_proc = None'     
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_missing_iparam
+      Desc: Missing input parameter
+      
+      Test: |    
+        id, name, status, segment, birth_no, reg_no, tax_no = 66, 'test test', 3, 2, '700101/0001', '1234', 'CZ1234'
+        param_names = ['name', 'status', 'segment', 'birth_no', 'reg_no', 'tax_no', 'err']              
+        input_values = {'name': name, 'status': status, 'segment': segment, 'birth_no': birth_no, 
+                        'reg_no': reg_no, 'tax_no': tax_no}
+        output_types = {'err': 'string'}   
+        res = c.call_proc('create_customer', param_names, input_values, output_types)        
+        
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'call_proc = None' 
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_redundant_iparam
+      Desc: Redundant input parameter
+      
+      Test: |    
+        param_names = ['name', 'status', 'segment', 'birth_no', 'reg_no', 'tax_no', 'err', 'xx']              
+        input_values = {'name': name, 'status': status, 'segment': segment, 'birth_no': birth_no, 
+                        'reg_no': reg_no, 'tax_no': tax_no, 'xx': 'xx'}
+        output_types = {'err': 'string'}   
+        res = c.call_proc('create_customer', param_names, input_values, output_types)        
+        
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'call_proc = None' 
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_missing_oparam
+      Desc: Missing output parameter
+      
+      Test: |    
+        param_names = ['name', 'status', 'segment', 'birth_no', 'reg_no', 'tax_no']              
+        input_values = {'name': name, 'status': status, 'segment': segment, 'birth_no': birth_no, 
+                        'reg_no': reg_no, 'tax_no': tax_no}
+        output_types = {}   
+        res = c.call_proc('create_customer', param_names, input_values, output_types)        
+        
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'call_proc = None'  
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_redundant_oparam
+      Desc: Redundant output parameter
+      
+      Test: |    
+        param_names = ['name', 'status', 'segment', 'birth_no', 'reg_no', 'tax_no', 'err', 'xx']              
+        input_values = {'name': name, 'status': status, 'segment': segment, 'birth_no': birth_no, 
+                        'reg_no': reg_no, 'tax_no': tax_no}
+        output_types = {'err': 'string', 'xx': 'string'}   
+        res = c.call_proc('create_customer', param_names, input_values, output_types)        
+        
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'call_proc = None'                                    
+        c.disconnect()
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        res = c.call_proc('')
+      
+      Validate: |     
+        this.test_result = res
+        assert (res == None), 'call_proc = None'                                                                                     

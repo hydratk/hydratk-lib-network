@@ -115,7 +115,7 @@ class JavaBridge:
                 
             ev = event.Event('java_before_start', options)
             if (self._mh.fire_event(ev) > 0):
-                options = ev.argv[0]                
+                options = ev.argv(0)                
                 
             if (ev.will_run_default()):                  
                 if (self._classpath != None):
@@ -260,7 +260,7 @@ class JavaBridge:
                 
         try:
 
-            package =  JPackage(name)
+            package = JPackage(name)
             return package
         
         except (RuntimeError, JavaException) as ex:

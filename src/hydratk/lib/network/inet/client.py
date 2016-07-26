@@ -35,6 +35,7 @@ class Client:
     _client = None
     _host = None
     _port = None
+    _is_connected = None
     
     _protocols = {
       'IPV4': AF_INET,
@@ -53,7 +54,7 @@ class Client:
            lay4_prot (str): layer 4 protocol, TCP|UDP
            
         Raises:
-           error: ValueError
+           error: NotImplementedError
                 
         """           
        
@@ -65,9 +66,9 @@ class Client:
             self._lay3_prot = lay3_prot.upper()
             self._lay4_prot = lay4_prot.upper()  
             if (self._lay3_prot not in self._protocols):
-                raise ValueError('Unknown protocol:{0}'.format(self._lay3_prot))   
+                raise NotImplementedError('Unknown protocol:{0}'.format(self._lay3_prot))   
             elif (self._lay3_prot not in self._protocols):
-                raise ValueError('Unknown protocol:{0}'.format(self._lay4_prot))       
+                raise NotImplementedError('Unknown protocol:{0}'.format(self._lay4_prot))       
             else:
                 self._client = socket(self._protocols[self._lay3_prot], self._protocols[self._lay4_prot])
                 
@@ -105,7 +106,13 @@ class Client:
         
         return self._port   
     
-    def connect(self, host, port, timeout=30):   
+    @property
+    def is_connected(self):
+        """ is_connecte property getter """
+        
+        return self._is_connected      
+    
+    def connect(self, host, port, timeout=10):   
         """Method connects to server 
         
         Method is supported for TCP only
@@ -113,7 +120,7 @@ class Client:
         Args:            
            host (str): host, name or IP address
            port (int): port
-           timeout (float): connection timeout
+           timeout (int): connection timeout
            
         Returns:
            bool: result
@@ -130,20 +137,22 @@ class Client:
                 self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_inet_unknown_method', self._lay4_prot), self._mh.fromhere())                 
                 return False
             
-            message = '{0}:{1}'.format(host, port)
+            message = '{0}:{1} timeout:{2}'.format(host, port, timeout)
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_inet_connecting', message), self._mh.fromhere())
             
             ev = event.Event('inet_before_connect', host, port)
             if (self._mh.fire_event(ev) > 0):
                 host = ev.argv(0)
-                port = ev.argv(1)    
+                port = ev.argv(1) 
+                timeout = ev.argv(2)   
                 
             if (ev.will_run_default()):
                 self._host = host
                 self._port = port
                  
-                setdefaulttimeout(timeout)      
-                self._client.connect((host, port))      
+                self._client.settimeout(timeout)      
+                self._client.connect((host, port))  
+                self._is_connected = True    
                       
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_inet_connected'), self._mh.fromhere())
             ev = event.Event('inet_after_connect')
@@ -169,13 +178,15 @@ class Client:
         
         try:
             
-            if (self._lay4_prot != 'TCP'):
-                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_inet_unknown_method', self._lay4_prot), self._mh.fromhere())                 
-                return False            
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_inet_not_connected'), self._mh.fromhere()) 
+                return False                          
             
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_inet_disconnecting'), self._mh.fromhere())
-            self._client.shutdown(SHUT_RDWR)
+            if (self._lay4_prot == 'TCP'):
+                self._client.shutdown(SHUT_RDWR)
             self._client.close()
+            self._is_connected = False
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_inet_disconnected'), self._mh.fromhere())
             
             return True
@@ -206,12 +217,16 @@ class Client:
             if (self._lay4_prot == 'TCP'):
                 self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_inet_sending_data', data), self._mh.fromhere())
                 
+                if (not self._is_connected):
+                    self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_inet_not_connected'), self._mh.fromhere()) 
+                    return False                
+                
                 ev = event.Event('inet_before_send', data)
                 if (self._mh.fire_event(ev) > 0):
                     data = ev.argv(0) 
                     
                 if (ev.will_run_default()):
-                    self._client.sendall(data)                      
+                    self._client.sendall(data.encode('utf-8'))                      
                 
             elif (self._lay4_prot == 'UDP'):
                 message = '{0}, server: {1}:{2}'.format(data, host, port)                            
@@ -227,7 +242,8 @@ class Client:
                     self._host = host if (host != None) else self._host
                     self._port = port if (port != None) else self._port
                     
-                    self._client.sendto(data, (self._host, self._port))              
+                    self._client.sendto(data.encode('utf-8'), (self._host, self._port))
+                    self._is_connected = True              
                  
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_inet_data_sent'), self._mh.fromhere())         
             ev = event.Event('inet_after_send')
@@ -239,7 +255,7 @@ class Client:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False       
         
-    def receive(self, size=4096, timeout=30):
+    def receive(self, size=4096, timeout=10):
         """Method receives data from server
         
         Args:            
@@ -259,9 +275,14 @@ class Client:
             
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_inet_receiving_data', size), self._mh.fromhere())
             
-            ev = event.Event('inet_before_receive', size)
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_inet_not_connected'), self._mh.fromhere()) 
+                return None            
+            
+            ev = event.Event('inet_before_receive', size, timeout)
             if (self._mh.fire_event(ev) > 0):           
-                size = ev.args[0] 
+                size = ev.argv(0) 
+                timeout = ev.argv(1)
             
             if (ev.will_run_default()):
                 self._client.settimeout(timeout)
@@ -280,11 +301,11 @@ class Client:
             ev = event.Event('inet_after_receive')
             self._mh.fire_event(ev)            
             
-            return True
+            return data.decode()
             
         except error as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
-            return False                           
+            return None                           
         
     def ip2name(self, ip):
         """Method translates IP address to name

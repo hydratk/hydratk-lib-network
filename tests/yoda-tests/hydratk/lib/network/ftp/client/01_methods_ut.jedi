@@ -1,0 +1,109 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/network/ftp/client/01_methods_ut.jedi
+  Name: ts_ftpclient
+  Desc: Test method EmailClient
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.ftp.client import FTPClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize FTPClient
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_ftp
+      Desc: FTP protocol
+    
+      Test: |
+        c = FTPClient('FTP')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'FTPClient'), 'FTPClient = FTPClient'    
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_ftp_args
+      Desc: FTP with arguments
+    
+      Test: |
+        c = FTPClient('FTP', False)
+        res = c._secured
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), '_verbose = False'     
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_sftp
+      Desc: SFTP protocol
+    
+      Test: |
+        c = FTPClient('SFTP')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'FTPClient'), 'FTPClient = FTPClient'    
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_sftp_args
+      Desc: SFTP with arguments
+    
+      Test: |
+        c = FTPClient('SFTP', False)
+        res = c._verbose
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), '_verbose = False'  
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_tftp
+      Desc: TFTP protocol
+    
+      Test: |
+        c = FTPClient('TFTP')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'FTPClient'), 'FTPClient = FTPClient'    
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_tftp_args
+      Desc: TFTP with arguments
+    
+      Test: |
+        c = FTPClient('TFTP', False)
+        res = c._verbose
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), '_verbose = False'                         
+        
+    Test-Condition-7: 
+      Id: tco_07
+      Name: tco_invalid
+      Desc: Invalid protocol
+      
+      Test: |
+        try:
+            c = FTPClient('')
+            ex = False
+        except NotImplementedError:
+            ex = True
+      
+      Validate: |          
+        this.test_result = ex
+        assert (ex), 'FTPClient raises NotImplementedError'

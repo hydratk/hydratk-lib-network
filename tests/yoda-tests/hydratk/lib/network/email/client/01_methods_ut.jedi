@@ -1,0 +1,109 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/network/email/client/01_methods_ut.jedi
+  Name: ts_emailclient
+  Desc: Test method EmailClient
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.email.client import EmailClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize EmailClient
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_smtp
+      Desc: SMTP protocol
+    
+      Test: |
+        c = EmailClient('SMTP')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'EmailClient'), 'EmailClient = EmailClient'    
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_smtp_args
+      Desc: SMTP with arguments
+    
+      Test: |
+        c = EmailClient('SMTP', False)
+        res = c._secured
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), '_secured = False'     
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_pop
+      Desc: POP protocol
+    
+      Test: |
+        c = EmailClient('POP')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'EmailClient'), 'EmailClient = EmailClient'    
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_pop_args
+      Desc: POP with arguments
+    
+      Test: |
+        c = EmailClient('POP', False)
+        res = c._secured
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), '_secured = False'  
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_imap
+      Desc: IMAP protocol
+    
+      Test: |
+        c = EmailClient('IMAP')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'EmailClient'), 'EmailClient = EmailClient'    
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_imap_args
+      Desc: IMAP with arguments
+    
+      Test: |
+        c = EmailClient('IMAP', False)
+        res = c._secured
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), '_secured = False'                         
+        
+    Test-Condition-7: 
+      Id: tco_07
+      Name: tco_invalid
+      Desc: Invalid protocol
+      
+      Test: |
+        try:
+            c = EmailClient('')
+            ex = False
+        except NotImplementedError:
+            ex = True
+      
+      Validate: |          
+        this.test_result = ex
+        assert (ex), 'EmailClient raises NotImplementedError'

@@ -1,0 +1,557 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/bridge/java/01_methods_ut.jedi
+  Name: ts_init
+  Desc: Test method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.bridge.java import JavaBridge
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize JavaBridge
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_def_path
+      Desc: Default JVM path
+      
+      Test: |
+        c = JavaBridge()
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'JavaBridge'), '__init__ = JavaBridge'
+        this.test_result = res = c._jvm_path
+        exp = '/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/server/libjvm.so'
+        assert (res == exp), '_jvm_path = {0}'.format(exp)
+        this.test_result = res = c._classpath
+        assert (res != ''), '_classpath is not empty'
+      
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_req_path
+      Desc: Requested JVM path
+      
+      Test: |
+        jvm_path = '/usr/local/app/java/jdk1.8.0_51/jre/lib/amd64/server/libjvm.so'
+        c = JavaBridge(jvm_path)
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'JavaBridge'), '__init__ = JavaBridge'
+        this.test_result = res = c._jvm_path
+        assert (res == jvm_path), '_jvm_path = {0}'.format(exp)
+        this.test_result = res = c._classpath
+        assert (res != ''), '_classpath is not empty' 
+        
+Test-Scenario-2:
+  Id: ts_02
+  Path: hydratk/lib/bridge/java/01_methods_ut.jedi
+  Name: ts_props
+  Desc: Test properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.bridge.java import JavaBridge
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_jvm_path
+      Desc: Getter jvm_path            
+      
+      Test: |
+        c = JavaBridge()
+        res = c.jvm_path
+      
+      Validate: |
+        this.test_result = res
+        exp = c._jvm_path
+        assert (res == exp), 'jvm_path = {0}'.format(exp)
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_classpath
+      Desc: Getter classpath            
+      
+      Test: |
+        res = c.classpath
+      
+      Validate: |
+        this.test_result = res
+        exp = c._classpath
+        assert (res == exp), 'classpath = {0}'.format(exp)     
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_status
+      Desc: Getter status            
+      
+      Test: |
+        res = c.status
+      
+      Validate: |
+        this.test_result = res
+        exp = c._status
+        assert (res == exp), 'status = {0}'.format(exp)   
+        
+Test-Scenario-3:
+  Id: ts_03
+  Path: hydratk/lib/bridge/java/01_methods_ut.jedi
+  Name: ts_start
+  Desc: Test method start
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.bridge.java import JavaBridge
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_start
+    Desc: Start JVM
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_start
+      Desc: Start
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['java_before_start', 'java_after_start']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        jvm_path = '/usr/local/app/java/jdk1.8.0_51/jre/lib/amd64/server/libjvm.so'
+        c = JavaBridge(jvm_path)  
+        res = c.start()
+      
+      Validate: |         
+        this.test_result = res
+        assert (res), 'start = True' 
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'start fires {0}'.format(evs)
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]     
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_already_started
+      Desc: JVM already started       
+      
+      Test: |
+        res = c.start()
+      
+      Validate: |
+        this.test_result = res
+        assert (res), 'start = True'
+        
+Test-Scenario-4:
+  Id: ts_04
+  Path: hydratk/lib/bridge/java/01_methods_ut.jedi
+  Name: ts_get_var
+  Desc: Test method get_var
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_get_var
+    Desc: Get Java variable
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_number
+      Desc: Get number
+      
+      Test: |
+        v = c.get_var('int', 2)
+        res = v.__class__.__name__        
+      
+      Validate: |   
+        this.test_result = res
+        exp = 'JInt'
+        assert (res == exp), 'get_var = {0}'.format(exp)
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_string
+      Desc: Get string
+      
+      Test: |
+        v = c.get_var('string', 'abc')
+        res = v.__class__.__name__        
+      
+      Validate: |   
+        this.test_result = res
+        exp = 'JString'
+        assert (res == exp), 'get_var = {0}'.format(exp)      
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_bool
+      Desc: Get bool
+      
+      Test: |
+        v = c.get_var('bool', True)
+        res = v.__class__.__name__        
+      
+      Validate: |   
+        this.test_result = res
+        exp = 'JBoolean'
+        assert (res == exp), 'get_var = {0}'.format(exp)   
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_invalid
+      Desc: Invalid variable
+      
+      Test: |
+        res = c.get_var('xx', True)       
+      
+      Validate: |   
+        this.test_result = res
+        assert (res == None), 'get_var = None'                   
+        
+Test-Scenario-5:
+  Id: ts_05
+  Path: hydratk/lib/bridge/java/01_methods_ut.jedi
+  Name: ts_get_class
+  Desc: Test method get_class
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_get_class
+    Desc: Get Java class
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_db_client
+      Desc: Get DBClient
+      
+      Test: |
+        name = 'DBClient'
+        v = c.get_class(name, c.get_var('bool', True))
+        res = v.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == name), 'get_class = {0}'.format(name)
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_jms_client
+      Desc: Get JMSClient
+      
+      Test: |
+        name = 'JMSClient'
+        v = c.get_class(name, c.get_var('bool', True))
+        res = v.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == name), 'get_class = {0}'.format(name)  
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_class
+      Desc: Invalid class
+      
+      Test: |
+        res = c.get_class('xx')
+      
+      Validate: |          
+        this.test_result = res
+        assert (res == None), 'get_class = None'
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_invalid_init
+      Desc: Invalid class init
+      
+      Test: |
+        res = c.get_class('DBClient')
+      
+      Validate: |          
+        this.test_result = res
+        assert (res == None), 'get_class = None'        
+        
+Test-Scenario-6:
+  Id: ts_06
+  Path: hydratk/lib/bridge/java/01_methods_ut.jedi
+  Name: ts_desc_class
+  Desc: Test method desc_class
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_desc_class
+    Desc: Describe Java class
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_db_client
+      Desc: Describe DBClient
+              
+      Test: |
+        name = 'DBClient'
+        attrs, methods = c.desc_class(name)
+      
+      Validate: |
+        res = sorted(attrs)
+        this.test_result = str(res)        
+        exp = ['conn', 'host', 'passw', 'port', 'sid', 'user', 'verbose']
+        assert (res == exp), 'attrs = {0}'.format(exp)
+        res = sorted(methods)
+        this.test_result = str(res)
+        exp = ['commit', 'connect', 'disconnect', 'exec_query', 'rollback']
+        assert (res == exp), 'methods = {0}'.format(exp)   
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_jms_client
+      Desc: Describe JMSClient
+              
+      Test: |
+        name = 'JMSClient'
+        attrs, methods = c.desc_class(name)
+      
+      Validate: |
+        res = sorted(attrs)
+        this.test_result = str(res)
+        exp = ['connected', 'connection', 'consumer', 'ctx', 'factory', 'producer', 'session', 'verbose']
+        assert (res == exp), 'attrs = {0}'.format(exp)
+        res = sorted(methods)
+        this.test_result = str(res)
+        exp = ['browse', 'connect', 'disconnect', 'receive', 'send']
+        assert (res == exp), 'methods = {0}'.format(exp)  
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_class
+      Desc: Invalid class
+      
+      Test: |
+        res = c.desc_class('xx')
+      
+      Validate: |          
+        this.test_result = res
+        assert (res == None), 'desc_class = None' 
+        
+Test-Scenario-7:
+  Id: ts_07
+  Path: hydratk/lib/bridge/java/01_methods_ut.jedi
+  Name: ts_get_package
+  Desc: Test method get_package
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_get_package
+    Desc: Get Java package
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_valid
+      Desc: Valid package
+      
+      Test: |
+        name = 'java.util'
+        v = c.get_package(name)
+        res = v.__class__.__name__
+      
+      Validate: |                 
+        this.test_result = str(res)
+        exp = 'JPackage'
+        assert (res == exp), 'get_package = {0}'.format(exp)    
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid
+      Desc: Invalid package
+      
+      Test: |
+        name = 'xx'
+        res = str(c.get_package(name))
+      
+      Validate: |                 
+        this.test_result = res
+        exp = '<Java package {0}>'.format(name)
+        assert (res == exp), 'get_package = {0}'.format(exp)    
+        
+Test-Scenario-8:
+  Id: ts_08
+  Path: hydratk/lib/bridge/java/01_methods_ut.jedi
+  Name: ts_init_arraylist
+  Desc: Test method init_arraylist
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init_arraylist
+    Desc: Initialize ArrayList
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_init
+      Desc: Initialize
+      
+      Test: |
+        v = c.init_arraylist(['a', 'b', 'c'])
+        res = v.__class__.__name__
+      
+      Validate: |                
+        this.test_result = res
+        exp = 'ArrayList'  
+        assert (exp in res), 'init_arraylist = {0}'.format(exp)    
+        
+Test-Scenario-9:
+  Id: ts_09
+  Path: hydratk/lib/bridge/java/01_methods_ut.jedi
+  Name: ts_init_hashmap
+  Desc: Test method init_hashmap
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init_hashmap
+    Desc: Initialize HashMap
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_init
+      Desc: Initialize
+      
+      Test: |
+        v = c.init_hashmap({'a': 1, 'b': 2, 'c': 3})
+        res = v.__class__.__name__
+      
+      Validate: |                
+        this.test_result = res
+        exp = 'HashMap'  
+        assert (exp in res), 'init_hashmap = {0}'.format(exp)           
+        
+Test-Scenario-10:
+  Id: ts_10
+  Path: hydratk/lib/bridge/java/01_methods_ut.jedi
+  Name: ts_set_classpath
+  Desc: Test method _set_classpath
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_set_classpath
+    Desc: Set Java classpath
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_default
+      Desc: Default classpath
+      
+      Test: |
+        res = c._set_classpath()
+      
+      Validate: |        
+        this.test_result = res
+        exp = 'javaee.jar'      
+        assert (exp in res), '_set_classpath contains {0}'.format(exp)
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_append
+      Desc: Append classpath
+      
+      Test: |
+        res = c._set_classpath('/usr/local/app/glassfish/glassfish4/javadb/lib')
+      
+      Validate: |        
+        this.test_result = res  
+        exp = 'derby.jar'      
+        assert (exp in res), '_set_classpath contains {0}'.format(exp)
+        
+Test-Scenario-11:
+  Id: ts_11
+  Path: hydratk/lib/bridge/stop/01_methods_ut.jedi
+  Name: ts_stop
+  Desc: Test method stop
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_stop
+    Desc: Stop JVM
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_stop
+      Desc: Start
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['java_before_stop', 'java_after_stop']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        jvm_path = '/usr/local/app/java/jdk1.8.0_51/jre/lib/amd64/server/libjvm.so'
+        res = c.stop()
+      
+      Validate: |         
+        this.test_result = res
+        assert (res), 'stop = True' 
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'stop fires {0}'.format(evs)
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]  
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_not_started
+      Desc: JVM not started       
+      
+      Test: |
+        res = c.stop()
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), 'stop = False' 
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_restart
+      Desc: Try to restart JVM       
+      
+      Test: |
+        res = c.start()
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), 'start = False'                         

@@ -24,15 +24,15 @@ jms_after_browse
 
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
-from logging import basicConfig, getLogger, DEBUG
+from logging import basicConfig, getLogger, DEBUG, CRITICAL
+from sys import version_info
 
-try:
+if (version_info[0] == 2):
     from stompest.config import StompConfig
     from stompest.sync import Stomp
     from stompest.protocol import StompSpec
     from stompest.error import StompError
-except ImportError:
-    raise NotImplementedError('STOMP client is not supported for Python 3.x due to external library stompest')
+    getLogger('stompest.sync.client').setLevel(CRITICAL)
 
 mapping = {
   'JMSCorrelationID': 'correlation-id',
@@ -51,13 +51,14 @@ class JMSClient:
     """Class JMSClient
     """
     
-    _mh = None
-    _verbose = None
+    _mh = None    
     _client = None
     _host = None
     _port = None
     _user = None
     _passw = None
+    _verbose = None
+    _is_connected = None
     
     def __init__(self, verbose=False):
         """Class constructor
@@ -69,6 +70,9 @@ class JMSClient:
            
         """         
         
+        if (version_info[0] == 3):
+            raise NotImplementedError('STOMP client is not supported for Python 3.x due to external library stompest')
+        
         try:
         
             self._mh = MasterHead.get_head() 
@@ -79,13 +83,7 @@ class JMSClient:
                 getLogger().setLevel(DEBUG)
         
         except StompError as ex:
-            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere()) 
-            
-    @property
-    def verbose(self):
-        """ verbose mode property getter """
-        
-        return self._verbose        
+            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())                 
             
     @property
     def client(self):
@@ -115,9 +113,21 @@ class JMSClient:
     def passw(self):
         """ user password property getter """
         
-        return self._passw                                              
+        return self._passw  
+    
+    @property
+    def verbose(self):
+        """ verbose mode property getter """
         
-    def connect(self, host, port=61613, user=None, passw=None):
+        return self._verbose          
+    
+    @property
+    def is_connected(self):
+        """ is_connected property getter """
+        
+        return self._is_connected                                              
+        
+    def connect(self, host, port=61613, user=None, passw=None, timeout=10):
         """Method connects to server
         
         Args:
@@ -125,6 +135,7 @@ class JMSClient:
            port (str): port
            user (str): username
            passw (str): password
+           timeout (int): timeout
 
         Returns:
            bool: result
@@ -137,15 +148,16 @@ class JMSClient:
         
         try:
         
-            msg = 'host:{0}, port:{1}, user:{2}, passw:{3}'.format(host, port, user, passw)       
+            msg = 'host:{0}, port:{1}, user:{2}, passw:{3}, timeout:{4}'.format(host, port, user, passw, timeout)       
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_connecting', msg), self._mh.fromhere()) 
         
-            ev = event.Event('jms_before_connect', host, port, user, passw)
+            ev = event.Event('jms_before_connect', host, port, user, passw, timeout)
             if (self._mh.fire_event(ev) > 0):
-                host = ev.argv[0]
-                port = ev.argv[1]
-                user = ev.argv[2]
-                passw = ev.argv[3]                 
+                host = ev.argv(0)
+                port = ev.argv(1)
+                user = ev.argv(2)
+                passw = ev.argv(3)     
+                timeout = ev.argv(4)            
         
             self._host = host
             self._port = port
@@ -155,7 +167,8 @@ class JMSClient:
             if (ev.will_run_default()):             
                 self._client = Stomp(StompConfig('tcp://{0}:{1}'.format(self._host, self._port), 
                                                  login=self._user, passcode=self._passw))
-                self._client.connect()
+                self._client.connect(connectTimeout=timeout, connectedTimeout=timeout)
+                self._is_connected = True
         
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_connected'), self._mh.fromhere()) 
             ev = event.Event('jms_after_connect')
@@ -182,11 +195,15 @@ class JMSClient:
         
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_disconnecting'), self._mh.fromhere())
                 
-            self._client.disconnect() 
-            self._client.close()           
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_disconnected'), self._mh.fromhere())
-                
-            return True
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_jms_not_connected'), self._mh.fromhere()) 
+                return False                
+            else:    
+                self._client.disconnect() 
+                self._client.close()       
+                self._is_connected = False    
+                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_disconnected'), self._mh.fromhere())
+                return True
         
         except StompError as ex:
             self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
@@ -219,12 +236,16 @@ class JMSClient:
                    destination_name, message, destination_type, headers)
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_sending_msg', msg), self._mh.fromhere())         
         
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_jms_not_connected'), self._mh.fromhere()) 
+                return False          
+        
             ev = event.Event('jms_before_send', destination_name, message, destination_type, headers)
             if (self._mh.fire_event(ev) > 0):        
-                destination_name = ev.args[0]
-                message = ev.args[1]
-                destination_type = ev.args[2]
-                headers = ev.args[3]
+                destination_name = ev.argv(0)
+                message = ev.argv(1)
+                destination_type = ev.argv(2)
+                headers = ev.argv(3)
         
             if (ev.will_run_default()): 
                 
@@ -266,10 +287,14 @@ class JMSClient:
             msg = 'destination_name:{0}, count:{1}'.format(destination_name, cnt)
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_receiving_msg', msg), self._mh.fromhere())         
         
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_jms_not_connected'), self._mh.fromhere()) 
+                return None          
+        
             ev = event.Event('jms_before_receive', destination_name, cnt)
             if (self._mh.fire_event(ev) > 0):        
-                destination_name = ev.args[0]
-                cnt = ev.args[1]
+                destination_name = ev.argv(0)
+                cnt = ev.argv(1)
         
             if (ev.will_run_default()): 
                 token = self._client.subscribe('/queue/{0}'.format(destination_name), 
@@ -277,8 +302,10 @@ class JMSClient:
                 
                 msgs = []
                 i = 0
-                while (i < cnt and self._client.canRead(1)):
+                while (i < cnt and self._client.canRead(1)):                    
                     frame = self._client.receiveFrame()
+                    if (frame.command != 'MESSAGE'):
+                        break
                     self._client.ack(frame)
                     msgs.append(frame)
                     i = i+1
@@ -291,7 +318,8 @@ class JMSClient:
                     message = {}
                     message['message'] = msg.body
                     for header in msg.rawHeaders:
-                        message[mapping.keys()[mapping.values().index(header[0])]] = header[1]
+                        if (header[0] in mapping.values()):
+                            message[mapping.keys()[mapping.values().index(header[0])]] = header[1]
                     
                     messages.append(message)
                 
@@ -329,12 +357,16 @@ class JMSClient:
                    destination_name, cnt, jms_correlation_id, jms_type)
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_browsing', msg), self._mh.fromhere())         
         
+            if (not self._is_connected):
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_jms_not_connected'), self._mh.fromhere()) 
+                return None          
+        
             ev = event.Event('jms_before_browse', destination_name, cnt, jms_correlation_id, jms_type)
             if (self._mh.fire_event(ev) > 0):        
-                destination_name = ev.args[0]
-                cnt = ev.args[1]
-                jms_correlation_id = ev.args[2]
-                jms_type = ev.args[3]
+                destination_name = ev.argv(0)
+                cnt = ev.argv(1)
+                jms_correlation_id = ev.argv(2)
+                jms_type = ev.argv(3)
         
             if (ev.will_run_default()): 
                 token = self._client.subscribe('/queue/{0}'.format(destination_name),
@@ -366,7 +398,8 @@ class JMSClient:
                     message = {}
                     message['message'] = msg.body
                     for header in msg.rawHeaders:
-                        message[mapping.keys()[mapping.values().index(header[0])]] = header[1]
+                        if (header[0] in mapping.values()):
+                            message[mapping.keys()[mapping.values().index(header[0])]] = header[1]
                     
                     messages.append(message)
                 

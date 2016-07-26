@@ -26,6 +26,7 @@ msg = {
     'htk_email_connecting'       : ["Connecting to server: '{0}'"],
     'htk_email_connected'        : ["Connected successfully"],
     'htk_email_disconnected'     : ["Disconnected from server"],
+    'htk_email_not_connected'    : ["Not connected to server"],
     'htk_email_sending'          : ["Sending email: '{0}'"],
     'htk_email_sent'             : ["Email sent"],
     'htk_email_counting'         : ["Counting emails"],
