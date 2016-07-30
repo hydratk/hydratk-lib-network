@@ -25,7 +25,7 @@ from hydratk.core import event
 from socket import socket, error, gethostbyaddr, getaddrinfo, setdefaulttimeout
 from socket import AF_INET, AF_INET6, SOCK_STREAM, SOCK_DGRAM, SHUT_RDWR
 
-class Client:
+class Client(object):
     """Class Client
     """
 

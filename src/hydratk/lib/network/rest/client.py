@@ -38,7 +38,7 @@ mime_types = {
   'xml' : 'application/xml'
 }
 
-class RESTClient:
+class RESTClient(object):
     """Class RESTClient
     """
     

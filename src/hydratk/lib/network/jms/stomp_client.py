@@ -47,7 +47,7 @@ mapping = {
   'JMSRedelivered'  : 'redelivered'          
 }
 
-class JMSClient:
+class JMSClient(object):
     """Class JMSClient
     """
     

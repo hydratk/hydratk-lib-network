@@ -32,7 +32,7 @@ from socket import error, setdefaulttimeout
 from os import path, remove
 from logging import basicConfig, DEBUG
 
-class FTPClient:
+class FTPClient(object):
     """Class FTPClient
     """
     

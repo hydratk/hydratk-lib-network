@@ -23,7 +23,7 @@ from hydratk.core import event
 from smtplib import SMTP, SMTP_SSL, SMTPException
 from socket import error
 
-class EmailClient:
+class EmailClient(object):
     """Class EmailClient
     """
     

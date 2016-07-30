@@ -1,6 +1,6 @@
 from tftpy import TftpServer
 
-class Server():
+class Server(object):
     
     _server = None
     _ip = None

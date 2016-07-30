@@ -25,7 +25,7 @@ from paramiko.ssh_exception import SSHException, NoValidConnectionsError
 from socket import error
 from logging import basicConfig, DEBUG
 
-class TermClient:
+class TermClient(object):
     """Class TermClient
     """
     

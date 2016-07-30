@@ -25,7 +25,7 @@ from hydratk.core import event
 from tftpy import TftpShared, TftpClient
 from os import path, remove
 
-class FTPClient:
+class FTPClient(object):
     """Class FTPClient
     """
     

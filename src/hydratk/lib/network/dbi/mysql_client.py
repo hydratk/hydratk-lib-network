@@ -26,7 +26,7 @@ from sys import version_info
 if (version_info[0] == 2):
     from string import replace
 
-class DBClient():
+class DBClient(object):
     """Class DBClient
     """
     

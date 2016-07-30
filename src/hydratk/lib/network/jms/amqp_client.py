@@ -41,7 +41,7 @@ mapping = {
   'JMSTimestamp'    : 'properties.creation-time'
 }
 
-class JMSClient:
+class JMSClient(object):
     """Class JMSClient
     """
     

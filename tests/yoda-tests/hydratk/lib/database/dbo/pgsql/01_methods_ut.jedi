@@ -1,0 +1,458 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Name: ts_init
+  Desc: Test method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.database.dbo.dbo import DBO
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize DBO
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_init
+      Desc: Initialize
+      
+      Test: |
+        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        c = DBO(dsn)
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'DBO'), '__init__ = DBO'
+        this.test_result = res = c._dbo_driver.__class__.__name__
+        assert (res == 'DBODriver'), '_dbo_driver = DBODriver'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_no_autoconnect
+      Desc: Autoconnect disabled
+      
+      Test: |
+        c = DBO(dsn, autoconnect=False)
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'DBO'), '__init__ = DBO'
+        this.test_result = res = c._dbo_driver.__class__.__name__
+        assert (res == 'DBODriver'), '_dbo_driver = DBODriver'        
+        
+Test-Scenario-2:
+  Id: ts_02
+  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Name: ts_parse_dsn
+  Desc: Test method _parse_dsn
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.database.dbo.dbo import DBO
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_parse_dsn
+    Desc: Parse DSN
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_file
+      Desc: File database    
+    
+      Test: |
+        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        c = DBO(dsn)
+        d = c._dbo_driver   
+        res = d._parse_dsn(dsn)
+        
+      Validate: |
+        this.test_result = res
+        assert (res), 'parse_dsn = True'
+        res = [d._host, d._port, d._dbname, d._username, d._password]
+        exp = ['127.0.0.1', 5432, 'postgre', 'lynus', 'bowman']
+        this.test_result = str(res)
+        assert (res == exp), '_host, _port, _dbname, _username, _password = {0}'.format(exp)
+        
+Test-Scenario-3:
+  Id: ts_03
+  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Name: ts_apply_driver_options
+  Desc: Test method _apply_driver_options
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.database.dbo.dbo import DBO
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_apply_driver_options
+    Desc: Apply options
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_opt
+      Desc: Apply option     
+    
+      Test: |
+        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        c = DBO(dsn)
+        d = c._dbo_driver 
+        opt = {'timeout': 10}
+        d._apply_driver_options(opt)
+        res = d._driver_options['timeout']                 
+        
+      Validate: |
+        this.test_result = res
+        assert (res == opt['timeout']), '_driver_options[timeout] = 10'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_opt
+      Desc: Invalid option
+               
+      Test: |
+        opt = {'xx': 1}
+        d._apply_driver_options(opt)
+        res = d._driver_options
+       
+      Validate: |
+        this.test_result = str(res)
+        assert ('xx' not in res), '_driver_options does contain xx'
+        
+Test-Scenario-4:
+  Id: ts_04
+  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Name: ts_connect
+  Desc: Test method connect
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.database.dbo.dbo import DBO
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_connect
+    Desc: Connect to database
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_connect
+      Desc: Connect     
+    
+      Test: |
+        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        c = DBO(dsn, autoconnect=False)
+        d = c._dbo_driver
+        d.connect()
+        res = (d._dbcon, d._cursor)        
+        
+      Validate: |
+        this.test_result = str(res)
+        assert (res != (None, None)), '_dbcon, _cursor != None'
+        
+Test-Scenario-5:
+  Id: ts_05
+  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Name: ts_close
+  Desc: Test method close
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.database.dbo.dbo import DBO
+    from hydratk.lib.database.dbo.dbodriver import DBODriverException
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_close
+    Desc: Disconnect from database
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_close
+      Desc: Disconnect   
+    
+      Test: |
+        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        c = DBO(dsn)
+        d = c._dbo_driver
+        d.close()             
+        
+      Validate: |
+        assert True
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_not_connected
+      Desc: Not connected to database
+      
+      Test: |
+        try:
+            c = DBO(dsn, autoconnect=False)
+            d = c._dbo_driver
+            d.close()
+            ex = False
+        except DBODriverException:
+            ex = True
+      
+      Validate: |
+        this.test_result = ex
+        assert (ex), 'close raises DBODriverException'
+        
+Test-Scenario-6:
+  Id: ts_06
+  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Name: ts_execute
+  Desc: Test method execute
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.database.dbo.dbo import DBO
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_execute
+    Desc: Execute query
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_read
+      Desc: Read query 
+    
+      Test: |
+        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        c = DBO(dsn)
+        d = c._dbo_driver  
+        res = d.execute('SELECT count(*) FROM customer').fetchall()  
+        
+      Validate: |
+        this.test_result = str(res)
+        assert (res[0] > 0), 'output > 0'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_write
+      Desc: Write query   
+      
+      Test: |
+        d.execute('INSERT INTO lov_status VALUES (4, \'test\')')
+        res = d.execute('SELECT * FROM lov_status WHERE id = 4').fetchall()
+      
+      Validate: |
+        this.test_result = str(res)
+        assert (res[0]['id'] == 4), 'output = 4'
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_binding
+      Desc: Query with binding   
+      
+      Test: |
+        res = d.execute('SELECT * FROM lov_status WHERE id = %s', [4]).fetchall()
+      
+      Validate: |
+        this.test_result = str(res)
+        assert (res[0]['id'] == 4), 'output = 4'        
+        d.execute('DELETE FROM lov_status WHERE id = 4')   
+        
+Test-Scenario-7:
+  Id: ts_07
+  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Name: ts_commit
+  Desc: Test method commit
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.database.dbo.dbo import DBO
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_commit
+    Desc: Commit transaction
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_commit
+      Desc: Commit 
+    
+      Test: |
+        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        c = DBO(dsn)
+        d = c._dbo_driver  
+        d.execute('INSERT INTO lov_status VALUES (4, \'test\')')
+        d.commit() 
+        d.close()
+        d.connect()
+        res = d.execute('SELECT * FROM lov_status WHERE id = 4').fetchall()
+        
+      Validate: |
+        this.test_result = str(res)
+        assert (res[0]['id'] == 4), 'output = 4'
+        d.execute('DELETE FROM lov_status WHERE id = 4')  
+        d.commit()
+        
+Test-Scenario-8:
+  Id: ts_08
+  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Name: ts_rollback
+  Desc: Test method rollback
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.database.dbo.dbo import DBO
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_rollback
+    Desc: Rollback transaction
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_rollback
+      Desc: Rollback
+    
+      Test: |
+        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        c = DBO(dsn)
+        d = c._dbo_driver  
+        d.execute('INSERT INTO lov_status VALUES (4, \'test\')')
+        d.rollback() 
+        d.close()
+        d.connect()
+        res = d.execute('SELECT * FROM lov_status WHERE id = 4').fetchall()
+        
+      Validate: |
+        this.test_result = str(res)
+        assert (len(res) == 0), 'output is empty'
+        
+Test-Scenario-9:
+  Id: ts_09
+  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Name: ts_table_exists
+  Desc: Test method table_exists
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.database.dbo.dbo import DBO
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_table_exists
+    Desc: Check if table exists
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_exist_table
+      Desc: Existing table
+    
+      Test: |
+        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        c = DBO(dsn)
+        d = c._dbo_driver
+        res = d.table_exists('customer')                               
+        
+      Validate: |
+        this.test_result = res
+        assert (res), 'table_exists = True'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_table
+      Desc: Invalid table
+      
+      Test: |
+        res = d.table_exists('xx')
+      
+      Validate: |    
+        this.test_result = res
+        assert (not res), 'table_exists = False'
+        
+Test-Scenario-10:
+  Id: ts_10
+  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Name: ts_result_as_dict
+  Desc: Test method result_as_dict
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.database.dbo.dbo import DBO
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_result_as_dict
+    Desc: Get result as dictionary
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_as_cursor
+      Desc: Result as cursor
+    
+      Test: |
+        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        c = DBO(dsn)
+        d = c._dbo_driver   
+        d.result_as_dict(False)
+        recs = d.execute('SELECT * FROM lov_status').fetchall()
+        
+      Validate: |
+        this.test_result = str(recs)
+        assert (recs[0][1] == 'active'), 'output[0] = active'       
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_as_dict
+      Desc: Result as dictionary
+    
+      Test: |
+        d.result_as_dict(True)
+        recs = d.execute('SELECT * FROM lov_status').fetchall()
+        
+      Validate: |
+        this.test_result = str(recs)
+        assert (recs[0]['title'] == 'active'), 'output[id] = active'        
+        
+Test-Scenario-11:
+  Id: ts_11
+  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Name: ts_erase_database
+  Desc: Test method erase_database
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.database.dbo.dbo import DBO
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_erase_database
+    Desc: Erase database
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_erase
+      Desc: Erase
+    
+      Test: |
+        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        c = DBO(dsn)
+        d = c._dbo_driver   
+        d.erase_database() 
+        recs = d.execute("select count(*) from information_schema.tables where table_type = 'BASE TABLE' and table_schema = 'public'").fetchall()           
+        
+      Validate: |
+        this.test_result = str(recs)
+        assert(recs[0]['count'] == 0), 'tables deleted'        

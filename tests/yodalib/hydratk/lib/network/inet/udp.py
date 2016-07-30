@@ -1,7 +1,7 @@
 import socket
 import sys
 
-class Server():
+class Server(object):
     
     def start(self, host='127.0.0.1', port=10000):
         

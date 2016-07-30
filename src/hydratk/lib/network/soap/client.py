@@ -34,7 +34,7 @@ except ImportError:
 
 getLogger('suds.client').setLevel(CRITICAL)
 
-class SOAPClient:
+class SOAPClient(object):
     """Class SOAPClient
     """
     

@@ -37,7 +37,7 @@ java_types = {
   'bool'  : JBoolean
 }
 
-class JavaBridge:
+class JavaBridge(object):
     """Class JavaBridge
     """
 

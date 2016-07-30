@@ -27,7 +27,7 @@ from sys import version_info
 if (version_info[0] == 2):
     from string import replace
 
-class EmailClient:
+class EmailClient(object):
     """Class EmailClient
     """
     

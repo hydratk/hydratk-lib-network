@@ -43,7 +43,7 @@ browsers = {
   'SAFARI'     : 'Safari'
 }            
 
-class SeleniumBridge():
+class SeleniumBridge(object):
     """Class SeleniumBridge
     """
     

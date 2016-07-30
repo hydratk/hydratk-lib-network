@@ -4,6 +4,7 @@ config = {
   'pre_tasks' : [
                  'version_update',
                  'install_libs_from_repo',
+                 'install_pip',
                  'install_java',
                  'install_oracle'
                 ],
@@ -14,28 +15,14 @@ config = {
                  ],
           
   'modules' : [   
-               'hydratk',
-               'cx_Oracle>=5.1.3',
-               'httplib2>=0.9.1',
-               'JPype1>=0.6.1',
-               'lxml>=3.3.3',                
-               'MySQL-python>=1.2.3', 
-               'paramiko>=1.16.0',
-               'psycopg2>=2.4.5',               
-               'pycurl>=7.19.5.1',     
+               'hydratk',             
                'pyexcel>=0.2.0',
                'pyexcel-xlsx>=0.1.0',
-               'pyexcel-ods3>=0.1.1',
-               'python-ldap>=2.4.25',                                                     
+               'pyexcel-ods3>=0.1.1',                                                   
                'python-ntlm>=1.1.0', 
                'python-qpid-proton>=0.10',
-               'pytz>=2016.6.1',              
-               'scapy>=2.3.1',
-               'selenium>=2.46.1',
-               'simplejson>=3.8.2',
-               'stompest>=2.1.6', 
-               'suds>=0.4', 
-               'tftpy>=0.6.2'                       
+               'pytz>=2016.6.1',                
+               'simplejson>=3.8.2'          
               ],
           
   'files' : {

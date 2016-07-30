@@ -22,7 +22,7 @@ from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
 from sqlite3 import Error, connect, Row
 
-class DBClient():
+class DBClient(object):
     """Class DBClient
     """
     

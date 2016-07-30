@@ -30,7 +30,7 @@ from hydratk.lib.array.operation import subdict
 from ldap import set_option, initialize, LDAPError, OPT_DEBUG_LEVEL, OPT_NETWORK_TIMEOUT, SCOPE_BASE, SCOPE_SUBTREE
 from ldap.modlist import addModlist, modifyModlist
 
-class LDAPClient:
+class LDAPClient(object):
     """Class LDAPClient
     """
     

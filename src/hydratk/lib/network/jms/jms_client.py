@@ -26,7 +26,7 @@ from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
 from hydratk.lib.bridge.java import JavaBridge
 
-class JMSClient:
+class JMSClient(object):
     """Class JMSClient
     """
     

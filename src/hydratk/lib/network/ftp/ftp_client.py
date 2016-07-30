@@ -33,7 +33,7 @@ from sys import version_info
 if (not(version_info[0] == 2 and version_info[1] == 6)):
     from ftplib import FTP_TLS
 
-class FTPClient:
+class FTPClient(object):
     """Class FTPClient
     """
     

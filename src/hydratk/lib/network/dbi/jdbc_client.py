@@ -22,7 +22,7 @@ from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
 from hydratk.lib.bridge.java import JavaBridge
 
-class DBClient:
+class DBClient(object):
     """Class DBClient
     """
     
