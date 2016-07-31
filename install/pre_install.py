@@ -28,6 +28,7 @@ def version_update(requires):
     major, minor = version_info[0], version_info[1]
     
     cfg['modules'].append('lxml>=3.3.3')
+    cfg['modules'].append('pyexcel-ods3>=0.1.1')
     cfg['modules'].append('paramiko>=1.16.0')
     cfg['modules'].append('psycopg2>=2.4.5')
     cfg['modules'].append('pycurl>=7.19.5.1')
@@ -61,6 +62,19 @@ def install_libs_from_repo(requires):
 def install_pip(requires):
     
     major, minor = version_info[0], version_info[1]   
+    
+    system('pip install lxml>=3.3.3')
+    requires.append('lxml>=3.3.3')
+    system('pip install pyexcel-ods3>=0.1.1')
+    requires.append('pyexcel-ods3>=0.1.1')
+    system('pip install paramiko>=1.16.0')
+    requires.append('paramiko>=1.16.0')
+    system('pip install psycopg2>=2.4.5')
+    requires.append('psycopg2>=2.4.5')
+    system('pip install pycurl>=7.19.5.1')
+    requires.append('pycurl>=7.19.5.1')
+    system('pip install selenium>=2.46.1')
+    requires.append('selenium>=2.46.1')    
     
     if (major == 2):
         system('pip install httplib2>=0.9.1')

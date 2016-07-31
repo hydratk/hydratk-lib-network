@@ -17,8 +17,7 @@ config = {
   'modules' : [   
                'hydratk',             
                'pyexcel>=0.2.0',
-               'pyexcel-xlsx>=0.1.0',
-               'pyexcel-ods3>=0.1.1',                                                   
+               'pyexcel-xlsx>=0.1.0',                                                                  
                'python-ntlm>=1.1.0', 
                'python-qpid-proton>=0.10',
                'pytz>=2016.6.1',                
