@@ -32,13 +32,11 @@ def version_update(requires):
     cfg['modules'].append('paramiko>=1.16.0')
     cfg['modules'].append('psycopg2>=2.4.5')
     cfg['modules'].append('pycurl>=7.19.5.1')
-    cfg['modules'].append('selenium>=2.46.1')
-    cfg['modules'].append('MySQL-python>=1.2.3')
-    cfg['modules'].append('python-ldap>=2.4.25')
+    cfg['modules'].append('selenium>=2.46.1')    
 
     if (major == 3):
         cfg['libs']['mysqlclient>=1.3.7'] = cfg['libs']['MySQL-python>=1.2.3']
-        cfg['libs']['pyldap>=2.4.25'] = cfg['libs']['python-ldap>=2.4.25']
+        cfg['libs']['pyldap>=2.4.25'] = cfg['libs']['python-ldap>=2.4.25']    
         
     return requires                    
 
@@ -78,30 +76,19 @@ def install_pip(requires):
     
     if (major == 2):
         system('pip install httplib2>=0.9.1')
-        requires.append('httplib2>=0.9.1')
         system('pip install MySQL-python>=1.2.3')
-        requires.append('MySQL-python>=1.2.3')
         system('pip install python-ldap>=2.4.25')
-        requires.append('python-ldap>=2.4.25')
         system('pip install scapy>=2.3.1')
-        requires.append('scapy>=2.3.1')
         system('pip install stompest>=2.1.6')
-        requires.append('stompest>=2.1.6') 
         system('pip install suds>=0.4')
-        requires.append('suds>=0.4')
-        system('pip install tftpy>=0.6.2')   
-        requires.append('tftpy>=0.6.2')      
+        system('pip install tftpy>=0.6.2')       
     else:   
         if (find_loader('httplib2') == None):
             system('pip install git+https://github.com/httplib2/httplib2.git@master#egg=httplib2')
         system('pip install mysqlclient>=1.3.7') 
-        requires.append('mysqlclient>=1.3.7')  
         system('pip install pyldap>=2.4.25') 
-        requires.append('pyldap>=2.4.25')
         system('pip install scapy-python3>=0.18') 
-        requires.append('scapy-python3>=0.18')
-        system('pip install suds-py3>=1.3.2.0')  
-        requires.append('suds-py3>=1.3.2.0')                   
+        system('pip install suds-py3>=1.3.2.0')                    
         if (find_loader('tftpy') == None):
             system('pip install git+https://github.com/ZuljinSBK/tftpy.git@master#egg=tftpy') 
             
