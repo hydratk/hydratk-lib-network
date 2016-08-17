@@ -36,7 +36,7 @@ def version_update(requires):
 
     if (major == 3):
         cfg['libs']['mysqlclient>=1.3.7'] = cfg['libs']['MySQL-python>=1.2.3']
-        cfg['libs']['pyldap>=2.4.25'] = cfg['libs']['python-ldap>=2.4.25']    
+        cfg['libs']['pyldap>=2.4.25'] = cfg['libs']['python-ldap>=2.4.25']  
         
     return requires                    
 
@@ -44,9 +44,14 @@ def install_libs_from_repo(requires):
     
     pckm = cmd.get_pck_manager()[0]
     
-    libs = cfg['libs']
+    if (version_info[0] == 2):
+        inst = ['MySQL-python>=1.2.3', 'python-ldap>=2.4.25']
+    else:   
+        inst = ['mysqlclient>=1.3.7', 'pyldap>=2.4.25'] 
+    
+    libs = cfg['libs']    
     for key in libs.keys():
-        if (key in requires):
+        if (key in requires or key in inst):
             lib_inst = []
             if ('repo' in libs[key]):
                 lib_inst += libs[key]['repo']
