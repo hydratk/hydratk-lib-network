@@ -30,6 +30,7 @@ def version_update(requires):
     cfg['modules'].append('lxml>=3.3.3')
     cfg['modules'].append('pyexcel-ods3>=0.1.1')
     cfg['modules'].append('paramiko>=1.16.0')
+    cfg['modules'].append('pymssql>=2.1.3')
     cfg['modules'].append('psycopg2>=2.4.5')
     cfg['modules'].append('pycurl>=7.19.5.1')
     cfg['modules'].append('selenium>=2.46.1')    
@@ -72,6 +73,8 @@ def install_pip(requires):
     requires.append('pyexcel-ods3>=0.1.1')
     system('pip install paramiko>=1.16.0')
     requires.append('paramiko>=1.16.0')
+    system('pip install pymssql>=2.1.3')
+    requires.append('pymssql>=2.1.3')    
     system('pip install psycopg2>=2.4.5')
     requires.append('psycopg2>=2.4.5')
     system('pip install pycurl>=7.19.5.1')
@@ -80,19 +83,22 @@ def install_pip(requires):
     requires.append('selenium>=2.46.1')    
     
     if (major == 2):
-        system('pip install httplib2>=0.9.1')
+        system('pip install jsonrpclib>=0.1.7')
         system('pip install MySQL-python>=1.2.3')
         system('pip install python-ldap>=2.4.25')
         system('pip install scapy>=2.3.1')
-        system('pip install stompest>=2.1.6')
+        if (minor == 6):
+            system('pip install stompest==2.1.6')
+        else:
+            system('pip install stompest>=2.2.5')
         system('pip install suds>=0.4')
         system('pip install tftpy>=0.6.2')       
     else:   
-        if (find_loader('httplib2') == None):
-            system('pip install git+https://github.com/httplib2/httplib2.git@master#egg=httplib2')
+        system('pip install jsonrpclib-pelix>=0.2.8')
         system('pip install mysqlclient>=1.3.7') 
         system('pip install pyldap>=2.4.25') 
         system('pip install scapy-python3>=0.18') 
+        system('pip install stompest>=2.2.5')
         system('pip install suds-py3>=1.3.2.0')                    
         if (find_loader('tftpy') == None):
             system('pip install git+https://github.com/ZuljinSBK/tftpy.git@master#egg=tftpy') 

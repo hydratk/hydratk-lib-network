@@ -38,10 +38,36 @@ Test-Scenario-1:
       
       Validate: |
         this.test_result = res
-        assert (res), '_verbose = True'            
+        assert (res), '_verbose = True'    
         
     Test-Condition-3: 
       Id: tco_03
+      Name: tco_telnet
+      Desc: Telnet protocol
+    
+      Test: |
+        c = TermClient('TELNET')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'TermClient'), 'TermClient = TermClient' 
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_telnet_args
+      Desc: TELNET with arguments
+    
+      Test: |
+        c = TermClient('TELNET', True)
+        res = c._verbose
+      
+      Validate: |
+        this.test_result = res
+        assert (res), '_verbose = True'                           
+        
+    Test-Condition-5: 
+      Id: tco_05
       Name: tco_invalid
       Desc: Invalid protocol
       

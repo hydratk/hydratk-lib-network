@@ -1,6 +1,6 @@
 Test-Scenario-1:
   Id: ts_01
-  Path: hydratk/lib/network/dbi/postgresql_client/01_methods_ut.jedi
+  Path: hydratk/lib/network/dbi/mssql_client/01_methods_ut.jedi
   Name: ts_init
   Desc: Test method __init__
   Author: Petr Rasek <bowman@hydratk.org>
@@ -20,7 +20,7 @@ Test-Scenario-1:
       Desc: Initialize
       
       Test: |
-        c = DBClient('POSTGRESQL')
+        c = DBClient('MSSQL')
         res = c.__class__.__name__
       
       Validate: |
@@ -29,7 +29,7 @@ Test-Scenario-1:
         
 Test-Scenario-2:
   Id: ts_02
-  Path: hydratk/lib/network/dbi/postgresql_client/01_methods_ut.jedi
+  Path: hydratk/lib/network/dbi/mssql_client/01_methods_ut.jedi
   Name: ts_props
   Desc: Test properties
   Author: Petr Rasek <bowman@hydratk.org>
@@ -49,8 +49,8 @@ Test-Scenario-2:
       Desc: Getter client
       
       Test: |
-        c = DBClient('POSTGRESQL')
-        c.connect('127.0.0.1', 5432, 'postgre', 'lynus', 'bowman')
+        c = DBClient('MSSQL')
+        c.connect('10.0.0.1', 1433, 'test', 'test', 'test')
         res = c.client.__class__.__name__
       
       Validate: |        
@@ -139,7 +139,7 @@ Test-Scenario-2:
         
 Test-Scenario-3:
   Id: ts_03
-  Path: hydratk/lib/network/dbi/postgresql_client/01_methods_ut.jedi
+  Path: hydratk/lib/network/dbi/mssql_client/01_methods_ut.jedi
   Name: ts_connect
   Desc: Test method connect
   Author: Petr Rasek <bowman@hydratk.org>
@@ -165,8 +165,8 @@ Test-Scenario-3:
         evs = ['dbi_before_connect', 'dbi_after_connect']
         reg_ev_hook(mh, evs[0])
         reg_ev_hook(mh, evs[1])
-        c = DBClient('POSTGRESQL')
-        host, port, sid, user, passw = '127.0.0.1', 5432, 'postgre', 'lynus', 'bowman'
+        c = DBClient('MSSQL')
+        host, port, sid, user, passw = '10.0.0.1', 1433, 'test', 'test', 'test'
         res = c.connect(host, port, sid, user, passw)       
       
       Validate: |          
@@ -196,7 +196,7 @@ Test-Scenario-3:
       Desc: Invalid host
       
       Test: |
-        c = DBClient('POSTGRESQL')
+        c = DBClient('MSSQL')
         res = c.connect('1.1.1.1')
       
       Validate: |               
@@ -209,7 +209,7 @@ Test-Scenario-3:
       Desc: Invalid port
       
       Test: |
-        res = c.connect('127.0.0.1', 20)
+        res = c.connect('10.0.0.1', 20)
       
       Validate: |               
         this.test_result = res
@@ -221,7 +221,7 @@ Test-Scenario-3:
       Desc: Invalid sid
       
       Test: |
-        res = c.connect('127.0.0.1', 5432, 'xx', 'lynus', 'bowman')
+        res = c.connect('10.0.0.1', 1433, 'xx', 'test', 'test')
       
       Validate: |               
         this.test_result = res
@@ -233,7 +233,7 @@ Test-Scenario-3:
       Desc: Invalid user
       
       Test: |
-        res = c.connect('127.0.0.1', 5432, 'postgre', 'xx', 'xx')
+        res = c.connect('10.0.0.1', 1433, 'test', 'xx', 'xx')
       
       Validate: |               
         this.test_result = res
@@ -241,7 +241,7 @@ Test-Scenario-3:
         
 Test-Scenario-4:
   Id: ts_04
-  Path: hydratk/lib/network/dbi/postgresql_client/01_methods_ut.jedi
+  Path: hydratk/lib/network/dbi/mssql_client/01_methods_ut.jedi
   Name: ts_disconnect
   Desc: Test method disconnect
   Author: Petr Rasek <bowman@hydratk.org>
@@ -261,8 +261,8 @@ Test-Scenario-4:
       Desc: Disconnect from server
       
       Test: |
-        c = DBClient('POSTGRESQL')
-        host, port, sid, user, passw = '127.0.0.1', 5432, 'postgre', 'lynus', 'bowman'
+        c = DBClient('MSSQL')
+        host, port, sid, user, passw = '10.0.0.1', 1433, 'test', 'test', 'test'
         c.connect(host, port, sid, user, passw)
         res = c.disconnect()       
       
@@ -281,16 +281,16 @@ Test-Scenario-4:
       Desc: Not connected to server
       
       Test: |
-        c = DBClient('POSTGRESQL')
+        c = DBClient('MSSQL')
         res = c.disconnect()
       
       Validate: |  
         this.test_result = res
-        assert (not res), 'disconnect = False'    
+        assert (not res), 'disconnect = False'  
         
 Test-Scenario-5:
   Id: ts_05
-  Path: hydratk/lib/network/dbi/postgresql_client/01_methods_ut.jedi
+  Path: hydratk/lib/network/dbi/mssql_client/01_methods_ut.jedi
   Name: ts_exec_query
   Desc: Test method exec_query
   Author: Petr Rasek <bowman@hydratk.org>
@@ -316,8 +316,8 @@ Test-Scenario-5:
         evs = ['dbi_before_exec_query', 'dbi_after_exec_query']
         reg_ev_hook(mh, evs[0])
         reg_ev_hook(mh, evs[1])      
-        c = DBClient('POSTGRESQL')
-        host, port, sid, user, passw = '127.0.0.1', 5432, 'postgre', 'lynus', 'bowman'
+        c = DBClient('MSSQL')
+        host, port, sid, user, passw = '10.0.0.1', 1433, 'test', 'test', 'test'
         c.connect(host, port, sid, user, passw) 
         query = 'SELECT * FROM customer a , payer b WHERE a.id = b.customer'
         res, rows = c.exec_query(query, fetch_one=True)        
@@ -389,8 +389,8 @@ Test-Scenario-5:
       Desc: Insert record
       
       Test: |
-        query = 'INSERT INTO customer (name, status, segment) VALUES (?, ?, ?)'
-        bindings = ['test test', 3, 2]
+        query = 'INSERT INTO customer (id, name, status, segment) VALUES (?, ?, ?, ?)'
+        bindings = [66, 'test test', 3, 2]
         res, rows = c.exec_query(query, bindings)
       
       Validate: |                                                                 
@@ -438,8 +438,8 @@ Test-Scenario-5:
       Desc: Disabled autocommit            
       
       Test: |
-        query = 'INSERT INTO customer (name, status, segment) VALUES (?, ?, ?)'
-        bindings = ['test test', 3, 2]
+        query = 'INSERT INTO customer (id, name, status, segment) VALUES (?, ?, ?, ?)'
+        bindings = [66, 'test test', 3, 2]
         res, rows = c.exec_query(query, bindings, autocommit=False)        
       
       Validate: |
@@ -465,8 +465,8 @@ Test-Scenario-5:
       Desc: Invalid table
       
       Test: |    
-        c = DBClient('POSTGRESQL')
-        host, port, sid, user, passw = '127.0.0.1', 5432, 'postgre', 'lynus', 'bowman'
+        c = DBClient('MSSQL')
+        host, port, sid, user, passw = '10.0.0.1', 1433, 'test', 'test', 'test'
         c.connect(host, port, sid, user, passw) 
         res, rows = c.exec_query('SELECT * FROM xxx')         
         
@@ -504,7 +504,7 @@ Test-Scenario-5:
       Desc: Invalid constaint
       
       Test: |     
-        res, rows = c.exec_query('INSERT INTO customer (name, status, segment) VALUES (\'test test\', 0, 2)')         
+        res, rows = c.exec_query('INSERT INTO customer (id, name, status, segment) VALUES (66, \'test test\', 0, 2)')         
         
       Validate: |
         this.test_result = res
@@ -521,11 +521,11 @@ Test-Scenario-5:
       
       Validate: |     
         this.test_result = res
-        assert (not res), 'exec_query = False' 
+        assert (not res), 'exec_query = False'       
         
 Test-Scenario-6:
   Id: ts_06
-  Path: hydratk/lib/network/dbi/postgresql_client/01_methods_ut.jedi
+  Path: hydratk/lib/network/dbi/mssql_client/01_methods_ut.jedi
   Name: ts_commit
   Desc: Test method commit
   Author: Petr Rasek <bowman@hydratk.org>
@@ -545,10 +545,10 @@ Test-Scenario-6:
       Desc: Commit
       
       Test: |    
-        c = DBClient('POSTGRESQL')
-        host, port, sid, user, passw = '127.0.0.1', 5432, 'postgre', 'lynus', 'bowman'
+        c = DBClient('MSSQL')
+        host, port, sid, user, passw = '10.0.0.1', 1433, 'test', 'test', 'test'
         c.connect(host, port, sid, user, passw) 
-        c.exec_query('INSERT INTO customer (name, status, segment) VALUES (?, ?, ?)', ['test test', 1, 2], autocommit=False)
+        c.exec_query('INSERT INTO customer (id, name, status, segment) VALUES (?, ?, ?, ?)', [66, 'test test', 1, 2], autocommit=False)
         res = c.commit()
         
       Validate: |                         
@@ -581,7 +581,7 @@ Test-Scenario-6:
         
 Test-Scenario-7:
   Id: ts_07
-  Path: hydratk/lib/network/dbi/postgresql_client/01_methods_ut.jedi
+  Path: hydratk/lib/network/dbi/mssql_client/01_methods_ut.jedi
   Name: ts_rollback
   Desc: Test method rollback
   Author: Petr Rasek <bowman@hydratk.org>
@@ -601,10 +601,10 @@ Test-Scenario-7:
       Desc: Rollback
       
       Test: |    
-        c = DBClient('POSTGRESQL')
-        host, port, sid, user, passw = '127.0.0.1', 5432, 'postgre', 'lynus', 'bowman'
+        c = DBClient('MSSQL')
+        host, port, sid, user, passw = '10.0.0.1', 1433, 'test', 'test', 'test'
         c.connect(host, port, sid, user, passw) 
-        c.exec_query('INSERT INTO customer (name, status, segment) VALUES (?, ?, ?)', ['test test', 1, 2], autocommit=False)
+        c.exec_query('INSERT INTO customer (id, name, status, segment) VALUES (?, ?, ?, ?)', [66, 'test test', 1, 2], autocommit=False)
         res = c.rollback()
         
       Validate: |                         
@@ -631,11 +631,11 @@ Test-Scenario-7:
       
       Validate: |     
         this.test_result = res
-        assert (not res), 'rollback = False'    
+        assert (not res), 'rollback = False'   
         
 Test-Scenario-8:
   Id: ts_08
-  Path: hydratk/lib/network/dbi/postgresql_client/01_methods_ut.jedi
+  Path: hydratk/lib/network/dbi/mssql_client/01_methods_ut.jedi
   Name: ts_call_proc
   Desc: Test method call_proc
   Author: Petr Rasek <bowman@hydratk.org>
@@ -661,8 +661,8 @@ Test-Scenario-8:
         evs = ['dbi_before_call_proc', 'dbi_after_call_proc']
         reg_ev_hook(mh, evs[0])
         reg_ev_hook(mh, evs[1])      
-        c = DBClient('POSTGRESQL')
-        host, port, sid, user, passw = '127.0.0.1', 5432, 'postgre', 'lynus', 'bowman'
+        c = DBClient('MSSQL')
+        host, port, sid, user, passw = '10.0.0.1', 1433, 'test', 'test', 'test'
         c.connect(host, port, sid, user, passw)
         id = 1 
         param_names = ['id', 'name', 'status', 'segment', 'birth_no', 'reg_no', 'tax_no', 'err']      
@@ -718,8 +718,8 @@ Test-Scenario-8:
       Desc: Invalid procedure
       
       Test: |    
-        c = DBClient('POSTGRESQL')
-        host, port, sid, user, passw = '127.0.0.1', 5432, 'postgre', 'lynus', 'bowman'
+        c = DBClient('MSSQL')
+        host, port, sid, user, passw = '10.0.0.1', 1433, 'test', 'test', 'test'
         c.connect(host, port, sid, user, passw) 
         res = c.call_proc('xx')        
         
@@ -803,4 +803,4 @@ Test-Scenario-8:
       
       Validate: |     
         this.test_result = res
-        assert (res == None), 'call_proc = None'                                                                                               
+        assert (res == None), 'call_proc = None'                            

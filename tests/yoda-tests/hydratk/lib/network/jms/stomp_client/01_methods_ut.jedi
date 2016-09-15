@@ -364,6 +364,24 @@ Test-Scenario-5:
       Validate: |
         this.test_result = res
         assert (res), 'send = True'  
+        c.disconnect()
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases      
+        
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_connected
+      Desc: Not connected to server 
+      
+      Test: |
+        res = c.send('', '')             
+        
+      Validate: |
+        this.test_result = res
+        assert (not res), 'send = False'          
         
 Test-Scenario-6:
   Id: ts_06
@@ -380,8 +398,8 @@ Test-Scenario-6:
   
   Test-Case-1:
     Id: tc_01
-    Name: tc_send
-    Desc: Send message
+    Name: tc_browse
+    Desc: Browse
     
     Test-Condition-1: 
       Id: tco_01
@@ -556,13 +574,13 @@ Test-Scenario-7:
     Test-Condition-2: 
       Id: tco_02
       Name: tco_mult_msg
-      Desc: Browse multiple messages
+      Desc: Receive multiple messages
       
       Test: |
         cnt = 5
         msg = 'test'
         headers = {'JMSCorrelationID': '1234', 'JMSType': 'test_msg'}
-        for i in xrange(0, cnt):
+        for i in range(0, cnt):
             c.send(queue, msg, 'queue', headers)
             
         res = c.receive(queue, 10)       
@@ -589,8 +607,8 @@ Test-Scenario-7:
       Desc: Not connected to server 
       
       Test: |
-        res = c.browse(queue)             
+        res = c.receive(queue)             
         
       Validate: |
         this.test_result = str(res)
-        assert (res == None), 'browse = None'                                          
+        assert (res == None), 'receive = None'                                          

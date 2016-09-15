@@ -27,6 +27,7 @@ ftp_before_remove_dir
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
 from paramiko import SFTPClient, Transport
+from paramiko.rsakey import RSAKey
 from paramiko.ssh_exception import SSHException, NoValidConnectionsError
 from socket import error, setdefaulttimeout
 from os import path, remove
@@ -41,6 +42,7 @@ class FTPClient(object):
     _host = None
     _port = None
     _user = None
+    _passw = None
     _path = None
     _verbose = None
     _is_connected = None
@@ -92,6 +94,12 @@ class FTPClient(object):
         return self._passw 
     
     @property
+    def cert(self): 
+        """ cert property getter """          
+        
+        return self._cert   
+    
+    @property
     def path(self):
         """ remote path property getter """  
         
@@ -109,7 +117,7 @@ class FTPClient(object):
         
         return self._is_connected                       
         
-    def connect(self, host, port=22, user=None, passw=None, path='/', timeout=10):
+    def connect(self, host, port=22, user=None, passw=None, cert=None, path='/', timeout=10):
         """Method connects to server
         
         Args:
@@ -117,6 +125,7 @@ class FTPClient(object):
            port (int): server port, default protocol port
            user (str): username
            passw (str): password
+           cert (str): path to certificate file
            path (str): server path
            timeout (int): timeout
            
@@ -131,30 +140,33 @@ class FTPClient(object):
         
         try:            
                           
-            message = '{0}/{1}@{2}:{3}{4} timeout:{5}'.format(user, passw, host, port, path, timeout)                            
+            message = '{0}/{1}@{2}:{3}{4} cert:{5}, timeout:{6}'.format(user, passw, host, port, path, cert, timeout)                            
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_ftp_connecting', message), self._mh.fromhere())
             
-            ev = event.Event('ftp_before_connect', host, port, user, passw, path, timeout)
+            ev = event.Event('ftp_before_connect', host, port, user, passw, cert, path, timeout)
             if (self._mh.fire_event(ev) > 0):
                 host = ev.argv(0)
                 port = ev.argv(1)
                 user = ev.argv(2)
                 passw = ev.argv(3)
-                path = ev.argv(4)
-                timeout = ev.argv(5)
+                cert = ev.argv(4)
+                path = ev.argv(5)
+                timeout = ev.argv(6)
                 
             self._host = host
             self._port = port
             self._user = user
             self._passw = passw 
+            self._cert = cert
             self._path = '/'                 
             
             if (ev.will_run_default()):
                 setdefaulttimeout(timeout)                  
                 t = Transport((host, self._port))                                                
             
-                if (user != None):
-                    t.connect(username=user, password=passw)
+                if (user != None or cert != None):
+                    pkey = RSAKey.from_private_key_file(self._cert) if (cert != None) else None
+                    t.connect(username=user, password=passw, pkey=pkey)
                     self._client = SFTPClient.from_transport(t)         
                            
                 self._is_connected = True           

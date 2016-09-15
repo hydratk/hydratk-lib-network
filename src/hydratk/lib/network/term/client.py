@@ -12,14 +12,15 @@ from hydratk.core.masterhead import MasterHead
 from importlib import import_module
 
 protocols = {
-  'SSH': 'ssh_client'
+  'SSH'    : 'ssh_client',
+  'TELNET' : 'telnet_client'
 }
 
 def TermClient(protocol='SSH', *args, **kwargs):
     """TERM client factory method
         
     Args:            
-        provider (str): TERM protocol, SSH
+        provider (str): TERM protocol, SSH|TELNET
         args (args): arguments
         kwargs (kwargs): key value arguments 
            

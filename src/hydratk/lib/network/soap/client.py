@@ -21,8 +21,10 @@ soap_after_request
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
 from suds import client, WebFault, MethodNotFound
-from suds.transport import TransportError
+from suds.transport import Reply, TransportError
+from suds.transport.https import HttpAuthenticated, WindowsHttpAuthenticated
 from suds.cache import NoCache
+from requests import post
 from lxml.etree import Element, SubElement, fromstring, tostring, XMLSyntaxError
 from logging import getLogger, StreamHandler, CRITICAL, DEBUG
 from sys import stderr
@@ -42,9 +44,11 @@ class SOAPClient(object):
     _client = None
     _wsdl = None
     _url = None
+    _proxies = None
     _location = None
     _user = None
     _passw = None
+    _cert = None
     _endpoint = None
     _headers = None
     _verbose = None
@@ -88,6 +92,12 @@ class SOAPClient(object):
         return self._url     
     
     @property
+    def proxies(self):
+        """ proxies property getter """
+        
+        return self._proxies        
+    
+    @property
     def location(self):
         """ WSDL location property getter """
         
@@ -104,6 +114,12 @@ class SOAPClient(object):
         """ user password property getter """
         
         return self._passw     
+    
+    @property
+    def cert(self):
+        """ cert property getter """
+        
+        return self._cert       
     
     @property
     def endpoint(self):
@@ -123,18 +139,20 @@ class SOAPClient(object):
         
         return self._verbose                      
             
-    def load_wsdl(self, url, location='remote', user=None, passw=None, endpoint=None, headers=None,
-                  transport=None, use_cache=True, timeout=10): 
+    def load_wsdl(self, url, proxies=None, location='remote', user=None, passw=None, auth='Basic', cert=None, 
+                  endpoint=None, headers=None, use_cache=True, timeout=10): 
         """Method loads wsdl
         
         Args:
            url (str): WSDL URL, URL for remote, file path for local
+           proxies (dict): HTTP proxies {http: url, https: url}
            location (str): WSDL location, remote|local
            user (str): username
            passw (str): password
+           auth (str): HTTP authentication, Basic|NTLM
+           cert (obj): str (path to cert.perm path), tuple (path to cert.pem path, path to key.pem path)
            endpoint (str): service endpoint, default endpoint from WSDL 
            headers (dict): HTTP headers
-           transport (obj): HTTP transport
            use_cache (bool): load WSDL from cache
            timeout (int): timeout
 
@@ -152,17 +170,19 @@ class SOAPClient(object):
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_soap_loading_wsdl', url,
                           user, passw, endpoint, headers), self._mh.fromhere())
             
-            ev = event.Event('soap_before_load_wsdl', url, location, user, passw, endpoint, headers, transport)
+            ev = event.Event('soap_before_load_wsdl', url, proxies, location, user, passw, auth, endpoint, headers)
             if (self._mh.fire_event(ev) > 0):
                 url = ev.argv(0)
-                location = ev.argv(1)
-                user = ev.argv(2)
-                passw = ev.argv(3)
-                endpoint = ev.argv(4)
-                headers = ev.argv(5)
-                transport = ev.argv(6)         
+                proxies = ev.argv(1)
+                location = ev.argv(2)
+                user = ev.argv(3)
+                passw = ev.argv(4)
+                auth = ev.argv(5)
+                endpoint = ev.argv(6)
+                headers = ev.argv(7)                         
         
             self._url = url
+            self._proxies = proxies
             self._location = location
             self._user = user
             self._passw = passw
@@ -174,15 +194,23 @@ class SOAPClient(object):
                 options = {}
                 if (self._location == 'local'):
                     self._url = 'file://' + self._url
+                if (self._proxies != None):
+                    options['proxy'] = self._proxies
                 if (self._user != None):
-                    options['username'] = self._user
-                    options['password'] = self._passw
+                    if (auth == 'Basic'):
+                        options['username'] = self._user
+                        options['password'] = self._passw
+                    elif (auth == 'NTLM'):
+                        options['transport'] = WindowsHttpAuthenticated(username=self._user, password=self._passw)
+                    else:
+                        options['username'] = self._user
+                        options['password'] = self._passw 
+                if (cert != None):
+                    options['transport'] = RequestsTransport(cert=cert)                       
                 if (self._endpoint != None):
                     options['location'] = self._endpoint
                 if (self._headers != None):
                     options['headers'] = self._headers
-                if (transport != None):
-                    options['transport'] = transport
                 if (timeout != None):
                     options['timeout'] = timeout
     
@@ -278,4 +306,20 @@ class SOAPClient(object):
             
         except (WebFault, TransportError, URLError, ValueError, XMLSyntaxError, MethodNotFound) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
-            return None                     
+            return None         
+        
+class RequestsTransport(HttpAuthenticated):
+    """Class RequestsTransport
+    """    
+
+    def __init__(self, **kwargs):
+        
+        self.cert = kwargs.pop('cert', None)
+        HttpAuthenticated.__init__(self, **kwargs)
+
+    def send(self, request):
+        
+        self.addcredentials(request)
+        resp = post(request.url, data=request.message, headers=request.headers, cert=self.cert, verify=True)
+        result = Reply(resp.status_code, resp.headers, resp.content)
+        return result                    

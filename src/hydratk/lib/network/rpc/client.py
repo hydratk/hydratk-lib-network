@@ -12,7 +12,9 @@ from hydratk.core.masterhead import MasterHead
 from importlib import import_module
 
 providers = {
-  'RMI': 'rmi_client'
+  'RMI'     : 'rmi_client',
+  'XMLRPC'  : 'xmlrpc_client',
+  'JSONRPC' : 'jsonrpc_client'
 }
 
 def RPCClient(provider, *args):

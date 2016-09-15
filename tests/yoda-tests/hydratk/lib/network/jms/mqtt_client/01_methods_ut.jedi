@@ -1,6 +1,6 @@
 Test-Scenario-1:
   Id: ts_01
-  Path: hydratk/lib/network/jms/amqp_client/01_methods_ut.jedi
+  Path: hydratk/lib/network/jms/mqtt_client/01_methods_ut.jedi
   Name: ts_init
   Desc: Test method __init__
   Author: Petr Rasek <bowman@hydratk.org>
@@ -20,14 +20,14 @@ Test-Scenario-1:
       Desc: Not verbose mode
       
       Test: |
-        c = JMSClient('AMQP', False)
+        c = JMSClient('MQTT', False)
         res = c.__class__.__name__
       
       Validate: |
         this.test_result = res
-        assert (res == 'JMSClient'), '__init__ = JMSClient'     
+        assert (res == 'JMSClient'), '__init__ = JMSClient'
         this.test_result = res = c._verbose
-        assert (not res), '_verbose = False'
+        assert (not res), '_verbose = False'          
         
     Test-Condition-2: 
       Id: tco_02
@@ -35,18 +35,18 @@ Test-Scenario-1:
       Desc: Verbose mode
       
       Test: |
-        c = JMSClient('AMQP', True)
+        c = JMSClient('MQTT', True)
         res = c.__class__.__name__
       
       Validate: |
         this.test_result = res
-        assert (res == 'JMSClient'), '__init__ = JMSClient'     
+        assert (res == 'JMSClient'), '__init__ = JMSClient'   
         this.test_result = res = c._verbose
-        assert (res), '_verbose = True'        
+        assert (res), '_verbose = True'                      
         
 Test-Scenario-2:
   Id: ts_02
-  Path: hydratk/lib/network/jms/amqp_client/01_methods_ut.jedi
+  Path: hydratk/lib/network/jms/mqtt_client/01_methods_ut.jedi
   Name: ts_props
   Desc: Test properties
   Author: Petr Rasek <bowman@hydratk.org>
@@ -66,8 +66,8 @@ Test-Scenario-2:
       Desc: Getter client
       
       Test: |
-        c = JMSClient('AMQP', True)
-        c.connect('127.0.0.1', 5672, 'admin', 'password')
+        c = JMSClient('MQTT', True)
+        c.connect('127.0.0.1', 1883, 'admin', 'password')
         res = c.client.__class__.__name__
       
       Validate: |        
@@ -125,7 +125,7 @@ Test-Scenario-2:
       Validate: |        
         this.test_result = res
         exp = c._passw
-        assert (res == exp), 'passw = {0}'.format(exp)     
+        assert (res == exp), 'passw = {0}'.format(exp)                  
         
     Test-Condition-6: 
       Id: tco_06
@@ -138,7 +138,7 @@ Test-Scenario-2:
       Validate: |        
         this.test_result = res
         exp = c._verbose
-        assert (res == exp), 'verbose = {0}'.format(exp)            
+        assert (res == exp), 'verbose = {0}'.format(exp)           
         
     Test-Condition-7: 
       Id: tco_07
@@ -156,7 +156,7 @@ Test-Scenario-2:
         
 Test-Scenario-3:
   Id: ts_03
-  Path: hydratk/lib/network/jms/amqp_client/01_methods_ut.jedi
+  Path: hydratk/lib/network/jms/mqtt_client/01_methods_ut.jedi
   Name: ts_connect
   Desc: Test method connect
   Author: Petr Rasek <bowman@hydratk.org>
@@ -182,8 +182,8 @@ Test-Scenario-3:
         evs = ['jms_before_connect', 'jms_after_connect']
         reg_ev_hook(mh, evs[0])
         reg_ev_hook(mh, evs[1])
-        c = JMSClient('AMQP')
-        host, port, user, passw = '127.0.0.1', 5672, 'admin', 'password'
+        c = JMSClient('MQTT')
+        host, port, user, passw = '127.0.0.1', 1883, 'admin', 'password'
         res = c.connect(host, port, user, passw)       
       
       Validate: |          
@@ -213,7 +213,7 @@ Test-Scenario-3:
       Desc: Invalid host
       
       Test: |
-        c = JMSClient('AMQP')
+        c = JMSClient('MQTT')
         res = c.connect('1.1.1.1')
       
       Validate: |               
@@ -230,11 +230,11 @@ Test-Scenario-3:
       
       Validate: |               
         this.test_result = res
-        assert (not res), 'connect = False'                           
+        assert (not res), 'connect = False'            
         
 Test-Scenario-4:
   Id: ts_04
-  Path: hydratk/lib/network/jms/amqp_client/01_methods_ut.jedi
+  Path: hydratk/lib/network/jms/mqtt_client/01_methods_ut.jedi
   Name: ts_disconnect
   Desc: Test method disconnect
   Author: Petr Rasek <bowman@hydratk.org>
@@ -254,8 +254,8 @@ Test-Scenario-4:
       Desc: Disconnect from server
       
       Test: |
-        c = JMSClient('AMQP')
-        host, port, user, passw = '127.0.0.1', 5672, 'admin', 'password'
+        c = JMSClient('MQTT')
+        host, port, user, passw = '127.0.0.1', 1883, 'admin', 'password'
         c.connect(host, port, user, passw)
         res = c.disconnect()       
       
@@ -274,16 +274,16 @@ Test-Scenario-4:
       Desc: Not connected to server
       
       Test: |
-        c = JMSClient('AMQP')
+        c = JMSClient('MQTT')
         res = c.disconnect()
       
       Validate: |  
         this.test_result = res
-        assert (not res), 'disconnect = False'  
+        assert (not res), 'disconnect = False' 
         
 Test-Scenario-5:
   Id: ts_05
-  Path: hydratk/lib/network/jms/amqp_client/01_methods_ut.jedi
+  Path: hydratk/lib/network/jms/mqtt_client/01_methods_ut.jedi
   Name: ts_send
   Desc: Test method send
   Author: Petr Rasek <bowman@hydratk.org>
@@ -309,12 +309,12 @@ Test-Scenario-5:
         evs = ['jms_before_send', 'jms_after_send']
         reg_ev_hook(mh, evs[0])
         reg_ev_hook(mh, evs[1])      
-        c = JMSClient('AMQP')
-        host, port, user, passw = '127.0.0.1', 5672, 'admin', 'password'
+        c = JMSClient('MQTT')
+        host, port, user, passw = '127.0.0.1', 1883, 'admin', 'password'
         c.connect(host, port, user, passw) 
-        queue = 'HydraQueue'
+        topic = 'HydraTopic'
         msg = 'test'
-        res = c.send(queue, msg, 'queue')       
+        res = c.send(topic, msg)       
                 
       Validate: |
         this.test_result = res
@@ -326,44 +326,7 @@ Test-Scenario-5:
         del mh._event_hooks[evs[1]]   
         del events[0]
         del events[0]  
-        
-    Test-Condition-2: 
-      Id: tco_02
-      Name: tco_queue_headers
-      Desc: Send message with headers to queue
-      
-      Test: |
-        headers = {'JMSCorrelationID': '1234', 'JMSType': 'test_msg'}
-        res = c.send(queue, msg, 'queue', headers)       
-                
-      Validate: |
-        this.test_result = res
-        assert (res), 'send = True'
-        
-    Test-Condition-3: 
-      Id: tco_03
-      Name: tco_topic
-      Desc: Send message to topic
-      
-      Test: |
-        topic = 'HydraTopic'
-        res = c.send(topic, msg, 'topic')       
-                
-      Validate: |
-        this.test_result = res
-        assert (res), 'send = True'        
-                         
-    Test-Condition-4: 
-      Id: tco_04
-      Name: tco_topic_headers
-      Desc: Send message with headers to topic
-      
-      Test: |
-        res = c.send(topic, msg, 'topic', headers)       
-                
-      Validate: |
-        this.test_result = res
-        assert (res), 'send = True'   
+        c.disconnect()
         
   Test-Case-2:
     Id: tc_02
@@ -376,154 +339,15 @@ Test-Scenario-5:
       Desc: Not connected to server 
       
       Test: |
-        res = c.send('', '')             
+        res = c.send(topic, '')             
         
       Validate: |
         this.test_result = res
-        assert (not res), 'send = False'             
+        assert (not res), 'send = False'           
         
 Test-Scenario-6:
   Id: ts_06
-  Path: hydratk/lib/network/jms/amqp_client/01_methods_ut.jedi
-  Name: ts_browse
-  Desc: Test method browse
-  Author: Petr Rasek <bowman@hydratk.org>
-  Version: 0.1
-  
-  Pre-Req: |
-    from hydratk.core.masterhead import MasterHead
-    from hydratk.lib.network.jms.client import JMSClient
-    from yodahelpers.hydratk.core.events import events, reg_ev_hook
-  
-  Test-Case-1:
-    Id: tc_01
-    Name: tc_send
-    Desc: Send message
-    
-    Test-Condition-1: 
-      Id: tco_01
-      Name: tco_queue
-      Desc: Browse queue
-      
-      Test: |
-        mh = MasterHead.get_head()
-        evs = ['jms_before_browse', 'jms_after_browse']
-        reg_ev_hook(mh, evs[0])
-        reg_ev_hook(mh, evs[1])      
-        c = JMSClient('AMQP')
-        host, port, user, passw = '127.0.0.1', 5672, 'admin', 'password'
-        c.connect(host, port, user, passw) 
-        queue = 'HydraQueue'
-        res = c.browse(queue)       
-                
-      Validate: |
-        this.test_result = str(res)
-        assert (len(res) > 0), 'browse is not empty'
-        msg = res[-1]
-        cont = [msg['message'], msg['JMSCorrelationID'], msg['JMSType']]
-        exp = ['test', '1234', 'test_msg']
-        assert (cont == exp), 'message = {0}'.format(exp)
-        res = [events[0]._id, events[1]._id]
-        this.test_result = str(res)
-        assert (res == evs), 'browse fires {0}'.format(evs)
-        del mh._event_hooks[evs[0]] 
-        del mh._event_hooks[evs[1]]   
-        del events[0]
-        del events[0]      
-        
-    Test-Condition-2: 
-      Id: tco_02
-      Name: tco_single_msg
-      Desc: Browse single message
-      
-      Test: |
-        res = c.browse(queue, 1)       
-                
-      Validate: |
-        this.test_result = str(res)
-        assert (len(res) == 1), 'browse contains 1 message'
-        cont = res[0]['message']
-        exp = 'test'
-        assert (cont == exp), 'message = {0}'.format(exp)            
-        
-    Test-Condition-3: 
-      Id: tco_03
-      Name: tco_jmscorrelationid
-      Desc: Search message with JMSCorrelationID
-      
-      Test: |
-        jms_id = '1234'
-        res = c.browse(queue, jms_correlation_id=jms_id)       
-                
-      Validate: |
-        this.test_result = str(res)
-        assert (len(res) >= 1), 'browse contains messages'
-        cont = res[-1]['JMSCorrelationID']
-        assert (cont == jms_id), 'JMSCorrelationID = {0}'.format(exp)  
-        
-    Test-Condition-4: 
-      Id: tco_04
-      Name: tco_jmstype
-      Desc: Search message with JMSType
-      
-      Test: |
-        jms_type = 'test_msg'
-        res = c.browse(queue, jms_type=jms_type)       
-                
-      Validate: |
-        this.test_result = str(res)
-        assert (len(res) >= 1), 'browse contains messages'
-        cont = res[-1]['JMSType']
-        assert (cont == jms_type), 'JMSType = {0}'.format(exp)    
-        
-    Test-Condition-5: 
-      Id: tco_05
-      Name: tco_both
-      Desc: Search message with JMSCorrelationID, JMSType
-      
-      Test: |
-        res = c.browse(queue, jms_correlation_id=jms_id, jms_type=jms_type)       
-                
-      Validate: |
-        this.test_result = str(res)
-        assert (len(res) >= 1), 'browse contains messages'
-        cont = [res[-1]['JMSCorrelationID'], res[-1]['JMSType']]
-        exp = [jms_id, jms_type]
-        assert (cont == exp), 'JMSCorrelationID, JMSType = {0}'.format(exp)      
-        
-    Test-Condition-6: 
-      Id: tco_06
-      Name: tco_no_msg
-      Desc: Search no messages
-      
-      Test: |
-        res = c.browse(queue, jms_correlation_id='1235', jms_type=jms_type)       
-                
-      Validate: |
-        this.test_result = str(res)
-        assert (len(res) == 0), 'browse is empty'
-        c.disconnect() 
-        
-  Test-Case-2:
-    Id: tc_02
-    Name: tc_negative
-    Desc: Negative cases      
-        
-    Test-Condition-1: 
-      Id: tco_01
-      Name: tco_not_connected
-      Desc: Not connected to server 
-      
-      Test: |
-        res = c.browse('test')             
-        
-      Validate: |
-        this.test_result = res
-        assert (res == None), 'browse = None' 
-        
-Test-Scenario-7:
-  Id: ts_07
-  Path: hydratk/lib/network/jms/amqp_client/01_methods_ut.jedi
+  Path: hydratk/lib/network/jms/mqtt_client/01_methods_ut.jedi
   Name: ts_receive
   Desc: Test method receive
   Author: Petr Rasek <bowman@hydratk.org>
@@ -549,26 +373,25 @@ Test-Scenario-7:
         evs = ['jms_before_receive', 'jms_after_receive']
         reg_ev_hook(mh, evs[0])
         reg_ev_hook(mh, evs[1])      
-        c = JMSClient('AMQP')
-        host, port, user, passw = '127.0.0.1', 5672, 'admin', 'password'
+        c = JMSClient('MQTT')
+        host, port, user, passw = '127.0.0.1', 1883, 'admin', 'password'
         c.connect(host, port, user, passw) 
-        queue = 'HydraQueue'
-        res = c.receive(queue, 1)       
+        topic = 'HydraTopic'
+        res = c.receive(topic, 1)       
                 
       Validate: |
         this.test_result = str(res)
         assert (len(res) == 1), 'received 1 message'
         msg = res[0]
-        cont = msg['message']
         exp = 'test'
-        assert (cont == exp), 'message = {0}'.format(exp)
+        assert (msg == exp), 'message = {0}'.format(exp)
         res = [events[0]._id, events[1]._id]
         this.test_result = str(res)
         assert (res == evs), 'receive fires {0}'.format(evs)
         del mh._event_hooks[evs[0]] 
         del mh._event_hooks[evs[1]]   
         del events[0]
-        del events[0]      
+        del events[0]         
         
     Test-Condition-2: 
       Id: tco_02
@@ -576,23 +399,15 @@ Test-Scenario-7:
       Desc: Receive multiple messages
       
       Test: |
-        cnt = 5
-        msg = 'test'
-        headers = {'JMSCorrelationID': '1234', 'JMSType': 'test_msg'}
-        for i in range(0, cnt):
-            c.send(queue, msg, 'queue', headers)
-            
-        res = c.receive(queue, 10)       
+        cnt = 2
+        res = c.receive(topic, cnt)       
                 
       Validate: |
         this.test_result = str(res[-1])
         assert (len(res) >= cnt), 'received {0} messages'.format(cnt)
         msg = res[-1]
-        cont = [msg['message'], msg['JMSCorrelationID'], msg['JMSType']]
-        exp = ['test', '1234', 'test_msg']
-        assert (cont == exp), 'message = {0}'.format(exp) 
-        res = c.browse(queue)
-        assert (len(res) == 0), 'queue is empty after receive' 
+        exp = 'test'
+        assert (msg == exp), 'message = {0}'.format(exp)  
         c.disconnect()                               
         
   Test-Case-2:
@@ -606,8 +421,8 @@ Test-Scenario-7:
       Desc: Not connected to server 
       
       Test: |
-        res = c.receive(queue)             
+        res = c.receive(topic)             
         
       Validate: |
         this.test_result = str(res)
-        assert (res == None), 'receive = None'                                                                
+        assert (res == None), 'receive = None'                                 

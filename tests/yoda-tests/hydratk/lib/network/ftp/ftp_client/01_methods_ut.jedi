@@ -783,7 +783,7 @@ Test-Scenario-8:
             f.write('test')
         
         c = FTPClient('FTP')
-        c.connect('srv8.endora.cz', 21, 'lynus', 'Bowmanlop1', '/lynus.cekuj.net/web')
+        c.connect('srv8.endora.cz', 21, 'lynus', 'xxx', '/lynus.cekuj.net/web')
         res = c.upload_file(lpath+file)       
       
       Validate: |          
@@ -895,7 +895,7 @@ Test-Scenario-9:
             f.write('test')
         
         c = FTPClient('FTP')
-        c.connect('srv8.endora.cz', 21, 'lynus', 'Bowmanlop1', '/lynus.cekuj.net/web')
+        c.connect('srv8.endora.cz', 21, 'lynus', 'xxx', '/lynus.cekuj.net/web')
         c.upload_file(rpath)
         res = c.delete_file('/lynus.cekuj.net/web/test.txt')       
       
@@ -919,7 +919,7 @@ Test-Scenario-9:
       
       Test: |
         c = FTPClient('FTP')
-        c.connect('srv8.endora.cz', 21, 'lynus', 'Bowmanlop1')
+        c.connect('srv8.endora.cz', 21, 'lynus', 'xxx')
         res = c.delete_file('/private/test.txt')
       
       Validate: |                               
@@ -967,7 +967,7 @@ Test-Scenario-10:
         evs = 'ftp_before_make_dir'
         reg_ev_hook(mh, evs)
         c = FTPClient('FTP')
-        c.connect('srv8.endora.cz', 21, 'lynus', 'Bowmanlop1')
+        c.connect('srv8.endora.cz', 21, 'lynus', 'xxx')
         rpath = '/lynus.cekuj.net/web/test'
         res = c.make_dir(rpath)       
       
@@ -992,7 +992,7 @@ Test-Scenario-10:
       
       Test: |
         c = FTPClient('FTP')
-        c.connect('srv8.endora.cz', 21, 'lynus', 'Bowmanlop1')
+        c.connect('srv8.endora.cz', 21, 'lynus', 'xxx')
         res = c.make_dir('/test')
       
       Validate: |                               
@@ -1040,7 +1040,7 @@ Test-Scenario-11:
         evs = 'ftp_before_remove_dir'
         reg_ev_hook(mh, evs)                     
         c = FTPClient('FTP')
-        c.connect('srv8.endora.cz', 21, 'lynus', 'Bowmanlop1')
+        c.connect('srv8.endora.cz', 21, 'lynus', 'xxx')
         rpath = '/lynus.cekuj.net/web/test' 
         c.make_dir(rpath)        
         res = c.remove_dir(rpath)       
@@ -1066,7 +1066,7 @@ Test-Scenario-11:
       
       Test: |
         c = FTPClient('FTP')
-        c.connect('srv8.endora.cz', 21, 'lynus', 'Bowmanlop1')
+        c.connect('srv8.endora.cz', 21, 'lynus', 'xxx')
         res = c.remove_dir('/dev/null/test')
       
       Validate: |                               

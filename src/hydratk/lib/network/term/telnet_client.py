@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""SSH client
+"""Telnet client
 
-.. module:: network.lib.ssh_client
+.. module:: network.lib.telnet_client
    :platform: Unix
-   :synopsis: SSH client
+   :synopsis: Telnet client
 .. moduleauthor:: Petr Rašek <bowman@hydratk.org>
 
 """
@@ -20,10 +20,9 @@ term_after_exec_command
 
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
-from paramiko import SSHClient, AutoAddPolicy
-from paramiko.ssh_exception import SSHException, NoValidConnectionsError
+from telnetlib import Telnet
 from socket import error
-from logging import basicConfig, DEBUG
+from sys import version_info
 
 class TermClient(object):
     """Class TermClient
@@ -33,32 +32,32 @@ class TermClient(object):
     _client = None
     _host = None    
     _port = None
-    _user = None
-    _passw = None
-    _cert = None
     _verbose = None
     _is_connected = None
+    _br = None
     
-    def __init__(self, verbose=False):
+    def __init__(self, verbose=False, br='\n'):
         """Class constructor
            
         Called when the object is initialized 
         
         Args:      
            verbose (bool): verbose mode
+           br (str): line break \n (Linux), \r\n (Windows)
            
         """          
         
         self._mh = MasterHead.get_head()         
-        self._client = SSHClient()   
-                         
+        self._client = Telnet()   
+           
+        self._br = br                 
         self._verbose = verbose 
         if (self._verbose):            
-            basicConfig(level=DEBUG)
+            self._client.set_debuglevel(2)
             
     @property
     def client(self):
-        """ SSH client property getter """
+        """ Telnet client property getter """
         
         return self._client
     
@@ -72,25 +71,7 @@ class TermClient(object):
     def port(self):
         """ Sserver port property getter """
         
-        return self._port
-    
-    @property
-    def user(self):
-        """ username property getter """
-        
-        return self._user
-    
-    @property
-    def passw(self):
-        """ user password property getter """
-        
-        return self._passw  
-    
-    @property
-    def cert(self):
-        """ cert property getter """
-        
-        return self._cert     
+        return self._port   
     
     @property
     def verbose(self):
@@ -104,19 +85,16 @@ class TermClient(object):
         
         return self._is_connected                
                 
-    def connect(self, host, port=22, user=None, passw=None, cert=None, timeout=10):
+    def connect(self, host, port=23, timeout=10):
         """Method connects to server
         
         Args:
            host (str): server host
            port (int): server port, default protocol port
-           user (str): username
-           passw (str): password
-           cert (str): path to certificate file
            timeout (int): timeout           
            
         Returns:
-           bool: result
+           tuple: result (bool), output (list)
            
         Raises:
            event: term_before_connect
@@ -126,39 +104,33 @@ class TermClient(object):
         
         try:
             
-            message = '{0}/{1}@{2}:{3} cert:{4}, timeout:{5}'.format(user, passw, host, port, cert, timeout)                            
+            message = '{0}:{1} timeout:{2}'.format(host, port, timeout)                            
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_term_connecting', message), self._mh.fromhere())
             
-            ev = event.Event('term_before_connect', host, port, user, passw, cert, timeout)
+            ev = event.Event('term_before_connect', host, port, timeout)
             if (self._mh.fire_event(ev) > 0):
                 host = ev.argv(0)
                 port = ev.argv(1)
-                user = ev.argv(2)
-                passw = ev.argv(3)                    
-                cert = ev.argv(4)
-                timeout = ev.argv(5)
+                timeout = ev.argv(2)
             
             self._host = host
             self._port = port
-            self._user = user
-            self._passw = passw
-            self._cert = cert
             
             if (ev.will_run_default()):                  
-                self._client.set_missing_host_key_policy(AutoAddPolicy())
-                self._client.connect(self._host, self._port, self._user, self._passw, key_filename=self._cert, timeout=timeout)                
+                self._client.open(self._host, self._port, timeout=timeout)                
                 self._is_connected = True
+                out = self._read()
                 
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_term_connected'), self._mh.fromhere()) 
             ev = event.Event('term_after_connect')
             self._mh.fire_event(ev)   
                                                    
-            return True
+            return True, out
         
-        except (SSHException, NoValidConnectionsError, error) as ex:
+        except error as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             self._client.close()            
-            return False            
+            return False, [str(ex)]          
                    
     def disconnect(self):
         """Method disconnects from server
@@ -182,19 +154,18 @@ class TermClient(object):
                 self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_term_disconnected'), self._mh.fromhere())  
                 return True  
     
-        except (SSHException, NoValidConnectionsError, error) as ex:
+        except error as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False                    
     
-    def exec_command(self, command, input=None):
+    def exec_command(self, command):
         """Method executes command
            
         Args:
-           command (str): command
-           input (str): input for interactive mode         
+           command (str): command                   
            
         Returns:
-           tuple: result (bool), output (list) (stdout for result True, stderr for result False) 
+           tuple: result (bool), output (list)
            
         Raises:
            event: term_before_exec_command
@@ -215,24 +186,34 @@ class TermClient(object):
                 command = ev.argv(0)            
             
             if (ev.will_run_default()): 
-                stdin, stdout, stderr = self._client.exec_command(command)
+                command += self._br
+                self._client.write(command if (version_info[0] == 2) else command.encode('utf-8'))
+                out = self._read()
                 
-                if (input != None):
-                    stdin.write(input + '\n')
-                    stdin.flush()
-                
-                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_term_command_executed'), self._mh.fromhere())
-                ev = event.Event('term_after_exec_command')
-                self._mh.fire_event(ev)               
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_term_command_executed'), self._mh.fromhere())
+            ev = event.Event('term_after_exec_command')
+            self._mh.fire_event(ev)               
             
-                err = stderr.read().splitlines()            
-                if (len(err) > 0 and input == None):
-                    raise SSHException(err)
-                else:
-                    out = stdout.read().splitlines()
-                    out = out if (len(out) > 0) else None
-                    return True, out
+            return True, out
             
-        except (SSHException, NoValidConnectionsError, error) as ex:
+        except error as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
-            return False, [str(ex)]                                
+            return False, [str(ex)] 
+        
+    def _read(self):
+        """Method reads server output
+           
+        Args:
+           none                 
+           
+        Returns:
+           list
+                
+        """          
+        
+        buff, out = [], None
+        while (out != '' and out != b''):
+            out = self._client.read_until(self._br if (version_info[0] == 2) else self._br.encode('utf-8'), 2)
+            buff.append(out)
+            
+        return buff[:-1]

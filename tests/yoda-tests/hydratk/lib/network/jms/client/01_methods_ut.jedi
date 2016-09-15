@@ -1,8 +1,8 @@
 Test-Scenario-1:
   Id: ts_01
   Path: hydratk/lib/network/jms/client/01_methods_ut.jedi
-  Name: ts_termclient
-  Desc: Test method TermClient
+  Name: ts_jmsclient
+  Desc: Test method JMSClient
   Author: Petr Rasek <bowman@hydratk.org>
   Version: 0.1
   
@@ -100,10 +100,36 @@ Test-Scenario-1:
       
       Validate: |
         this.test_result = res
-        assert (res == 'JMSClient'), 'JMSClient = JMSClient'                           
+        assert (res == 'JMSClient'), 'JMSClient = JMSClient'  
         
     Test-Condition-6: 
       Id: tco_06
+      Name: tco_mqtt
+      Desc: MQTT protocol
+    
+      Test: |
+        c = JMSClient('MQTT')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'JMSClient'), 'JMSClient = JMSClient' 
+        
+    Test-Condition-7: 
+      Id: tco_07
+      Name: tco_mqtt_args
+      Desc: MQTT with arguments
+    
+      Test: |
+        c = JMSClient('MQTT', True)
+        res = c._verbose
+      
+      Validate: |
+        this.test_result = res
+        assert (res), '_verbose = True'                                          
+        
+    Test-Condition-8: 
+      Id: tco_08
       Name: tco_invalid
       Desc: Invalid protocol
       

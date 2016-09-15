@@ -31,7 +31,7 @@ classifiers = [
           
 setup(
       name='hydratk-lib-network',
-      version='0.1.0',
+      version='0.2.0a.dev1',
       description='Clients/API for many network protocols and technologies',
       long_description=readme,
       author='Petr Rašek, HydraTK team',

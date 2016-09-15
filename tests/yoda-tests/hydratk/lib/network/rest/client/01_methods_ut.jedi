@@ -60,21 +60,47 @@ Test-Scenario-2:
     
     Test-Condition-1: 
       Id: tco_01
-      Name: tco_client
-      Desc: Getter client
+      Name: tco_res_status
+      Desc: Getter res_status
       
       Test: |
         c = RESTClient(True)
         c.send_request('http://localhost:8080/Autobot/rs/crm/')
-        res = c.client.__class__.__name__
+        res = c.res_status
       
       Validate: |        
         this.test_result = res
-        exp = c._client.__class__.__name__
-        assert (res == exp), 'client = {0}'.format(exp) 
+        exp = c._res_status
+        assert (res == exp), 'res_status = {0}'.format(exp) 
         
     Test-Condition-2: 
       Id: tco_02
+      Name: tco_req_header
+      Desc: Getter req_header
+      
+      Test: |
+        res = c.req_header
+      
+      Validate: |        
+        this.test_result = str(res)
+        exp = c._req_header
+        assert (res == exp), 'req_header = {0}'.format(exp)         
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_req_body
+      Desc: Getter req_body
+      
+      Test: |
+        res = c.req_body
+      
+      Validate: |        
+        this.test_result = (res)
+        exp = c._req_body
+        assert (res == exp), 'req_body = {0}'.format(exp)         
+        
+    Test-Condition-4: 
+      Id: tco_04
       Name: tco_res_header
       Desc: Getter res_header
       
@@ -86,8 +112,8 @@ Test-Scenario-2:
         exp = c._res_header
         assert (res == exp), 'res_header = {0}'.format(exp)         
         
-    Test-Condition-3: 
-      Id: tco_03
+    Test-Condition-5: 
+      Id: tco_05
       Name: tco_res_body
       Desc: Getter res_body
       
@@ -99,8 +125,8 @@ Test-Scenario-2:
         exp = c._res_body
         assert (res == exp), 'res_body = {0}'.format(exp)           
         
-    Test-Condition-4: 
-      Id: tco_04
+    Test-Condition-6: 
+      Id: tco_06
       Name: tco_verbose
       Desc: Getter verbose
       
@@ -111,7 +137,84 @@ Test-Scenario-2:
         this.test_result = res
         exp = c._verbose
         assert (res == exp), 'verbose = {0}'.format(exp) 
-        c.reset_debug()
+        
+    Test-Condition-7: 
+      Id: tco_07
+      Name: tco_config
+      Desc: Getter config
+      
+      Test: |
+        res = c.config
+      
+      Validate: |        
+        this.test_result = str(res)
+        exp = c._config
+        assert (res == exp), 'config = {0}'.format(exp)   
+        
+    Test-Condition-8: 
+      Id: tco_08
+      Name: tco_history
+      Desc: Getter history
+      
+      Test: |
+        res = c.history
+      
+      Validate: |        
+        this.test_result = str(res)
+        exp = c._history
+        assert (res == exp), 'history = {0}'.format(exp) 
+        
+    Test-Condition-9: 
+      Id: tco_09
+      Name: tco_url
+      Desc: Getter url
+      
+      Test: |
+        res = c.url
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._url
+        assert (res == exp), 'url = {0}'.format(exp)       
+        
+    Test-Condition-10: 
+      Id: tco_10
+      Name: tco_proxies
+      Desc: Getter proxies
+      
+      Test: |
+        res = c.proxies
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._proxies
+        assert (res == exp), 'proxies = {0}'.format(exp)        
+        
+    Test-Condition-11: 
+      Id: tco_11
+      Name: tco_cert
+      Desc: Getter cert
+      
+      Test: |
+        res = c.cert
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._cert
+        assert (res == exp), 'cert = {0}'.format(exp)  
+        
+    Test-Condition-12: 
+      Id: tco_12
+      Name: tco_cookies
+      Desc: Getter cookies
+      
+      Test: |
+        res = c.cookies
+      
+      Validate: |        
+        this.test_result = str(res)
+        exp = c._cookies
+        assert (res == exp), 'cookies = {0}'.format(exp)                                        
         
 Test-Scenario-3:
   Id: ts_03
@@ -160,37 +263,6 @@ Test-Scenario-3:
 Test-Scenario-4:
   Id: ts_04
   Path: hydratk/lib/network/rest/client/01_methods_ut.jedi
-  Name: ts_get_body
-  Desc: Test method get_body
-  Author: Petr Rasek <bowman@hydratk.org>
-  Version: 0.1
-  
-  Pre-Req: |
-    from hydratk.lib.network.rest.client import RESTClient
-  
-  Test-Case-1:
-    Id: tc_01
-    Name: tc_get_body
-    Desc: Get body
-    
-    Test-Condition-1: 
-      Id: tco_01
-      Name: tco_body
-      Desc: Get body
-      
-      Test: |
-        c = RESTClient()
-        c.send_request('http://localhost:8080/Autobot/rs/crm/')
-        res = c.get_body()
-      
-      Validate: |        
-        this.test_result = res
-        exp = c._res_body
-        assert (res == exp), 'get_body = {0}'.format(exp) 
-        
-Test-Scenario-5:
-  Id: ts_05
-  Path: hydratk/lib/network/rest/client/01_methods_ut.jedi
   Name: ts_send_request
   Desc: Test method send_request
   Author: Petr Rasek <bowman@hydratk.org>
@@ -201,6 +273,7 @@ Test-Scenario-5:
     from hydratk.lib.network.rest.client import RESTClient
     from yodahelpers.hydratk.core.events import events, reg_ev_hook
     from simplejson import dumps
+    from os import path, system
   
   Test-Case-1:
     Id: tc_01
@@ -388,18 +461,33 @@ Test-Scenario-5:
         
     Test-Condition-4: 
       Id: tco_04
-      Name: tco_auth
+      Name: tco_auth_basic
       Desc: Basic authentication
       
       Test: |
         url = 'https://git-retail.hydratk.org/'
-        res, out = c.send_request(url, user='bowman', passw='lynus1234')
+        res, out = c.send_request(url, user='xxx', passw='xxx', auth='Basic')
       
       Validate: |  
         this.test_result = res
         assert (res == 200), 'status = 200' 
         exp = 'hydratk-demo'
-        assert (exp in out), 'out contains {0}'.format(exp)       
+        assert (exp in out), 'out contains {0}'.format(exp)   
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_auth_digest
+      Desc: Digest authentication
+      
+      Test: |
+        url = 'https://trac.hydratk.org/hydratk/login'
+        res, out = c.send_request(url, user='xxx', passw='xxx', auth='Digest')
+      
+      Validate: |  
+        this.test_result = res
+        assert (res == 200), 'status = 200' 
+        exp = 'HydraTK'
+        assert (exp in out), 'out contains {0}'.format(exp)                   
         
   Test-Case-4:
     Id: tc_04
@@ -529,4 +617,73 @@ Test-Scenario-5:
       
       Validate: |  
         this.test_result = res
-        assert (res == 401), 'status = 401'                                                                             
+        assert (res == 401), 'status = 401'       
+        
+  Test-Case-5:
+    Id: tc_05
+    Name: tc_files
+    Desc: Request with files       
+        
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_upload
+      Desc: Upload file
+      
+      Test: |
+        file = 'test.txt'
+        with open(file, 'w') as f:
+            f.write('test')
+      
+        c = RESTClient()
+        url = 'http://www.filedropper.com/'
+        res, out = c.send_request(url, method='POST', file=file)      
+      
+      Validate: |          
+        this.test_result = res
+        assert (res == 200), 'status = 200'
+        this.test_result = out
+        assert (out != None), 'download url is not empty' 
+        system('rm -f {0}'.format(file))
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_up_invalid_path
+      Desc: Invalid path for upload
+      
+      Test: |
+        file = '/xxx/test.txt'
+        res, out = c.send_request(url, method='POST', file=file)      
+      
+      Validate: |          
+        this.test_result = res
+        assert (res == None), 'None'                  
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_download
+      Desc: Download file
+      
+      Test: |
+        url = 'https://pypi.python.org/packages/82/a3/ef4eb2dc3fcaaa5346d51548fcc3c8f0f4e1769d8ad4052430cd8ef1a1af/hydratk-ext-datagen-0.1.0.tar.gz#md5=5695263be75afd60473374e17c0f5785'
+        file = 'hydratk-ext-datagen-0.1.0.tar.gz'
+        res, out = c.send_request(url, method='GET', file=file)      
+      
+      Validate: |          
+        this.test_result = str(res)
+        assert (res == 200), 'status = 200'
+        this.test_result = res = path.exists(file)
+        assert (res), 'file {0} downloaded'.format(file)
+        system('rm -f {0}'.format(file))        
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_down_invalid_path
+      Desc: Invalid path for download
+      
+      Test: |
+        file = '/xxx/test.txt'
+        res, out = c.send_request(url, method='GET', file=file)      
+      
+      Validate: |          
+        this.test_result = res
+        assert (res == None), 'None'                                                                                         

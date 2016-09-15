@@ -128,6 +128,19 @@ Test-Scenario-2:
         
     Test-Condition-6: 
       Id: tco_06
+      Name: tco_cert
+      Desc: Getter cert
+      
+      Test: |
+        res = c.cert
+      
+      Validate: |             
+        this.test_result = res
+        exp = c._cert
+        assert (res == exp), 'cert = {0}'.format(exp)         
+        
+    Test-Condition-7: 
+      Id: tco_07
       Name: tco_path
       Desc: Getter path
       
@@ -139,8 +152,8 @@ Test-Scenario-2:
         exp = c._path
         assert (res == exp), 'path = {0}'.format(exp)         
         
-    Test-Condition-7: 
-      Id: tco_07
+    Test-Condition-8: 
+      Id: tco_08
       Name: tco_verbose
       Desc: Getter verbose
       
@@ -152,8 +165,8 @@ Test-Scenario-2:
         exp = c._verbose
         assert (res == exp), 'verbose = {0}'.format(exp)
         
-    Test-Condition-8: 
-      Id: tco_08
+    Test-Condition-9: 
+      Id: tco_09
       Name: tco_is_connected
       Desc: Getter is_connected
       
@@ -220,7 +233,7 @@ Test-Scenario-3:
       Desc: Set server path 
       
       Test: |
-        res = c.connect(host, port, user, passw, 'private')       
+        res = c.connect(host, port, user, passw, path='private')       
       
       Validate: |          
         this.test_result = res
@@ -238,7 +251,7 @@ Test-Scenario-3:
       
       Test: |
         c._path = None
-        res = c.connect(host, port, user, passw, '/xxx')       
+        res = c.connect(host, port, user, passw, path='/xxx')       
       
       Validate: |          
         this.test_result = res
@@ -247,7 +260,22 @@ Test-Scenario-3:
         this.test_result = str(res)
         exp = [host, port, user, passw, '/', True]
         assert (res == exp), 'host, port, user, passw, path, is_connected = {0}'.format(exp)
-        c.disconnect()                      
+        c.disconnect() 
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_cert
+      Desc: Certificate 
+      
+      Test: |
+        c = FTPClient('SFTP')
+        host, port, user, cert = 'tldwiki.teledin.cz', 22, 'spravce', '/home/lynus/hydratk/key.pri' 
+        res = c.connect(host, port, user, cert=cert)      
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'connect = True'
+        c.disconnect()                             
         
   Test-Case-2:
     Id: tc_02
@@ -622,7 +650,7 @@ Test-Scenario-8:
             f.write('test')
         
         c = FTPClient('SFTP')
-        c.connect('127.0.0.1', 22, 'lynus', 'bowman', '/home/lynus')
+        c.connect('127.0.0.1', 22, 'lynus', 'bowman', path='/home/lynus')
         res = c.upload_file(lpath+file)       
       
       Validate: |          

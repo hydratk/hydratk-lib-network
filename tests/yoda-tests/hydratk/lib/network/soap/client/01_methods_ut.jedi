@@ -177,6 +177,32 @@ Test-Scenario-2:
         exp = c._verbose
         assert (res == exp), 'verbose = {0}'.format(exp)   
         
+    Test-Condition-10: 
+      Id: tco_10
+      Name: tco_proxies
+      Desc: Getter proxies
+      
+      Test: |
+        res = c.proxies
+      
+      Validate: |        
+        this.test_result = str(res)
+        exp = c._proxies
+        assert (res == exp), 'proxies = {0}'.format(exp)   
+        
+    Test-Condition-11: 
+      Id: tco_11
+      Name: tco_cert
+      Desc: Getter cert
+      
+      Test: |
+        res = c.cert
+      
+      Validate: |        
+        this.test_result = str(res)
+        exp = c._cert
+        assert (res == exp), 'cert = {0}'.format(exp)              
+        
 Test-Scenario-3:
   Id: ts_03
   Path: hydratk/lib/network/soap/client/01_methods_ut.jedi

@@ -25,14 +25,13 @@ jms_after_browse
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
 from logging import basicConfig, getLogger, DEBUG, CRITICAL
+from stompest.config import StompConfig
+from stompest.sync import Stomp
+from stompest.protocol import StompSpec
+from stompest.error import StompError
 from sys import version_info
 
-if (version_info[0] == 2):
-    from stompest.config import StompConfig
-    from stompest.sync import Stomp
-    from stompest.protocol import StompSpec
-    from stompest.error import StompError
-    getLogger('stompest.sync.client').setLevel(CRITICAL)
+getLogger('stompest.sync.client').setLevel(CRITICAL)
 
 mapping = {
   'JMSCorrelationID': 'correlation-id',
@@ -69,9 +68,6 @@ class JMSClient(object):
            verbose (bool): verbose mode
            
         """         
-        
-        if (version_info[0] == 3):
-            raise NotImplementedError('STOMP client is not supported for Python 3.x due to external library stompest')
         
         try:
         
@@ -254,7 +250,7 @@ class JMSClient(object):
                     if (key in mapping):
                         headers_new[mapping[key]] = value
                 
-                self._client.send('/{0}/{1}'.format(destination_type, destination_name), message, headers_new)
+                self._client.send('/{0}/{1}'.format(destination_type, destination_name), message if (version_info[0] == 2) else message.encode('utf-8'), headers_new)
         
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_jms_msg_sent'), self._mh.fromhere())  
             ev = event.Event('jms_after_send')
@@ -316,10 +312,10 @@ class JMSClient(object):
                 for msg in msgs:
                     
                     message = {}
-                    message['message'] = msg.body
+                    message['message'] = msg.body.decode()
                     for header in msg.rawHeaders:
                         if (header[0] in mapping.values()):
-                            message[mapping.keys()[mapping.values().index(header[0])]] = header[1]
+                            message[list(mapping.keys())[list(mapping.values()).index(header[0])]] = header[1]
                     
                     messages.append(message)
                 
@@ -396,10 +392,10 @@ class JMSClient(object):
                 for msg in msgs:
                     
                     message = {}
-                    message['message'] = msg.body
+                    message['message'] = msg.body.decode()
                     for header in msg.rawHeaders:
                         if (header[0] in mapping.values()):
-                            message[mapping.keys()[mapping.values().index(header[0])]] = header[1]
+                            message[list(mapping.keys())[list(mapping.values()).index(header[0])]] = header[1]
                     
                     messages.append(message)
                 

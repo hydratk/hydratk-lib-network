@@ -21,7 +21,9 @@ HIGHLIGHT_US    = chr(27)+chr(91)+"4m"
 HIGHLIGHT_END   = chr(27)+chr(91)+"0m"
 
 msg = {
-    'htk_rest_request'  : ["Posílám požadavek na server: '{0}', uživatel:'{1}', heslo:'{2}', metoda:'{3}', " + \
-                          "hlavičky:'{4}', tělo:'{5}', parametry:'{6}'"],
-    'htk_rest_response' : ["Obdržena odpověď ze serveru: hlavička: {0}, tělo: {1}"] 
+    'htk_rest_request'     : ["Posílám požadavek na server: '{0}', uživatel:'{1}', heslo:'{2}', autentizace:'{3}', metoda:'{4}', " + \
+                              "hlavičky:'{5}', tělo:'{6}', parametry:'{7}'"],
+    'htk_rest_response'    : ["Obdržena odpověď ze serveru: status: {0}, hlavička: {1}, tělo: {2}"],
+    'htk_rest_unknown_dir' : ["Neznámý adresář: '{0}'"], 
+    'htk_rest_unknown_file' : ["Neznámý soubor: '{0}'"],
 }

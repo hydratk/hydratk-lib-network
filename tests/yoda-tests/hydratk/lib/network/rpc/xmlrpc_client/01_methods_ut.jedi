@@ -1,0 +1,336 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/network/rpc/xmlrpc_client/01_methods_ut.jedi
+  Name: ts_init
+  Desc: Test method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.rpc.client import RPCClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize RPCClient
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_init
+      Desc: Initialize
+      
+      Test: |
+        c = RPCClient('XMLRPC')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'RPCClient'), '__init__ = RPCClient'     
+        
+Test-Scenario-2:
+  Id: ts_02
+  Path: hydratk/lib/network/rpc/xmlrpc_client/01_methods_ut.jedi
+  Name: ts_props
+  Desc: Test properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.rpc.client import RPCClient  
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods 
+        
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_proxy
+      Desc: Getter proxy
+      
+      Test: |
+        c = RPCClient('XMLRPC')
+        res = c.proxy
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._proxy
+        assert (res == exp), 'proxy = {0}'.format(exp) 
+        
+Test-Scenario-3:
+  Id: ts_03
+  Path: hydratk/lib/network/rpc/xmlrpc_client/01_methods_ut.jedi
+  Name: ts_init_proxy
+  Desc: Test method init_proxy
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.rpc.client import RPCClient
+    from hydratk.core.masterhead import MasterHead
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init_proxy
+    Desc: Initialize proxy
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_init
+      Desc: Initialize
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['rpc_before_init_proxy', 'rpc_after_init_proxy']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = RPCClient('XMLRPC')
+        url = 'http://127.0.0.1:8000'
+        res = c.init_proxy(url)      
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'connect = True'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'init_proxy fires {0}'.format(evs)
+        assert (c._proxy is not None), 'proxy is not empty'
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_host
+      Desc: Invalid host
+    
+      Test: |
+        c.init_proxy('http://1.1.1.1:8000')
+        res = c.call_method('callRemote')
+    
+      Validate: |             
+        this.test_result = res
+        assert (not res), 'init_proxy = False'     
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_port
+      Desc: Invalid port
+    
+      Test: |
+        c.init_proxy('http://127.0.0.1:7999')
+        res = c.call_method('callRemote')
+    
+      Validate: |             
+        this.test_result = res
+        assert (not res), 'init_proxy = False'    
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_protocol
+      Desc: Invalid protocol
+    
+      Test: |
+        res = c.init_proxy('htt://127.0.0.1:8000')
+    
+      Validate: |             
+        this.test_result = res
+        assert (not res), 'init_proxy = False'    
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_invalid_path
+      Desc: Invalid path
+    
+      Test: |
+        c.init_proxy('http://127.0.0.1:8000/serv')
+        res = c.call_method('callRemote')
+     
+      Validate: |             
+        this.test_result = res
+        assert (not res), 'init_proxy = False'  
+        
+Test-Scenario-4:
+  Id: ts_04
+  Path: hydratk/lib/network/rpc/xmlrpc_client/01_methods_ut.jedi
+  Name: ts_call_method
+  Desc: Test method call_method
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.rpc.client import RPCClient
+    from hydratk.core.masterhead import MasterHead
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_call_method
+    Desc: Call remote method
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_no_attr
+      Desc: No attributes
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['rpc_before_call_method', 'rpc_after_call_method']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = RPCClient('XMLRPC')
+        url = 'http://127.0.0.1:8000'
+        c.init_proxy(url)
+        res = c.call_method('callRemote')      
+      
+      Validate: |          
+        this.test_result = res
+        assert (res == None), 'call_method = None'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'init_proxy fires {0}'.format(evs)
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0] 
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_out_int
+      Desc: Output int attribute
+      
+      Test: |
+        res = c.call_method('out_int')
+      
+      Validate: |                   
+        this.test_result = res
+        exp = 666
+        assert (res == exp), 'call_method = {0}'.format(exp)
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_out_str
+      Desc: Output str attribute
+      
+      Test: |
+        res = c.call_method('out_string')
+      
+      Validate: |                   
+        this.test_result = res
+        exp = 'Sucker'
+        assert (res == exp), 'call_method = {0}'.format(exp) 
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_in_int
+      Desc: Input int attribute
+      
+      Test: |
+        i = 2
+        res = c.call_method('in_int', i)
+      
+      Validate: |                   
+        this.test_result = res
+        exp = i+6
+        assert (res == exp), 'call_method = {0}'.format(exp) 
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_in_str
+      Desc: Input str attribute
+      
+      Test: |
+        s = 'aa'
+        res = c.call_method('in_string', s)
+      
+      Validate: |                   
+        this.test_result = res
+        exp = s+' xxx'
+        assert (res == exp), 'call_method = {0}'.format(exp)   
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_2_in
+      Desc: Two input attributes
+      
+      Test: |
+        i, j = 3, 5
+        res = c.call_method('in2', i, j)
+      
+      Validate: |                   
+        this.test_result = res
+        exp = str(i)+str(j)
+        assert (res == exp), 'call_method = {0}'.format(exp)
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_method
+      Desc: Invalid method
+    
+      Test: |
+        res = c.call_method('xx')
+    
+      Validate: |             
+        this.test_result = res
+        assert (not res), 'call_method = False'   
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_param
+      Desc: Invalid param
+    
+      Test: |
+        res = c.call_method('in_int', 'xx')
+    
+      Validate: |             
+        this.test_result = res
+        assert (not res), 'call_method = False'         
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_missing_param
+      Desc: Missing param
+    
+      Test: |
+        res = c.call_method('in_int')
+    
+      Validate: |             
+        this.test_result = res
+        assert (not res), 'call_method = False'
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_redundant_param
+      Desc: Redundant param
+    
+      Test: |
+        res = c.call_method('in_int', 1, 2)
+    
+      Validate: |             
+        this.test_result = res
+        assert (not res), 'call_method = False'   
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_not_init
+      Desc: Proxy not initialized
+    
+      Test: |
+        c._proxy = None
+        res = c.call_method('xx')
+    
+      Validate: |             
+        this.test_result = res
+        assert (not res), 'call_method = False'                                                                                                              

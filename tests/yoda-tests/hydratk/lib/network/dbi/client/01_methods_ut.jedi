@@ -77,10 +77,23 @@ Test-Scenario-1:
       
       Validate: |
         this.test_result = res
-        assert (res == 'DBClient'), 'DBClient = DBClient'                                    
+        assert (res == 'DBClient'), 'DBClient = DBClient' 
         
     Test-Condition-6: 
       Id: tco_06
+      Name: tco_mssql
+      Desc: MSSQL engine
+    
+      Test: |
+        c = DBClient('MSSQL')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'DBClient'), 'DBClient = DBClient'                                              
+        
+    Test-Condition-7: 
+      Id: tco_07
       Name: tco_invalid
       Desc: Invalid protocol
       

@@ -15,12 +15,14 @@ config = {
                  ],
           
   'modules' : [   
-               'hydratk',             
+               'hydratk',  
+               'paho-mqtt>=1.2',           
                'pyexcel>=0.2.0',
                'pyexcel-xlsx>=0.1.0',                                                                  
-               'python-ntlm>=1.1.0', 
                'python-qpid-proton>=0.10',
-               'pytz>=2016.6.1',                
+               'pytz>=2016.6.1',   
+               'requests>=2.11.1',
+               'requests-ntlm>=0.3.0',             
                'simplejson>=3.8.2'          
               ],
           
@@ -72,6 +74,15 @@ config = {
                                                   'openssl-devel'
                                                  ]
                                     },
+            'pymssql>=2.1.3'     : {
+                                     'apt-get' : [
+                                                  'freetds-dev'
+                                                 ],
+                                     'yum'     : [
+                                                  'freetds',
+                                                  'freetds-devel'
+                                                 ]
+                                    },              
             'psycopg2>=2.4.5'     : {
                                      'repo'    : [
                                                   'python-psycopg2'

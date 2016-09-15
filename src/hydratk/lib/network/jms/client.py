@@ -14,14 +14,15 @@ from importlib import import_module
 protocols = {
   'JMS'  : 'jms_client',
   'STOMP': 'stomp_client',
-  'AMQP' : 'amqp_client'
+  'AMQP' : 'amqp_client',
+  'MQTT' : 'mqtt_client'
 }
 
 def JMSClient(protocol='JMS', *args, **kwargs):
     """JMS client factory method
         
     Args:            
-        protocol (str): JMS protocol, JMS|STOMP|AMQP
+        protocol (str): JMS protocol, JMS|STOMP|AMQP|MQTT
         args (args): arguments 
         kwargs (kwargs): key value arguments
            

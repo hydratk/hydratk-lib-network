@@ -13,17 +13,18 @@ from importlib import import_module
 
 engines = {
   'SQLITE'    : 'sqlite_client',
-  'ORACLE'    : 'oracle_client',
+  'ORACLE'    : 'oracle_client',  
   'MYSQL'     : 'mysql_client',
   'POSTGRESQL': 'postgresql_client',
-  'JDBC'      : 'jdbc_client'
+  'JDBC'      : 'jdbc_client',
+  'MSSQL'     : 'mssql_client'
 }
 
 def DBClient(engine='SQLITE', *args, **kwargs):    
     """DB client factory method
         
     Args:            
-        engine (str): DB engine, SQLITE|ORACLE|MYSQL|POSTGRESQL|JDBC
+        engine (str): DB engine, SQLITE|ORACLE|MYSQL|POSTGRESQL|JDBC|MSSQL
         args (args): arguments 
         kwargs (kwargs): key value arguments
            

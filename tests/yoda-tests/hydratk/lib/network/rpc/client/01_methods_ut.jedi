@@ -25,10 +25,36 @@ Test-Scenario-1:
       
       Validate: |
         this.test_result = res
-        assert (res == 'RPCClient'), 'RPCClient = RPCClient'                           
+        assert (res == 'RPCClient'), 'RPCClient = RPCClient'     
         
     Test-Condition-2: 
       Id: tco_02
+      Name: tco_xmlrpc
+      Desc: XMLRPC provider
+    
+      Test: |
+        c = RPCClient('XMLRPC')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'RPCClient'), 'RPCClient = RPCClient'     
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_jsonrpc
+      Desc: JSONRPC provider
+    
+      Test: |
+        c = RPCClient('JSONRPC')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'RPCClient'), 'RPCClient = RPCClient'                                       
+        
+    Test-Condition-4: 
+      Id: tco_04
       Name: tco_invalid
       Desc: Invalid provider
       

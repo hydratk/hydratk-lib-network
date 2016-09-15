@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """PostgreSQL DB client
 
-.. module:: network.dbi.postgresql_client
+.. module:: network.dbi.mssql_client
    :platform: Unix
-   :synopsis: PostgreSQL DB client
+   :synopsis: MSSQL DB client
 .. moduleauthor:: Petr Rašek <bowman@hydratk.org>
 
 """
@@ -22,7 +22,7 @@ dbi_after_call_proc
 
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
-from psycopg2 import Error, connect
+from pymssql import Error, connect, output
 from sys import version_info
 
 if (version_info[0] == 2):
@@ -55,7 +55,7 @@ class DBClient(object):
         
     @property
     def client(self):
-        """ PostgreSQL client property getter """
+        """ MSSQL client property getter """
         
         return self._client
     
@@ -95,7 +95,7 @@ class DBClient(object):
         
         return self._is_connected      
         
-    def connect(self, host=None, port=5432, sid=None, user=None, passw=None, timeout=10):
+    def connect(self, host=None, port=1433, sid=None, user=None, passw=None, timeout=10):
         """Method connects to database
         
         Args:            
@@ -136,8 +136,10 @@ class DBClient(object):
                 self._user = user
                 self._passw = passw
                 
-                self._client = connect(host=self._host, port=self._port, database=self._sid,
-                                       user=self._user, password=self._passw, connect_timeout=timeout)
+                user = self._user if (self._user != None) else ''
+                password = self._passw if (self._passw != None) else ''    
+                self._client = connect(server=self._host, port=self._port, database=self._sid,
+                                       user=user, password=password, login_timeout=timeout)
                 self._is_connected = True                   
 
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_dbi_connected'), self._mh.fromhere())
@@ -146,7 +148,7 @@ class DBClient(object):
                         
             return True
         
-        except Error as ex:
+        except (Error, ValueError) as ex:
             self._mh.dmsg('htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
             return False   
         
@@ -172,9 +174,9 @@ class DBClient(object):
                 self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_dbi_disconnected'), self._mh.fromhere())
                 return True
         
-        except Error as ex:
+        except (Error, ValueError) as ex:
             self._mh.dmsg('htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
-            return False    
+            return False 
         
     def exec_query(self, query, bindings=None, fetch_one=False, autocommit=True):
         """Method executes query
@@ -237,7 +239,7 @@ class DBClient(object):
                                       
             return True, rows
         
-        except Error as ex:
+        except (Error, ValueError) as ex:
             if ('SELECT ' not in query.upper()):
                 self._client.rollback()            
             
@@ -286,12 +288,13 @@ class DBClient(object):
                 params = []
                 for name in param_names:
                     if (name in i_values):
-                        params.append(i_values[name])                               
+                        params.append(i_values[name])
+                    else:
+                        params.append(output(str))                            
                 
-                cur.callproc(p_name, params)
-                row = cur.fetchone()  
+                row = cur.callproc(p_name, params)
                                    
-                output = {}
+                out = {}
                 i = 0 
                 for name in param_names:
                     
@@ -300,24 +303,25 @@ class DBClient(object):
                         param = int(param)
                        
                     if (name in o_types):   
-                        output[name] = param if (param.__class__.__name__ != 'bytes') else param.decode()
-                        i = i+1  
+                        out[name] = param if (param.__class__.__name__ != 'bytes') else param.decode()
+                        
+                    i = i+1  
                     
                 if (autocommit):
                     self._client.commit()            
             
             cur.close()  
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_dbi_proc_called', output), self._mh.fromhere())
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_dbi_proc_called', out), self._mh.fromhere())
             
-            ev = event.Event('dbi_after_call_proc', output) 
+            ev = event.Event('dbi_after_call_proc', out) 
             self._mh.fire_event(ev)                 
-            return output
+            return out
         
         except Error as ex:
             self._client.rollback()                        
             self._mh.dmsg('htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
-            return None                
-        
+            return None                              
+
     def commit(self):
         """Method commits transaction
         
@@ -338,9 +342,9 @@ class DBClient(object):
                 self._client.commit()
                 return True
             
-        except Error as ex:
+        except (Error, ValueError) as ex:
             self._mh.dmsg('htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
-            return False    
+            return False
         
     def rollback(self):
         """Method rollbacks transaction
@@ -362,6 +366,6 @@ class DBClient(object):
                 self._client.rollback()
                 return True
             
-        except Error as ex:
+        except (Error, ValueError) as ex:
             self._mh.dmsg('htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
-            return False                                   
+            return False

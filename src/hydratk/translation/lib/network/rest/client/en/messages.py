@@ -21,7 +21,9 @@ HIGHLIGHT_US    = chr(27)+chr(91)+"4m"
 HIGHLIGHT_END   = chr(27)+chr(91)+"0m"
 
 msg = {
-    'htk_rest_request'  : ["Sending request on server:'{0}', user:'{1}', passw:'{2}', method:'{3}', " + \
-                          "headers:'{4}', body:'{5}', params:'{6}'"],
-    'htk_rest_response' : ["Received response from server: header: {0}, body: {1}"] 
+    'htk_rest_request'      : ["Sending request on server:'{0}', user:'{1}', passw:'{2}', authentication:'{3}', method:'{4}', " + \
+                               "headers:'{5}', body:'{6}', params:'{7}'"],
+    'htk_rest_response'     : ["Received response from server: status:{0}, header: {1}, body: {2}"],
+    'htk_rest_unknown_dir'  : ["Unknown directory: '{0}'"],
+    'htk_rest_unknown_file' : ["Unknown file: '{0}'"] 
 }

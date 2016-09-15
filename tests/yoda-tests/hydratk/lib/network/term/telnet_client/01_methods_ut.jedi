@@ -1,6 +1,6 @@
 Test-Scenario-1:
   Id: ts_01
-  Path: hydratk/lib/network/term/ssh_client/01_methods_ut.jedi
+  Path: hydratk/lib/network/term/telnet_client/01_methods_ut.jedi
   Name: ts_init
   Desc: Test method __init__
   Author: Petr Rasek <bowman@hydratk.org>
@@ -20,14 +20,14 @@ Test-Scenario-1:
       Desc: Not verbose mode
       
       Test: |
-        c = TermClient('SSH', False)
+        c = TermClient('TELNET', False)
         res = c.__class__.__name__
       
       Validate: |
         this.test_result = res
         assert (res == 'TermClient'), '__init__ = TermClient'
         this.test_result = res = c._client.__class__.__name__
-        assert (res == 'SSHClient'), '_client = SSHClient'
+        assert (res == 'Telnet'), '_client = Telnet'
         this.test_result = res = c._verbose
         assert (not res), '_verbose = False'
         
@@ -37,7 +37,7 @@ Test-Scenario-1:
       Desc: Verbose mode
       
       Test: |
-        c = TermClient('SSH', True)
+        c = TermClient('TELNET', True)
         res = c._verbose
       
       Validate: |
@@ -46,7 +46,7 @@ Test-Scenario-1:
         
 Test-Scenario-2:
   Id: ts_02
-  Path: hydratk/lib/network/term/ssh_client/01_methods_ut.jedi
+  Path: hydratk/lib/network/term/telnet_client/01_methods_ut.jedi
   Name: ts_props
   Desc: Test properties
   Author: Petr Rasek <bowman@hydratk.org>
@@ -66,8 +66,8 @@ Test-Scenario-2:
       Desc: Getter client
       
       Test: |
-        c = TermClient('SSH', True)
-        c.connect('127.0.0.1', 22, 'lynus', 'bowman')
+        c = TermClient('TELNET', True)
+        c.connect('freechess.org', 5000)
         res = c.client.__class__.__name__
       
       Validate: |        
@@ -99,49 +99,10 @@ Test-Scenario-2:
       Validate: |        
         this.test_result = res
         exp = c._port
-        assert (res == exp), 'port = {0}'.format(exp)           
+        assert (res == exp), 'port = {0}'.format(exp)                    
         
     Test-Condition-4: 
       Id: tco_04
-      Name: tco_user
-      Desc: Getter user
-      
-      Test: |
-        res = c.user
-      
-      Validate: |        
-        this.test_result = res
-        exp = c._user
-        assert (res == exp), 'user = {0}'.format(exp)    
-        
-    Test-Condition-5: 
-      Id: tco_05
-      Name: tco_passw
-      Desc: Getter passw
-      
-      Test: |
-        res = c.passw
-      
-      Validate: |        
-        this.test_result = res
-        exp = c._passw
-        assert (res == exp), 'passw = {0}'.format(exp) 
-        
-    Test-Condition-6: 
-      Id: tco_06
-      Name: tco_cert
-      Desc: Getter cert
-      
-      Test: |
-        res = c.cert
-      
-      Validate: |        
-        this.test_result = res
-        exp = c._cert
-        assert (res == exp), 'cert = {0}'.format(exp)            
-        
-    Test-Condition-7: 
-      Id: tco_07
       Name: tco_verbose
       Desc: Getter verbose
       
@@ -153,8 +114,8 @@ Test-Scenario-2:
         exp = c._verbose
         assert (res == exp), 'verbose = {0}'.format(exp)   
         
-    Test-Condition-8: 
-      Id: tco_08
+    Test-Condition-5: 
+      Id: tco_05
       Name: tco_is_connected
       Desc: Getter is_connected
       
@@ -165,11 +126,11 @@ Test-Scenario-2:
         this.test_result = res
         exp = c._is_connected
         assert (res == exp), 'is_connected = {0}'.format(exp) 
-        c.disconnect()      
+        c.disconnect()
         
 Test-Scenario-3:
   Id: ts_03
-  Path: hydratk/lib/network/term/ssh_client/01_methods_ut.jedi
+  Path: hydratk/lib/network/term/telnet_client/01_methods_ut.jedi
   Name: ts_connect
   Desc: Test method connect
   Author: Petr Rasek <bowman@hydratk.org>
@@ -195,9 +156,9 @@ Test-Scenario-3:
         evs = ['term_before_connect', 'term_after_connect']
         reg_ev_hook(mh, evs[0])
         reg_ev_hook(mh, evs[1])
-        c = TermClient('SSH')
-        host, port, user, passw = '127.0.0.1', 22, 'lynus', 'bowman' 
-        res = c.connect(host, port, user, passw)       
+        c = TermClient('TELNET')
+        host, port = 'freechess.org', 23
+        res, out = c.connect(host, port)       
       
       Validate: |          
         this.test_result = res
@@ -205,30 +166,17 @@ Test-Scenario-3:
         res = [events[0]._id, events[1]._id]
         this.test_result = str(res)
         assert (res == evs), 'connect fires {0}'.format(evs)
-        res = [c.host, c.port, c.user, c.passw, c.is_connected]
+        res = [c.host, c.port, c.is_connected]
         this.test_result = str(res)
-        exp = [host, port, user, passw, True]
-        assert (res == exp), 'host, port, user, passw, is_connected = {0}'.format(exp)
+        exp = [host, port, True]
+        assert (res == exp), 'host, port, is_connected = {0}'.format(exp)
+        this.test_result = str(out)
+        assert (len(out) > 0), 'output is not empty'
         c.disconnect() 
         del mh._event_hooks[evs[0]] 
         del mh._event_hooks[evs[1]]   
         del events[0]
         del events[0]  
-        
-    Test-Condition-2: 
-      Id: tco_02
-      Name: tco_cert
-      Desc: Certificate
-      
-      Test: |
-        c = TermClient('SSH')
-        host, port, user, cert = 'tldwiki.teledin.cz', 22, 'spravce', '/home/lynus/hydratk/key.pri' 
-        res = c.connect(host, port, user, cert=cert)
-        
-      Validate: |          
-        this.test_result = res
-        assert (res), 'connect = True'                   
-        c.disconnect()
         
   Test-Case-2:
     Id: tc_02
@@ -241,8 +189,8 @@ Test-Scenario-3:
       Desc: Invalid host
       
       Test: |
-        c = TermClient('SSH')
-        res = c.connect('1.1.1.1')
+        c = TermClient('TELNET')
+        res, out = c.connect('1.1.1.1')
       
       Validate: |
         this.test_result = res
@@ -254,27 +202,15 @@ Test-Scenario-3:
       Desc: Invalid port
       
       Test: |
-        res = c.connect('127.0.0.1', 20)
+        res, out = c.connect('freechess.org', 20)
       
       Validate: |
         this.test_result = res
         assert (not res), 'connect = False'      
         
-    Test-Condition-3: 
-      Id: tco_03
-      Name: tco_invalid_user
-      Desc: Invalid user
-      
-      Test: |
-        res = c.connect('127.0.0.1', 22, 'lynus', 'xxx')
-      
-      Validate: |
-        this.test_result = res
-        assert (not res), 'connect = False' 
-        
 Test-Scenario-4:
   Id: ts_04
-  Path: hydratk/lib/network/term/ssh_client/01_methods_ut.jedi
+  Path: hydratk/lib/network/term/telnet_client/01_methods_ut.jedi
   Name: ts_disconnect
   Desc: Test method disconnect
   Author: Petr Rasek <bowman@hydratk.org>
@@ -294,8 +230,8 @@ Test-Scenario-4:
       Desc: Disconnect from server
       
       Test: |
-        c = TermClient('SSH')
-        c.connect('127.0.0.1', 22, 'lynus', 'bowman')
+        c = TermClient('TELNET')
+        c.connect('freechess.org', 23)
         res = c.disconnect()
       
       Validate: |           
@@ -315,16 +251,16 @@ Test-Scenario-4:
       Desc: Not connected to server
       
       Test: |
-        c = TermClient('SSH')
+        c = TermClient('TELNET')
         res = c.disconnect()
       
       Validate: |
         this.test_result = res
-        assert (not res), 'disconnect = False'
+        assert (not res), 'disconnect = False'  
         
 Test-Scenario-5:
   Id: ts_05
-  Path: hydratk/lib/network/term/ssh_client/01_methods_ut.jedi
+  Path: hydratk/lib/network/term/telnet_client/01_methods_ut.jedi
   Name: ts_exec_command
   Desc: Test method exec_command
   Author: Petr Rasek <bowman@hydratk.org>
@@ -334,7 +270,6 @@ Test-Scenario-5:
     from hydratk.core.masterhead import MasterHead
     from hydratk.lib.network.term.client import TermClient
     from yodahelpers.hydratk.core.events import events, reg_ev_hook
-    from os import path
   
   Test-Case-1:
     Id: tc_01
@@ -343,18 +278,18 @@ Test-Scenario-5:
     
     Test-Condition-1: 
       Id: tco_01
-      Name: tco_stdout
-      Desc: Command with stdout
+      Name: tco_command
+      Desc: Command
       
       Test: |
         mh = MasterHead.get_head()
         evs = ['term_before_exec_command', 'term_after_exec_command']
         reg_ev_hook(mh, evs[0])
         reg_ev_hook(mh, evs[1])
-        c = TermClient('SSH')
-        host, port, user, passw = '127.0.0.1', 22, 'lynus', 'bowman' 
-        res = c.connect(host, port, user, passw)  
-        res, out = c.exec_command('pwd')     
+        c = TermClient('TELNET')
+        host, port = 'freechess.org', 23 
+        c.connect(host, port) 
+        res, out = c.exec_command('guest')
       
       Validate: |          
         this.test_result = res
@@ -362,32 +297,12 @@ Test-Scenario-5:
         res = [events[0]._id, events[1]._id]
         this.test_result = str(res)
         assert (res == evs), 'exec_command fires {0}'.format(evs)
-        this.test_result = res = out[0]
-        assert (res != None), 'out is not empty' 
+        this.test_result = res = str(out)
+        assert (len(out) > 0), 'output is not empty' 
         del mh._event_hooks[evs[0]] 
         del mh._event_hooks[evs[1]]         
         del events[0] 
         del events[0] 
-        
-    Test-Condition-2: 
-      Id: tco_02
-      Name: tco_stdin
-      Desc: Command with stdin
-      
-      Test: |
-        file = '/home/lynus/test.txt'
-        with open(file, 'w') as f:
-            f.write('test')
-      
-        c.connect(host, port, user, passw)
-        res, out = c.exec_command('rm {0}'.format(file), 'y')
-      Validate: |   
-        this.result = res
-        assert (res), 'exec_command = True'
-        this.test_result = out
-        assert (out == None), 'out is empty'
-        this.test_result = res = (path.exists(file))
-        assert (not res), 'file removed'                 
         c.disconnect()
         
   Test-Case-2:
@@ -401,8 +316,8 @@ Test-Scenario-5:
       Desc: Not connected to server
       
       Test: |
-        c = TermClient('SSH')
-        res = c.exec_command('pwd')
+        c = TermClient('TELNET')
+        res, out = c.exec_command('guest')
       
       Validate: |
         this.test_result = res
@@ -414,26 +329,12 @@ Test-Scenario-5:
       Desc: Invalid command
       
       Test: |
-        res = c.connect('127.0.0.1', 22, 'lynus', 'bowman')  
-        res, out = c.exec_command('xxx')     
+        c.connect('freechess.org', 23)  
+        res, out = c.exec_command('xxx')    
       
       Validate: |          
         this.test_result = res
-        assert (not res), 'exec_command = False'
-        this.test_result = res = out[0]
-        assert (res != None), 'out is not empty'        
-        
-    Test-Condition-3: 
-      Id: tco_03
-      Name: tco_no_rights
-      Desc: No access rights
-      
-      Test: |  
-        res, out = c.exec_command('touch /etc/hydratk/test.txt')     
-      
-      Validate: |          
-        this.test_result = res
-        assert (not res), 'exec_command = False'
-        this.test_result = res = out[0]
-        assert (res != None), 'out is not empty'    
-        c.disconnect()               
+        assert (res), 'exec_command = True'
+        this.test_result = res = str(out)
+        assert (len(out) > 0), 'output is not empty'   
+        c.disconnect()                                     
