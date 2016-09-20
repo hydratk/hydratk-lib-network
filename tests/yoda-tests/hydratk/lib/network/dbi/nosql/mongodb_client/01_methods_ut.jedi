@@ -1,0 +1,589 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/network/dbi/nosql/mongodb_client/01_methods_ut.jedi
+  Name: ts_init
+  Desc: Test method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.dbi.client import DBClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize DBClient
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_init
+      Desc: Initialize
+      
+      Test: |
+        c = DBClient('MONGODB')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'DBClient'), '__init__ = DBClient'     
+        
+Test-Scenario-2:
+  Id: ts_02
+  Path: hydratk/lib/network/dbi/nosql/mongodb_client/01_methods_ut.jedi
+  Name: ts_props
+  Desc: Test properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.dbi.client import DBClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_client
+      Desc: Getter client
+      
+      Test: |
+        c = DBClient('MONGODB')
+        host, port, db = '127.0.0.1', 27017, 'test'
+        c.connect(host, port, db)
+        res = c.client.__class__.__name__
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._client.__class__.__name__
+        assert (res == exp), 'client = {0}'.format(exp)       
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_host
+      Desc: Getter host
+      
+      Test: |
+        res = c.host
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._host
+        assert (res == exp), 'host = {0}'.format(exp)
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_port
+      Desc: Getter port
+      
+      Test: |
+        res = c.port
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._port
+        assert (res == exp), 'port = {0}'.format(exp)
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_db
+      Desc: Getter db
+      
+      Test: |
+        res = c.db
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._db
+        assert (res == exp), 'db = {0}'.format(exp)
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_user
+      Desc: Getter user
+      
+      Test: |
+        res = c.user
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._user
+        assert (res == exp), 'user = {0}'.format(exp)         
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_passw
+      Desc: Getter passw
+      
+      Test: |
+        res = c.passw
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._passw
+        assert (res == exp), 'passw = {0}'.format(exp)                        
+        
+    Test-Condition-7: 
+      Id: tco_07
+      Name: tco_is_connected
+      Desc: Getter is_connected
+      
+      Test: |
+        res = c.is_connected
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._is_connected
+        assert (res == exp), 'is_connected = {0}'.format(exp)    
+        c.disconnect()     
+        
+Test-Scenario-3:
+  Id: ts_03
+  Path: hydratk/lib/network/dbi/nosql/redis_client/01_methods_ut.jedi
+  Name: ts_connect
+  Desc: Test method connect
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.dbi.client import DBClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_connect
+    Desc: Connect to server
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_connect
+      Desc: Connect to server
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['dbi_before_connect', 'dbi_after_connect']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = DBClient('MONGODB')
+        host, port, db = '127.0.0.1', 27017, 'test'
+        res = c.connect(host, port, db)       
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'connect = True'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'connect fires {0}'.format(evs)
+        res = [c.host, c.port, c.db, c.is_connected]
+        this.test_result = str(res)
+        exp = [host, port, db, True]
+        assert (res == exp), 'host, port, db, is_connected = {0}'.format(exp) 
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]  
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_host
+      Desc: Invalid host
+      
+      Test: |
+        c = DBClient('MONGODB')
+        res = c.connect('1.1.1.1')
+      
+      Validate: |               
+        this.test_result = res
+        assert (not res), 'connect = False'      
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_port
+      Desc: Invalid port
+      
+      Test: |
+        res = c.connect('127.0.0.1', 20)
+      
+      Validate: |               
+        this.test_result = res
+        assert (not res), 'connect = False'            
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_auth
+      Desc: Invalid user
+      
+      Test: |
+        res = c.connect('127.0.0.1', 27017, 'test', 'xx', 'xx')
+      
+      Validate: |               
+        this.test_result = res
+        assert (not res), 'connect = False'  
+        
+Test-Scenario-4:
+  Id: ts_04
+  Path: hydratk/lib/network/dbi/nosql/mongogb_client/01_methods_ut.jedi
+  Name: ts_disconnect
+  Desc: Test method disconnect
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.dbi.client import DBClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_disconnect
+    Desc: Disconnect from server
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_disconnect
+      Desc: Disconnect from server
+      
+      Test: |
+        c = DBClient('MONGODB')
+        host, port, db = '127.0.0.1', 27017, 'test'
+        c.connect(host, port, db)
+        res = c.disconnect()       
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'disconnect = True' 
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |
+        c = DBClient('MONGODB')
+        res = c.disconnect()
+      
+      Validate: |  
+        this.test_result = res
+        assert (not res), 'disconnect = False'    
+        
+Test-Scenario-5:
+  Id: ts_05
+  Path: hydratk/lib/network/dbi/nosql/redis_client/01_methods_ut.jedi
+  Name: ts_exec_command
+  Desc: Test method exec_command
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.dbi.client import DBClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_exec_command
+    Desc: Execute command
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_insert
+      Desc: Insert record
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['dbi_before_exec_command', 'dbi_after_exec_command']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = DBClient('MONGODB')
+        host, port, db = '127.0.0.1', 27017, 'test'
+        c.connect(host, port, db)       
+      
+        collection = 'test'
+        doc = {"customer": {"name": "Charlie Bowman", "status": "active", "segment": 2,
+                            "payer": {"name": "Charlie Bowman", "status": "active"},
+                            "services": [{"id": 615, "status": "active"}, {"id": 619, "status": "suspend"}]}}
+        res, id = c.exec_command('insert', collection, doc)
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'exec_command = True'
+        this.test_result = id
+        assert (id != None), 'id is not empty'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'exec_command fires {0}'.format(evs)
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0] 
+        filter = {"_id": id}
+        res, rows = c.exec_command('find', collection, filter=filter)
+        this.test_result = str(rows)
+        assert (rows[0]['_id'] == id), 'rows[id] = {0}'.format(id)     
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_insert_mult
+      Desc: Insert multiple records
+      
+      Test: |
+        doc = [{"customer": {"_id": "1", "name": "Charlie Bowman"}},
+               {"customer": {"_id": "2", "name": "Vince Neil", "payer": {"status": "active"}}}]      
+        res, id = c.exec_command('insert', collection, doc, single=False)
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'exec_command = True'
+        this.test_result = id
+        assert (id[1] != None), 'id is not empty'
+        filter = {"_id": id[1]}
+        res, rows = c.exec_command('find', collection, filter=filter)
+        this.test_result = str(rows)
+        assert (rows[0]['_id'] == id[1]), 'rows[id] = {0}'.format(id[1]) 
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_select_one
+      Desc: Select one record
+      
+      Test: |
+        val = "Vince Neil"
+        filter = {"customer.name": val, "customer.payer.status": "active"}
+        res, rows = c.exec_command('find', collection, filter=filter)
+      
+      Validate: |                                 
+        this.test_result = res
+        assert (res), 'exec_command = True'
+        this.test_result = str(rows)
+        assert (len(rows) == 1), 'rows contains 1 record'
+        res = rows[0]['customer']['name']        
+        assert (res == val), 'name = {0}'.format(val)
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_select_mult
+      Desc: Select multiple records
+      
+      Test: |
+        filter = {"$or": [{"customer.name": "Charlie Bowman"}, {"customer.name": "Vince Neil"}]}
+        res, rows = c.exec_command('find', collection, filter=filter)
+      
+      Validate: |                                 
+        this.test_result = res
+        assert (res), 'exec_command = True'
+        this.test_result = str(rows)
+        assert (len(rows) == 3), 'rows contains 3 records'   
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_select_zero
+      Desc: Select zero records
+      
+      Test: |
+        filter = {"customer.name": "xxx"}
+        res, rows = c.exec_command('find', collection, filter=filter)
+      
+      Validate: |                                 
+        this.test_result = res
+        assert (res), 'exec_command = True'
+        this.test_result = str(rows)
+        assert (len(rows) == 0), 'rows is empty'   
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_aggregate
+      Desc: Aggregate records
+      
+      Test: |
+        filter = [{"$group": {"_id": "$customer.name", "count": {"$sum": 1}}}]
+        res, rows = c.exec_command('aggregate', collection, filter=filter)
+
+      Validate: |                                 
+        this.test_result = res
+        assert (res), 'exec_command = True'        
+        this.test_result = str(rows)
+        assert (len(rows) == 2), 'rows contains 2 records'        
+        assert (rows[0]['_id'] == 'Vince Neil' and rows[0]['count'] == 1), 'Vince Neil 1 record' 
+        assert (rows[1]['_id'] == 'Charlie Bowman' and rows[1]['count'] == 2), 'Charlie Bowman 2 records' 
+        
+    Test-Condition-7: 
+      Id: tco_07
+      Name: tco_aggregate_match
+      Desc: Aggregate records with match
+      
+      Test: |
+        filter = [{"$match": {"customer.payer.status": "active"}},
+                  {"$group": {"_id": "$customer.name", "count": {"$sum": 1}}}]
+        res, rows = c.exec_command('aggregate', collection, filter=filter)
+
+      Validate: |                                 
+        this.test_result = res
+        assert (res), 'exec_command = True'        
+        this.test_result = str(rows)
+        assert (len(rows) == 2), 'rows contains 2 records'   
+        assert (rows[0]['_id'] == 'Vince Neil' and rows[0]['count'] == 1), 'Vince Neil 1 record' 
+        assert (rows[1]['_id'] == 'Charlie Bowman' and rows[1]['count'] == 1), 'Charlie Bowman 1 record'                       
+        
+    Test-Condition-8: 
+      Id: tco_08
+      Name: tco_update
+      Desc: Update record
+      
+      Test: |
+        doc, filter = {"$set": {"customer.name": "Vince Neil 2"}}, {"customer.name": "Vince Neil"}
+        res, count = c.exec_command('update', collection, doc, filter)
+      
+      Validate: |                                 
+        this.test_result = res
+        assert (res), 'exec_command = True'
+        this.test_result = count
+        assert (count == 1), 'count = 1'
+        res, rows = c.exec_command('find', collection, filter={"customer.name": "Vince Neil 2"})
+        this.test_result = str(rows)
+        assert (len(rows) == 1), 'rows contain 1 record'  
+        
+    Test-Condition-9: 
+      Id: tco_09
+      Name: tco_update_mult
+      Desc: Update multiple records
+      
+      Test: |
+        doc, filter = {"$set": {"customer.name": "Charlie Bowman 2"}}, {"customer.name": "Charlie Bowman"}
+        res, count = c.exec_command('update', collection, doc, filter, single=False)
+      
+      Validate: |                                 
+        this.test_result = res
+        assert (res), 'exec_command = True'
+        this.test_result = count
+        assert (count == 2), 'count = 2'
+        res, rows = c.exec_command('find', collection, filter={"customer.name": "Charlie Bowman 2"})
+        this.test_result = str(rows)
+        assert (len(rows) == 2), 'rows contain 2 records'    
+        
+    Test-Condition-10: 
+      Id: tco_10
+      Name: tco_replace
+      Desc: Replace record
+      
+      Test: |
+        doc, filter = {"customer": {"name": "Vince Neil"}}, {"customer.name": "Vince Neil 2"}
+        res, count = c.exec_command('replace', collection, doc, filter)
+      
+      Validate: |                                 
+        this.test_result = res
+        assert (res), 'exec_command = True'
+        this.test_result = count
+        assert (count == 1), 'count = 1'
+        res, rows = c.exec_command('find', collection, filter={"customer.name": "Vince Neil"})
+        this.test_result = str(rows)
+        assert (len(rows) == 1), 'rows contain 1 record'    
+        res, rows = c.exec_command('find', collection, filter={"customer.name": "Vince Neil", "customer.payer.status": "active"})
+        this.test_result = str(rows)
+        assert (len(rows) == 0), 'rows is empty'                  
+        
+    Test-Condition-11: 
+      Id: tco_11
+      Name: tco_delete
+      Desc: Delete record
+      
+      Test: |
+        filter = {"customer.name": "Vince Neil"}
+        res, count = c.exec_command('delete', collection, filter=filter)
+      
+      Validate: |                                 
+        this.test_result = res
+        assert (res), 'exec_command = True'
+        this.test_result = count
+        assert (count == 1), 'count = 1'
+        res, rows = c.exec_command('find', collection, filter={"customer.name": "Vince Neil"})
+        this.test_result = str(rows)
+        assert (len(rows) == 0), 'rows is empty' 
+        
+    Test-Condition-12: 
+      Id: tco_12
+      Name: tco_delete_mult
+      Desc: Delete multiple records
+      
+      Test: |
+        filter = {"customer.name": "Charlie Bowman 2"}
+        res, count = c.exec_command('delete', collection, filter=filter, single=False)        
+      
+      Validate: |                                 
+        this.test_result = res
+        assert (res), 'exec_command = True'
+        this.test_result = count
+        res, rows = c.exec_command('find', collection, filter={"customer.name": "Charlie Bowman 2"})
+        this.test_result = str(rows)
+        assert (len(rows) == 0), 'rows is empty'                      
+        
+    Test-Condition-13: 
+      Id: tco_13
+      Name: tco_drop
+      Desc: Drop collection
+      
+      Test: |
+        res, out = c.exec_command('drop', collection)
+      
+      Validate: |                                 
+        this.test_result = res
+        assert (res), 'exec_command = True'
+        c.disconnect()
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_connected
+      Desc: Not connected to server
+      
+      Test: |    
+        c = DBClient('MONGODB')
+        res, out = c.exec_command('find', 'xxx')         
+        
+      Validate: |
+        this.test_result = res
+        assert (not res), 'exec_command = False' 
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_command
+      Desc: Invalid command
+      
+      Test: |
+        host, port, db = '127.0.0.1', 27017, 'test'
+        c.connect(host, port, db)
+        res, out = c.exec_command('xxx', 'xxx')
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), 'exec_command = False'      
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_syntax
+      Desc: Invalid syntax
+                            
+      Test: |
+        collection = 'test'
+        filter = [{"$match": {"customer.payer.status": "active"}},
+                  {"$group": {"_id": "$customer.name", "count": {"$count": 1}}}]
+        res, rows = c.exec_command('aggregate', collection, filter=filter)      
+      
+      Validate: |
+        this.test_result = res
+        assert (not res), 'exec_command = False' 
+        c.exec_command('drop', collection)
+        c.disconnect()               

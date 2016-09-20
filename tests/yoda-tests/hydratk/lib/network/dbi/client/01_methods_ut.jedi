@@ -90,12 +90,51 @@ Test-Scenario-1:
       
       Validate: |
         this.test_result = res
-        assert (res == 'DBClient'), 'DBClient = DBClient'                                              
+        assert (res == 'DBClient'), 'DBClient = DBClient'                      
         
     Test-Condition-7: 
       Id: tco_07
+      Name: tco_redis
+      Desc: Redis engine
+    
+      Test: |
+        c = DBClient('REDIS')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'DBClient'), 'DBClient = DBClient'   
+        
+    Test-Condition-8: 
+      Id: tco_08
+      Name: tco_mongodb
+      Desc: MongoDB engine
+    
+      Test: |
+        c = DBClient('MONGODB')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'DBClient'), 'DBClient = DBClient'      
+        
+    Test-Condition-9: 
+      Id: tco_09
+      Name: tco_cassandra
+      Desc: Cassandra engine
+    
+      Test: |
+        c = DBClient('CASSANDRA')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'DBClient'), 'DBClient = DBClient'                                               
+        
+    Test-Condition-10: 
+      Id: tco_10
       Name: tco_invalid
-      Desc: Invalid protocol
+      Desc: Invalid engine
       
       Test: |
         try:

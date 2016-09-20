@@ -17,7 +17,10 @@ engines = {
   'MYSQL'     : 'mysql_client',
   'POSTGRESQL': 'postgresql_client',
   'JDBC'      : 'jdbc_client',
-  'MSSQL'     : 'mssql_client'
+  'MSSQL'     : 'mssql_client',
+  'REDIS'     : 'nosql.redis_client',
+  'MONGODB'   : 'nosql.mongodb_client',
+  'CASSANDRA' : 'nosql.cassandra_client'
 }
 
 def DBClient(engine='SQLITE', *args, **kwargs):    
@@ -25,6 +28,7 @@ def DBClient(engine='SQLITE', *args, **kwargs):
         
     Args:            
         engine (str): DB engine, SQLITE|ORACLE|MYSQL|POSTGRESQL|JDBC|MSSQL
+                      NoSQL REDIS|MongoDB
         args (args): arguments 
         kwargs (kwargs): key value arguments
            

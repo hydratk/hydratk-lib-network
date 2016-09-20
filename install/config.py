@@ -15,12 +15,15 @@ config = {
                  ],
           
   'modules' : [   
-               'hydratk',  
+               'hydratk', 
+               'cassandra-driver>=3.7.0', 
                'paho-mqtt>=1.2',           
                'pyexcel>=0.2.0',
-               'pyexcel-xlsx>=0.1.0',                                                                  
+               'pyexcel-xlsx>=0.1.0',  
+               'pymongo>=3.3.0',                                                                
                'python-qpid-proton>=0.10',
-               'pytz>=2016.6.1',   
+               'pytz>=2016.6.1',  
+               'redis>=2.10.5', 
                'requests>=2.11.1',
                'requests-ntlm>=0.3.0',             
                'simplejson>=3.8.2'          

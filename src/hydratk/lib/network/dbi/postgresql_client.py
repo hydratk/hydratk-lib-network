@@ -186,7 +186,7 @@ class DBClient(object):
            autocommit (bool): autocommit
              
         Returns:
-           tuple: result (bool), rows (list) (accessible by column name)
+           tuple: result (bool), rows (list) (accessible by row[column])
           
         Raises:
            event: dbi_before_exec_query

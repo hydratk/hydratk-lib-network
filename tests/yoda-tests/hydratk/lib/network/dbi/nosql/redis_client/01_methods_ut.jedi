@@ -1,0 +1,470 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/network/dbi/nosql/redis_client/01_methods_ut.jedi
+  Name: ts_init
+  Desc: Test method __init__
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.dbi.client import DBClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize DBClient
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_init
+      Desc: Initialize
+      
+      Test: |
+        c = DBClient('REDIS')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'DBClient'), '__init__ = DBClient'     
+        
+Test-Scenario-2:
+  Id: ts_02
+  Path: hydratk/lib/network/dbi/nosql/redis_client/01_methods_ut.jedi
+  Name: ts_props
+  Desc: Test properties
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.dbi.client import DBClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_getters
+    Desc: Getter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_client
+      Desc: Getter client
+      
+      Test: |
+        c = DBClient('REDIS')
+        host, port, db = '127.0.0.1', 6379, 0
+        c.connect(host, port, db)
+        res = c.client.__class__.__name__
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._client.__class__.__name__
+        assert (res == exp), 'client = {0}'.format(exp)       
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_host
+      Desc: Getter host
+      
+      Test: |
+        res = c.host
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._host
+        assert (res == exp), 'host = {0}'.format(exp)
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_port
+      Desc: Getter port
+      
+      Test: |
+        res = c.port
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._port
+        assert (res == exp), 'port = {0}'.format(exp)
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_db
+      Desc: Getter db
+      
+      Test: |
+        res = c.db
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._db
+        assert (res == exp), 'db = {0}'.format(exp)
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_passw
+      Desc: Getter passw
+      
+      Test: |
+        res = c.passw
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._passw
+        assert (res == exp), 'passw = {0}'.format(exp)                        
+        
+    Test-Condition-6: 
+      Id: tco_06
+      Name: tco_is_connected
+      Desc: Getter is_connected
+      
+      Test: |
+        res = c.is_connected
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._is_connected
+        assert (res == exp), 'is_connected = {0}'.format(exp)         
+        
+Test-Scenario-3:
+  Id: ts_03
+  Path: hydratk/lib/network/dbi/nosql/redis_client/01_methods_ut.jedi
+  Name: ts_connect
+  Desc: Test method connect
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.dbi.client import DBClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_connect
+    Desc: Connect to server
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_connect
+      Desc: Connect to server
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['dbi_before_connect', 'dbi_after_connect']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        c = DBClient('REDIS')
+        host, port, db = '127.0.0.1', 6379, 0
+        res = c.connect(host, port, db)       
+      
+      Validate: |          
+        this.test_result = res
+        assert (res), 'connect = True'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'connect fires {0}'.format(evs)
+        res = [c.host, c.port, c.db, c.is_connected]
+        this.test_result = str(res)
+        exp = [host, port, db, True]
+        assert (res == exp), 'host, port, db, is_connected = {0}'.format(exp) 
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]  
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_invalid_host
+      Desc: Invalid host
+      
+      Test: |
+        c = DBClient('REDIS')
+        res = c.connect('1.1.1.1')
+      
+      Validate: |               
+        this.test_result = res
+        assert (not res), 'connect = False'      
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_port
+      Desc: Invalid port
+      
+      Test: |
+        res = c.connect('127.0.0.1', 20)
+      
+      Validate: |               
+        this.test_result = res
+        assert (not res), 'connect = False'           
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_db
+      Desc: Invalid db
+      
+      Test: |
+        res = c.connect('127.0.0.1', 6379, 666)
+      
+      Validate: |               
+        this.test_result = res
+        assert (not res), 'connect = False'   
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_invalid_auth
+      Desc: Invalid user
+      
+      Test: |
+        res = c.connect('127.0.0.1', 6379, 0, 'xx')
+      
+      Validate: |               
+        this.test_result = res
+        assert (not res), 'connect = False' 
+        
+Test-Scenario-4:
+  Id: ts_04
+  Path: hydratk/lib/network/dbi/nosql/redis_client/01_methods_ut.jedi
+  Name: ts_exec_command
+  Desc: Test method exec_command
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.network.dbi.client import DBClient
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_exec_command
+    Desc: Execute command
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_set
+      Desc: Command SET
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['dbi_before_exec_command', 'dbi_after_exec_command']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])      
+        c = DBClient('REDIS')
+        host, port, db = '127.0.0.1', 6379, 0
+        c.connect(host, port, db) 
+        key, val = 'test_key', 'test_val'
+        cmd = 'SET {0} {1}'.format(key, val)
+        res, out = c.exec_command(cmd)        
+                
+      Validate: |
+        this.test_result = res
+        assert (res), 'exec_command = True'
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'exec_command fires {0}'.format(evs)
+        del mh._event_hooks[evs[0]] 
+        del mh._event_hooks[evs[1]]   
+        del events[0]
+        del events[0]           
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_get
+      Desc: Command GET
+      
+      Test: |
+        cmd = 'GET {0}'.format(key)
+        res, out = c.exec_command(cmd)        
+                
+      Validate: |
+        this.test_result = res
+        assert (res), 'exec_command = True'
+        this.test_result = str(out)
+        assert (out == val), 'out = {0}'.format(val)  
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_exists
+      Desc: Command EXISTS
+      
+      Test: |
+        cmd = 'EXISTS {0}'.format(key)
+        res, out = c.exec_command(cmd)        
+                
+      Validate: |
+        this.test_result = res
+        assert (res), 'exec_command = True'
+        this.test_result = out
+        assert (out), 'out = True' 
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_append
+      Desc: Command APPEND
+      
+      Test: |
+        cmd = 'APPEND {0} 2'.format(key)
+        res, out = c.exec_command(cmd)        
+                
+      Validate: |
+        this.test_result = res
+        assert (res), 'exec_command = True'
+        res, out = c.exec_command('GET {0}'.format(key))
+        this.test_result = str(out)
+        exp = val+'2'
+        assert (out == exp), 'out = {0}'.format(exp)                            
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_del
+      Desc: Command DEL
+      
+      Test: |
+        cmd = 'DEL {0}'.format(key)
+        res, out = c.exec_command(cmd)        
+                
+      Validate: |
+        this.test_result = res
+        assert (res), 'exec_command = True'
+        res, out = c.exec_command('GET {0}'.format(key))
+        this.test_result = str(out)
+        assert (out == None), 'out = None'           
+
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_negative
+    Desc: Negative cases  
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_not_connected
+      Desc: Invalid table
+      
+      Test: |    
+        c = DBClient('REDIS')
+        res, out = c.exec_command('PING')         
+        
+      Validate: |
+        this.test_result = res
+        assert (not res), 'exec_command = False'
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_invalid_command
+      Desc: Invalid command
+      
+      Test: |     
+        c.connect('127.0.0.1', 6379, 0)
+        res, rows = c.exec_command('xxx')         
+        
+      Validate: |
+        this.test_result = res
+        assert (not res), 'exec_command = False'     
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid_syntax
+      Desc: Invalid command syntax
+      
+      Test: |     
+        res, rows = c.exec_command('GET xxx xxx')         
+        
+      Validate: |
+        this.test_result = res
+        assert (not res), 'exec_command = False'       
+        
+Test-Scenario-5:
+  Id: ts_05
+  Path: hydratk/lib/network/dbi/nosql/redis_client/01_methods_ut.jedi
+  Name: ts_commands
+  Desc: Test command methods
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.network.dbi.client import DBClient
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_commands
+    Desc: Commands
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_get
+      Desc: Get not existing key
+      
+      Test: |     
+        c = DBClient('REDIS')
+        host, port, db = '127.0.0.1', 6379, 0
+        c.connect(host, port, db)
+        key, val = 'test_key', 'test_val' 
+        res = c.get(key)       
+                
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'get = None'           
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_set
+      Desc: Set key
+      
+      Test: |     
+        res = c.set(key, val)     
+                
+      Validate: |
+        this.test_result = res
+        assert (res), 'set = True'
+        res = c.get(key)
+        assert (res == val), 'get = {0}'.format(val)  
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_exists
+      Desc: Check if key exists
+      
+      Test: |     
+        res = c.exists(key)     
+                
+      Validate: |
+        this.test_result = res
+        assert (res), 'exists = True'       
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_rewrite
+      Desc: Rewrite key
+      
+      Test: |     
+        val = 'test_val2'
+        res = c.set(key, val)     
+                
+      Validate: |
+        this.test_result = res
+        assert (res), 'set = True'  
+        res = c.get(key)
+        this.test_result = res
+        assert (res == val), 'get = {0}'.format(val)    
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_del
+      Desc: Delete key
+      
+      Test: |     
+        res = c.delete(key)     
+                
+      Validate: |
+        this.test_result = res
+        assert (res), 'set = True'  
+        res = c.get(key)
+        this.test_result = res
+        assert (res == None), 'get = None'
+        res = c.exists(key)
+        this.test_result = res
+        assert (not res), 'exists = False'                                                                 
