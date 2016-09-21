@@ -43,9 +43,9 @@ class TermClient(object):
         
         Args:      
            verbose (bool): verbose mode
-           br (str): line break \n (Linux), \r\n (Windows)
+           br (str): line break character
            
-        """          
+        """             
         
         self._mh = MasterHead.get_head()         
         self._client = Telnet()   
@@ -69,7 +69,7 @@ class TermClient(object):
     
     @property
     def port(self):
-        """ Sserver port property getter """
+        """ server port property getter """
         
         return self._port   
     
