@@ -50,6 +50,7 @@ Requirements
 Several python modules are used.
 These modules will be installed automatically, if not installed yet.
 
+* hydratk
 * cassandra-driver
 * cx_Oracle
 * JPype1
