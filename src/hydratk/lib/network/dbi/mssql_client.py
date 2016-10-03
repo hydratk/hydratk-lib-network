@@ -22,8 +22,12 @@ dbi_after_call_proc
 
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
-from pymssql import Error, connect, output
 from sys import version_info
+
+try:
+    from pymssql import Error, connect, output
+except ImportError:
+    raise NotImplementedError('MSSQL client is not supported for PyPy')
 
 if (version_info[0] == 2):
     from string import replace

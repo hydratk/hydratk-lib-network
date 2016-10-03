@@ -4,9 +4,7 @@ config = {
   'pre_tasks' : [
                  'version_update',
                  'install_libs_from_repo',
-                 'install_pip',
-                 'install_java',
-                 'install_oracle'
+                 'install_pip'
                 ],
 
   'post_tasks' : [  
@@ -17,15 +15,20 @@ config = {
   'modules' : [   
                'hydratk', 
                'cassandra-driver>=3.7.0', 
-               'paho-mqtt>=1.2',           
+               'lxml>=3.3.3',
+               'paho-mqtt>=1.2',  
+               'paramiko>=1.16.0',                              
+               'pycurl>=7.19.5.1',           
                'pyexcel>=0.2.0',
-               'pyexcel-xlsx>=0.1.0',  
-               'pymongo>=3.3.0',                                                                
+               'pyexcel-xlsx>=0.1.0',
+               'pyexcel-ods3>=0.1.1',  
+               'pymongo>=3.3.0',                                                                               
                'python-qpid-proton>=0.10',
                'pytz>=2016.6.1',  
                'redis>=2.10.5', 
                'requests>=2.11.1',
-               'requests-ntlm>=0.3.0',             
+               'requests-ntlm>=0.3.0',   
+               'selenium>=2.46.1',                         
                'simplejson>=3.8.2'          
               ],
           
@@ -59,13 +62,13 @@ config = {
                                                  ]
                                     },
             'MySQL-python>=1.2.3' : {
-                                     'repo'    : [
-                                                  'mysql-devel'
-                                                 ],
                                      'apt-get' : [
                                                   'python-mysqldb',
                                                   'libmysqlclient-dev'
-                                                 ]
+                                                 ],
+                                     'yum'     : [
+                                                  'mysql-devel'
+                                                 ]                                     
                                     },
             'paramiko>=1.16.0'    : {
                                      'apt-get' : [

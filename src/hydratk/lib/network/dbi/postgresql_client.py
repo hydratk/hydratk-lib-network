@@ -22,8 +22,12 @@ dbi_after_call_proc
 
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
-from psycopg2 import Error, connect
 from sys import version_info
+
+try:
+    from psycopg2 import Error, connect
+except ImportError:
+    from psycopg2cffi import Error, connect
 
 if (version_info[0] == 2):
     from string import replace

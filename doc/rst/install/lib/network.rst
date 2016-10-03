@@ -98,6 +98,13 @@ Module cassandra-driver installation takes longer time (not so fast as other mod
      Module scapy-python3 is installed instead of scapy.
      Module suds-py3 is installed instead of suds.
      Module tftpy is not installed from PyPi but from https://github.com/ZuljinSBK/tftpy.git@master#egg=tftpy
+     
+  .. note ::
+  
+     Installation for PyPy has some differences.
+     Module cx-oracle-on-ctypes is installed instead of cx_Oracle.
+     Module psycopg2cffi is installed instead of psycopg2.
+     Modules JPype1, pymssql are not supported and not installed.
 
 cx_Oracle
 
@@ -111,7 +118,7 @@ lxml
 
 MySQL-python
 
-* apt-get: mysql-devel, python-mysqldb, libmysqlclient-dev
+* apt-get: python-mysqldb, libmysqlclient-dev
 * yum: mysql-devel   
 
 paramiko

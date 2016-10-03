@@ -46,6 +46,10 @@ After installation do following actions:
 1. Check that directory /var/local/hydratk/java was created and contains files: JMSClient.java, JMSClient.class, JMSMessage.class, javaee.jar
 2. Store specific client jar file to same directory (i.e. activemq-all-5.13.0.jar).
 
+  .. note ::
+  
+     JMS is not supported for PyPy due to module JPype1.
+
   .. code-block:: python
   
      # import library

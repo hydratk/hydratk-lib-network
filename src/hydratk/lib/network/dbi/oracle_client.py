@@ -20,11 +20,20 @@ dbi_after_exec_query
 
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
-from cx_Oracle import Error, connect, NUMBER, STRING, TIMESTAMP, CLOB, BLOB
+from cx_Oracle import Error, connect
 from sys import version_info
+from platform import python_implementation
 
 if (version_info[0] == 2):
     from string import replace
+    
+if (python_implementation() != 'PyPy'):    
+    from cx_Oracle import NUMBER, STRING, TIMESTAMP, CLOB, BLOB
+else:
+    from cx_Oracle.numbervar import NUMBER
+    from cx_Oracle.stringvar import STRING
+    from cx_Oracle.timestampvar import TIMESTAMP 
+    from cx_Oracle.lobvar import CLOB, BLOB
 
 class DBClient(object):
     """Class DBClient
@@ -318,14 +327,14 @@ class DBClient(object):
                 i = 0 
                 for param in params:
                     name = param_names[i]
-                                                  
-                    if (param.__class__.__module__ == 'cx_Oracle'):
+                                         
+                    if (param.__class__.__module__.split('.')[0] == 'cx_Oracle'):
                         
                         if (param.__class__.__name__ == 'Cursor'):
                             columns = [j[0].lower() for j in param.description]                    
                             param = [dict(zip(columns, row)) for row in param]                              
                         else:
-                            param = param.getvalue()
+                            param = param.getvalue()                            
                             if (name in o_types and o_types[name] == 'int' and param != None):
                                 param = int(param)
                     

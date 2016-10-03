@@ -8,8 +8,13 @@
 
 """
 
-import psycopg2
-from  psycopg2.extras import RealDictCursor
+try:
+    import psycopg2
+    from  psycopg2.extras import RealDictCursor
+except ImportError:
+    import psycopg2cffi as psycopg2    
+    from  psycopg2cffi.extras import RealDictCursor
+    
 import os
 from hydratk.lib.database.dbo import dbodriver 
 
@@ -106,7 +111,7 @@ class DBODriver(dbodriver.DBODriver):
            exception: DBODriverException
                 
         """       
-        if type(self._dbcon).__name__ == 'connection':
+        if type(self._dbcon).__name__.lower() == 'connection':
             self._dbcon.close()
         else:
             raise dbodriver.DBODriverException('Not connected')  
@@ -123,11 +128,12 @@ class DBODriver(dbodriver.DBODriver):
         Raises:
            exception: DBODriverException
                 
-        """                
+        """   
+         
         if type(self._dbcon).__name__.lower() == 'connection':
             self._dbcon.commit()
         else:
-            raise dbodriver.DBODriverException('Not connected')    
+            raise dbodriver.DBODriverException('Not connected')       
              
     def error_code(self):
         pass
@@ -164,7 +170,7 @@ class DBODriver(dbodriver.DBODriver):
            obj: cursor
                 
         """ 
-                
+      
         self._cursor.execute(sql, *parameters)
         return self._cursor
         
@@ -218,7 +224,7 @@ class DBODriver(dbodriver.DBODriver):
                 
         """ 
                 
-        if type(self._dbcon).__name__ == 'Connection':    
+        if type(self._dbcon).__name__.lower() == 'connection':    
             if hasattr(self._dbcon, name):
                 return getattr(self._dbcon,name)
             
@@ -259,11 +265,11 @@ class DBODriver(dbodriver.DBODriver):
            void
                 
         """ 
-                
+        
         self._cursor.execute("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'")
         tables = list(self._cursor.fetchall())
         query = ''
-        for col in tables:
+        for col in tables:            
             query += "drop table if exists {0} cascade;".format(col['table_name'])        
         self._cursor.execute(query)
         self.commit()

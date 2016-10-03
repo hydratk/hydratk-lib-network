@@ -158,6 +158,7 @@ Test-Scenario-4:
       Validate: |
         this.test_result = str(res)
         assert (res != (None, None)), '_dbcon, _cursor != None'
+        d.close()
         
 Test-Scenario-5:
   Id: ts_05
@@ -263,7 +264,9 @@ Test-Scenario-6:
       Validate: |
         this.test_result = str(res)
         assert (res[0]['id'] == 4), 'output = 4'        
-        d.execute('DELETE FROM lov_status WHERE id = 4')   
+        d.execute('DELETE FROM lov_status WHERE id = 4')
+        d.commit()
+        d.close()   
         
 Test-Scenario-7:
   Id: ts_07
@@ -301,6 +304,7 @@ Test-Scenario-7:
         assert (res[0]['id'] == 4), 'output = 4'
         d.execute('DELETE FROM lov_status WHERE id = 4')  
         d.commit()
+        d.close()
         
 Test-Scenario-8:
   Id: ts_08
@@ -336,6 +340,7 @@ Test-Scenario-8:
       Validate: |
         this.test_result = str(res)
         assert (len(res) == 0), 'output is empty'
+        d.close()
         
 Test-Scenario-9:
   Id: ts_09

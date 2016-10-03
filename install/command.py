@@ -2,6 +2,7 @@
 
 from subprocess import call, Popen, PIPE
 from os import environ, path
+from sys import exit
 
 def is_install_cmd(argv):
 
@@ -41,7 +42,8 @@ def install_pck(pckm, pck):
         cmd = 'yum -y install {0}'.format(pck)
         
     if (call(cmd, shell=True) != 0):
-        print('Failed to install package {0}'.format(pck)) 
+        print('Failed to install package {0}, hydratk-lib-network installation failed.'.format(pck))
+        exit(-1) 
         
 def create_dir(dst):
     
@@ -78,4 +80,13 @@ def compile_java_class(dir, file, classpath=None):
         cmd = 'javac {0}'.format(file)
         
     if (call(cmd, cwd=dir, shell=True) != 0):
-        print('Failed to compile {0}'.format(file))         
+        print('Failed to compile {0}'.format(file))   
+        
+def install_pip(module):
+    
+    print ('Installing module {0}'.format(module))
+    
+    cmd = 'pip install {0}'.format(module) 
+    if (call(cmd, shell=True) != 0):
+        print('Failed to install {0}, hydratk-lib-network installation failed'.format(module))
+        exit(-1)               

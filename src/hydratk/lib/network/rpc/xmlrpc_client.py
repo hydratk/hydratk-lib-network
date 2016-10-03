@@ -22,6 +22,7 @@ from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
 from socket import error, setdefaulttimeout
 from sys import version_info
+from platform import python_implementation
 
 try:
     from xmlrpclib import ServerProxy, Fault, ProtocolError
@@ -81,7 +82,7 @@ class RPCClient(object):
             
             if (ev.will_run_default()):     
                 setdefaulttimeout(timeout) 
-                if (version_info[0] == 3 and version_info[1] == 5):
+                if ((version_info[0] == 3 and version_info[1] == 5) or python_implementation() == 'PyPy'):
                     from ssl import _create_unverified_context
                     self._proxy = ServerProxy(url, allow_none=True, context=_create_unverified_context())
                 else:

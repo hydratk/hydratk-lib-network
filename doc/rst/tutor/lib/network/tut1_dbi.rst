@@ -135,6 +135,10 @@ After installation do following actions:
 1. Check that directory /var/local/hydratk/java was created and contains files: DBClient.java, DBClient.class.
 2. Store specific client jar file to same directory (i.e. ojdbc6.jar).
 
+  .. note ::
+  
+     JDBC is not supported for PyPy due to module JPype1.
+
   .. code-block:: python
   
      # import library
@@ -236,6 +240,10 @@ PostgreSQL
      
 MSSQL
 ^^^^^ 
+
+  .. note ::
+  
+     MSSQL is not supported for PyPy due to module pymssql.
 
   .. code-block:: python
   

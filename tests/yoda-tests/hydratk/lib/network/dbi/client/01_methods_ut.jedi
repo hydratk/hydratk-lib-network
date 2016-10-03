@@ -8,6 +8,7 @@ Test-Scenario-1:
   
   Pre-Req: |
     from hydratk.lib.network.dbi.client import DBClient
+    from platform import python_implementation
   
   Test-Case-1:
     Id: tc_01
@@ -72,12 +73,22 @@ Test-Scenario-1:
       Desc: JDBC engine
     
       Test: |
-        c = DBClient('JDBC', False, '/usr/local/app/java/jdk1.8.0_51/jre/lib/amd64/server/libjvm.so')
-        res = c.__class__.__name__
+        if (python_implementation() != 'PyPy'):
+            c = DBClient('JDBC', False, '/usr/local/app/java/jdk1.8.0_51/jre/lib/amd64/server/libjvm.so')
+            res = c.__class__.__name__
+        else:
+            try:
+                DBClient('JDBC')
+                ex = False
+            except NotImplementedError:
+                ex = True
       
       Validate: |
-        this.test_result = res
-        assert (res == 'DBClient'), 'DBClient = DBClient' 
+        if (python_implementation() != 'PyPy'):
+            this.test_result = res
+            assert (res == 'DBClient'), 'DBClient = DBClient'
+        else:
+            assert (ex), 'raises NotImplementedError' 
         
     Test-Condition-6: 
       Id: tco_06
@@ -85,12 +96,22 @@ Test-Scenario-1:
       Desc: MSSQL engine
     
       Test: |
-        c = DBClient('MSSQL')
-        res = c.__class__.__name__
+        if (python_implementation() != 'PyPy'):
+            c = DBClient('MSSQL')
+            res = c.__class__.__name__
+        else:
+            try:
+                DBClient('MSSQL')
+                ex = False
+            except NotImplementedError:
+                ex = True            
       
       Validate: |
-        this.test_result = res
-        assert (res == 'DBClient'), 'DBClient = DBClient'                      
+        if (python_implementation() != 'PyPy'):
+            this.test_result = res
+            assert (res == 'DBClient'), 'DBClient = DBClient' 
+        else:
+            assert (ex), 'raises NotImplementedError'                              
         
     Test-Condition-7: 
       Id: tco_07

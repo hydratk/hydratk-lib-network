@@ -8,7 +8,7 @@ Test-Scenario-1:
   
   Pre-Req: |
     from hydratk.lib.network.jms.client import JMSClient
-    from sys import version_info
+    from platform import python_implementation
   
   Test-Case-1:
     Id: tc_01
@@ -21,23 +21,12 @@ Test-Scenario-1:
       Desc: STOMP protocol
     
       Test: |
-        if (version_info[0] == 2):
-            c = JMSClient('STOMP')
-            res = c.__class__.__name__
-        else:
-            try:
-                c = JMSClient('STOMP')
-                ex = False
-            except NotImplementedError:
-                ex = True
+        c = JMSClient('STOMP')
+        res = c.__class__.__name__
       
       Validate: |
-        if (version_info[0] == 2):
-            this.test_result = res
-            assert (res == 'JMSClient'), 'JMSClient = JMSClient'
-        else:
-            this.test_result = ex
-            assert (ex), 'JMSClient raises NotImplementedError'    
+        this.test_result = res
+        assert (res == 'JMSClient'), 'JMSClient = JMSClient'   
         
     Test-Condition-2: 
       Id: tco_02
@@ -45,23 +34,12 @@ Test-Scenario-1:
       Desc: STOMP with arguments
     
       Test: |
-        if (version_info[0] == 2):
-            c = JMSClient('STOMP', True)
-            res = c._verbose
-        else:
-            try:
-                c = JMSClient('STOMP')
-                ex = False
-            except NotImplementedError:
-                ex = True            
+        c = JMSClient('STOMP', True)
+        res = c._verbose          
       
       Validate: |
-        if (version_info[0] == 2):
-            this.test_result = res
-            assert (res), '_verbose = True'   
-        else:
-            this.test_result = ex
-            assert (ex), 'JMSClient raises NotImplementedError'             
+        this.test_result = res
+        assert (res), '_verbose = True'              
         
     Test-Condition-3: 
       Id: tco_03
@@ -95,12 +73,22 @@ Test-Scenario-1:
       Desc: JMS protocol
     
       Test: |
-        c = JMSClient('JMS', False, '/usr/local/app/java/jdk1.8.0_51/jre/lib/amd64/server/libjvm.so')
-        res = c.__class__.__name__
+        if (python_implementation() != 'PyPy'):
+            c = JMSClient('JMS', False, '/usr/local/app/java/jdk1.8.0_51/jre/lib/amd64/server/libjvm.so')
+            res = c.__class__.__name__
+        else:
+            try:
+                JMSClient('JMS')
+                ex = False
+            except NotImplementedError:
+                ex = True
       
       Validate: |
-        this.test_result = res
-        assert (res == 'JMSClient'), 'JMSClient = JMSClient'  
+        if (python_implementation() != 'PyPy'):
+            this.test_result = res
+            assert (res == 'JMSClient'), 'JMSClient = JMSClient'  
+        else:
+            assert (ex), 'raises NotImplementedError'
         
     Test-Condition-6: 
       Id: tco_06

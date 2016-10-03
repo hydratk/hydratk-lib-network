@@ -20,10 +20,14 @@ java_after_stop
 
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
-from jpype import JByte, JShort, JInt, JLong, JFloat, JDouble, JChar, JString, JBoolean
-from jpype import get_default_jvm_path, isJVMStarted, startJVM, shutdownJVM, JavaException
-from jpype import JClass, JPackage
 from os import path, walk
+
+try:
+    from jpype import JByte, JShort, JInt, JLong, JFloat, JDouble, JChar, JString, JBoolean
+    from jpype import get_default_jvm_path, isJVMStarted, startJVM, shutdownJVM, JavaException
+    from jpype import JClass, JPackage
+except ImportError:
+    raise NotImplementedError('Java bridge is not supported for PyPy')
 
 java_types = {
   'byte'  : JByte,

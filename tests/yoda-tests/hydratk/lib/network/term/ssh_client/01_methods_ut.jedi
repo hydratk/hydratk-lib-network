@@ -402,7 +402,7 @@ Test-Scenario-5:
       
       Test: |
         c = TermClient('SSH')
-        res = c.exec_command('pwd')
+        res, out = c.exec_command('pwd')
       
       Validate: |
         this.test_result = res

@@ -659,9 +659,9 @@ Test-Scenario-8:
         res = [events[0]._id, events[1]._id]
         this.test_result = str(res)
         assert (res == evs), 'upload_file fires {0}'.format(evs)
-        this.test_result = res = (path.exists('./'+file))
+        this.test_result = res = (path.exists('/home/lynus/'+file))
         assert (res), 'file {0} uploaded'.format(file)
-        remove(file) 
+        remove('/home/lynus/'+file) 
         del mh._event_hooks[evs[0]]
         del mh._event_hooks[evs[1]]   
         del events[0]
@@ -678,10 +678,10 @@ Test-Scenario-8:
       Validate: |        
         this.test_result = res
         assert (res), 'upload_file = True'          
-        this.test_result = res = (path.exists('./'+file))
+        this.test_result = res = (path.exists('/home/lynus/'+file))
         assert (res), 'file {0} uploaded'.format(file)
         c.disconnect()
-        remove(file)         
+        remove('/home/lynus/'+file)         
         remove(lpath+file)  
         
   Test-Case-2:

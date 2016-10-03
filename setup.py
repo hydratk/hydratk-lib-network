@@ -7,7 +7,7 @@ from install.post_install import run_post_install
 with open("README.rst", "r") as f:
     readme = f.read()
     
-requires = run_pre_install(argv)       
+run_pre_install(argv)       
     
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -25,6 +25,7 @@ classifiers = [
     "Programming Language :: Python :: 3.5",
     "Programming Language :: Python :: Implementation",
     "Programming Language :: Python :: Implementation :: CPython", 
+    "Programming Language :: Python :: Implementation :: PyPy",
     "Topic :: Software Development :: Libraries :: Application Frameworks",
     "Topic :: Utilities"
 ]                        
@@ -39,10 +40,9 @@ setup(
       url='http://libraries.hydratk.org/network',
       license='BSD',
       packages=find_packages('src'),
-      install_requires=requires,
       package_dir={'' : 'src'},
       classifiers=classifiers,
       zip_safe=False
      )        
 
-run_post_install(argv, requires)
+run_post_install(argv)

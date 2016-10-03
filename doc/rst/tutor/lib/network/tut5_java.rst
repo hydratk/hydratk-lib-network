@@ -25,6 +25,10 @@ Methods:
    
      API uses HydraTK core functionalities so it must be running.
      
+  .. note ::
+  
+     Java bridge is not supported for PyPy due to module JPype1.     
+     
 Configuration
 ^^^^^^^^^^^^^
 

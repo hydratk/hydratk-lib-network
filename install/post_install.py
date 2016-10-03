@@ -3,8 +3,9 @@
 from install.config import config as cfg
 import install.command as cmd
 from os import path
+from pkgutil import find_loader
 
-def run_post_install(argv, requires):  
+def run_post_install(argv):  
     
     if (cmd.is_install_cmd(argv)):           
     
@@ -12,7 +13,7 @@ def run_post_install(argv, requires):
         print('*     Running post-install tasks     *')    
         print('**************************************')
     
-        if ('JPype1>=0.6.1' in requires):
+        if (find_loader('jpype')):
             for task in cfg['post_tasks']:
                 print('\n*** Running task: {0} ***\n'.format(task))
                 globals()[task]()     

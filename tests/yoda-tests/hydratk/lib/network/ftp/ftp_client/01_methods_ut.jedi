@@ -823,7 +823,7 @@ Test-Scenario-8:
       
       Test: |
         c = FTPClient('FTP')
-        c.connect('srv8.endora.cz', 21, 'lynus', 'Bowmanlop1')
+        c.connect('srv8.endora.cz', 21, 'lynus', 'xxx')
         res = c.upload_file('/private/test.txt')
       
       Validate: |                               
