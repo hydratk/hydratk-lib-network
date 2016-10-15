@@ -31,6 +31,7 @@ from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.utils import is_url_connectable
 from importlib import import_module
+from os import path
 
 browsers = {
   'ANDROID'    : 'Android',
@@ -73,7 +74,8 @@ class SeleniumBridge(object):
             
             mod = import_module('selenium.webdriver')   
             if (self._browser == 'PHANTOMJS'):                
-                client = mod.__dict__[browsers[self._browser]](service_args=['--ignore-ssl-errors=true', '--ssl-protocol=any'])
+                client = mod.__dict__[browsers[self._browser]](service_args=['--ignore-ssl-errors=true', '--ssl-protocol=any'],
+                                                               service_log_path=path.devnull)
                 client.set_window_size(1024, 768)         
             else:
                 client = mod.__dict__[browsers[self._browser]]()
