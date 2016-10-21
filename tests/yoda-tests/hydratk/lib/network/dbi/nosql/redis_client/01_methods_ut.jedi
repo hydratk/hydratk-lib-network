@@ -342,7 +342,7 @@ Test-Scenario-4:
     Test-Condition-1: 
       Id: tco_01
       Name: tco_not_connected
-      Desc: Invalid table
+      Desc: Not connected to server
       
       Test: |    
         c = DBClient('REDIS')

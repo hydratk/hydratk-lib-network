@@ -28,7 +28,7 @@ def DBClient(engine='SQLITE', *args, **kwargs):
         
     Args:            
         engine (str): DB engine, SQLITE|ORACLE|MYSQL|POSTGRESQL|JDBC|MSSQL
-                      NoSQL REDIS|MongoDB
+                      NoSQL REDIS|MONGODB|CASSANDRA
         args (args): arguments 
         kwargs (kwargs): key value arguments
            

@@ -236,11 +236,12 @@ class DBClient(object):
                 self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_dbi_not_connected'), self._mh.fromhere()) 
                 return False, None                
             
-            ev = event.Event('dbi_before_exec_query', query, bindings, fetch_one)
+            ev = event.Event('dbi_before_exec_query', query, bindings, fetch_one, autocommit)
             if (self._mh.fire_event(ev) > 0):
                 query = ev.argv(0)
                 bindings = ev.argv(1)
                 fetch_one = ev.argv(2)             
+                autocommit = ev.argv(3)
             
             if (ev.will_run_default()):
                 arraylist = self.bridge.init_arraylist(bindings)

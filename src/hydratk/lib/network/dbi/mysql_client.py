@@ -15,6 +15,8 @@ dbi_before_connect
 dbi_after_connect
 dbi_before_exec_query
 dbi_after_exec_query
+dbi_before_call_proc
+dbi_after_call_proc
 
 """
 
@@ -200,11 +202,12 @@ class DBClient(object):
                 self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_dbi_not_connected'), self._mh.fromhere()) 
                 return False, None             
             
-            ev = event.Event('dbi_before_exec_query', query, bindings, fetch_one)
+            ev = event.Event('dbi_before_exec_query', query, bindings, fetch_one, autocommit)
             if (self._mh.fire_event(ev) > 0):
                 query = ev.argv(0)
                 bindings = ev.argv(1)
-                fetch_one = ev.argv(2)          
+                fetch_one = ev.argv(2)  
+                autocommit = ev.argv(3)        
 
             if (ev.will_run_default()):
                 cur = self._client.cursor()    
@@ -253,7 +256,7 @@ class DBClient(object):
            autocommit (bool): autocommit            
              
         Returns:
-           tuple: result (bool) (for function only), params (dict)
+           tuple: result (according to ret_type) (for function only), params (dict)
            
         Raises:
            event: dbi_before_call_proc
@@ -270,7 +273,7 @@ class DBClient(object):
                 self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_dbi_not_connected'), self._mh.fromhere()) 
                 return None             
             
-            ev = event.Event('dbi_before_call_proc', p_name, param_names, i_values, o_types, type, ret_type)
+            ev = event.Event('dbi_before_call_proc', p_name, param_names, i_values, o_types, type, ret_type, autocommit)
             if (self._mh.fire_event(ev) > 0):
                 p_name = ev.argv(0)
                 param_names = ev.argv(1)
@@ -278,6 +281,7 @@ class DBClient(object):
                 o_types = ev.argv(3)
                 type = ev.argv(4)
                 ret_type = ev.argv(5)                          
+                autocommit = ev.argv(6)
             
             if (ev.will_run_default()):
                 if (type not in ('func', 'function', 'proc', 'procedure')):

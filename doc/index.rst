@@ -18,7 +18,7 @@ Network library provides clients/API for many network protocols and technologies
 * RPC: client for Java RMI, XML-RPC, JSON-RPC
 * Selenium: bridge to Selenium API for web GUI interaction
 * SOAP: client for SOAP protocol
-* Terminal: client for SSH protocol
+* Terminal: client for SSH, TELNET protocols
 
 .. toctree::
    :hidden:

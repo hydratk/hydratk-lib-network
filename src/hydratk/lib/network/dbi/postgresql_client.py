@@ -276,12 +276,13 @@ class DBClient(object):
                 self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_dbi_not_connected'), self._mh.fromhere()) 
                 return None             
             
-            ev = event.Event('dbi_before_call_proc', p_name, param_names, i_values, o_types)
+            ev = event.Event('dbi_before_call_proc', p_name, param_names, i_values, o_types, autocommit)
             if (self._mh.fire_event(ev) > 0):
                 p_name = ev.argv(0)
                 param_names = ev.argv(1)
                 i_values = ev.argv(2)   
                 o_types = ev.argv(3)                       
+                autocommit = ev.argv(4)
             
             if (ev.will_run_default()):
                 

@@ -248,5 +248,5 @@ class EmailClient(object):
             
         except (SMTPException, error) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
-            return False 
-                                                              
+            return False
+        

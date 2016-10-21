@@ -166,7 +166,7 @@ class FTPClient(object):
             self._port = port
             self._user = user
             self._passw = passw
-            self._path = '/'                        
+            self._path = path                       
             
             if (ev.will_run_default()):    
                 self._client.connect(self._host, self._port, timeout=timeout)             

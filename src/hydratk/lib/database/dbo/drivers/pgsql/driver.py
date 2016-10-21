@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """DBO PostgreSQL driver
 
-.. module:: lib.database.dbo.drivers.sqlite.driver
+.. module:: lib.database.dbo.drivers.pgsql.driver
    :platform: Unix
    :synopsis: DBO PosgreSQL driver
 .. moduleauthor:: Petr Czaderna <pc@hydratk.org>
@@ -80,8 +80,7 @@ class DBODriver(dbodriver.DBODriver):
         for optname, optval in driver_options.items():
             if optname in self._driver_options:
                 self._driver_options[optname] = optval
-            
-        
+                    
     def connect(self):
         """Method connects to database
         

@@ -145,10 +145,11 @@ def send_packet(packet, iface=None, verbose=False):
         
         mh.dmsg('htk_on_debug_info', mh._trn.msg('htk_inet_sending_packet', iface), mh.fromhere())
 
-        ev = event.Event('inet_before_send_packet', iface, verbose)
+        ev = event.Event('inet_before_send_packet', packet, iface, verbose)
         if (mh.fire_event(ev) > 0):
-            iface = ev.argv(0)
-            verbose = ev.argv(1)
+            packet = ev.argv(0)
+            iface = ev.argv(1)
+            verbose = ev.argv(2)
 
         if (ev.will_run_default()):
             if (iface != None):
@@ -190,11 +191,13 @@ def send_recv_packet(packet, iface=None, retry=3, timeout=1, verbose=False):
         mh.dmsg('htk_on_debug_info', mh._trn.msg('htk_inet_sending_recv_packet', iface, retry, timeout), 
                 mh.fromhere())
 
-        ev = event.Event('inet_before_sendrecv_packet', iface, retry, timeout)
+        ev = event.Event('inet_before_sendrecv_packet', packet, iface, retry, timeout, verbose)
         if (mh.fire_event(ev) > 0):
-            iface = ev.argv(0)
-            retry = ev.argv(1)
-            timeout = ev.argv(2)
+            packet = ev.argv(0)
+            iface = ev.argv(1)
+            retry = ev.argv(2)
+            timeout = ev.argv(3)
+            verbose = ev.argv(4)
 
         if (ev.will_run_default()):
             if (iface != None):
@@ -236,11 +239,12 @@ def ping(destination, protocol='ICMP', port=None, verbose=False):
         print('ping {0}'.format(destination))
         mh.dmsg('htk_on_debug_info', mh._trn.msg('htk_inet_ping', destination, protocol, port), mh.fromhere())
     
-        ev = event.Event('inet_before_ping', destination, protocol, port)
+        ev = event.Event('inet_before_ping', destination, protocol, port, verbose)
         if (mh.fire_event(ev) > 0):
             destination = ev.argv(0)
             protocol = ev.argv(1)
             port = ev.argv(2)
+            verbose = ev.argv(3)
 
         if (ev.will_run_default()):            
         
@@ -297,12 +301,13 @@ def traceroute(destination, protocol='ICMP', port=None, max_hops=30, verbose=Fal
         mh.dmsg('htk_on_debug_info', mh._trn.msg('htk_inet_traceroute', destination, protocol, port, max_hops), 
                 mh.fromhere()) 
         
-        ev = event.Event('inet_before_traceroute', destination, protocol, port, max_hops)
+        ev = event.Event('inet_before_traceroute', destination, protocol, port, max_hops, verbose)
         if (mh.fire_event(ev) > 0):
             destination = ev.argv(0)
             protocol = ev.argv(1)
             port = ev.argv(2)
             max_hops = ev.argv(3)
+            verbose = ev.argv(4)
 
         if (ev.will_run_default()):          
         

@@ -184,10 +184,11 @@ class SeleniumBridge(object):
         try:
                
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_selen_waiting', ident, timeout), self._mh.fromhere())
-            ev = event.Event('selen_before_wait', ident, timeout)
+            ev = event.Event('selen_before_wait', ident, method, timeout)
             if (self._mh.fire_event(ev) > 0):
                 ident = ev.argv(0) 
-                timeout = ev.argv(1)              
+                method = ev.argv(1)
+                timeout = ev.argv(2)              
              
             if (ev.will_run_default()): 
                 if (method == 'id'):   

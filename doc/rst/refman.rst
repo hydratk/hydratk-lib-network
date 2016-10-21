@@ -12,4 +12,4 @@ Libraries
 .. toctree::
    :maxdepth: 1
 
-   refman/libs/network   
+   refman/lib/network   

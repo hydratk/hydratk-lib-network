@@ -81,9 +81,10 @@ class DBClient(object):
                     
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_dbi_connecting', db_file), self._mh.fromhere())
             
-            ev = event.Event('dbi_before_connect', db_file)
+            ev = event.Event('dbi_before_connect', db_file, timeout)
             if (self._mh.fire_event(ev) > 0):
-                db_file = ev.argv(0)               
+                db_file = ev.argv(0)    
+                timeout = ev.arv(1)           
             
             if (ev.will_run_default()):
                 self._db_file = db_file

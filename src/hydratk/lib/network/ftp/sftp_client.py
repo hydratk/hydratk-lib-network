@@ -43,6 +43,7 @@ class FTPClient(object):
     _port = None
     _user = None
     _passw = None
+    _cert = None
     _path = None
     _verbose = None
     _is_connected = None
@@ -158,7 +159,7 @@ class FTPClient(object):
             self._user = user
             self._passw = passw 
             self._cert = cert
-            self._path = '/'                 
+            self._path = path                
             
             if (ev.will_run_default()):
                 setdefaulttimeout(timeout)                  

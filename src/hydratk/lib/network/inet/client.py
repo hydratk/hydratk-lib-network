@@ -22,7 +22,7 @@ inet_after_receive
 
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
-from socket import socket, error, gethostbyaddr, getaddrinfo, setdefaulttimeout
+from socket import socket, error, gethostbyaddr, getaddrinfo
 from socket import AF_INET, AF_INET6, SOCK_STREAM, SOCK_DGRAM, SHUT_RDWR
 
 class Client(object):
@@ -140,7 +140,7 @@ class Client(object):
             message = '{0}:{1} timeout:{2}'.format(host, port, timeout)
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_inet_connecting', message), self._mh.fromhere())
             
-            ev = event.Event('inet_before_connect', host, port)
+            ev = event.Event('inet_before_connect', host, port, timeout)
             if (self._mh.fire_event(ev) > 0):
                 host = ev.argv(0)
                 port = ev.argv(1) 

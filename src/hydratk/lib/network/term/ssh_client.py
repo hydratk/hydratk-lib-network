@@ -210,9 +210,10 @@ class TermClient(object):
                 self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_term_not_connected'), self._mh.fromhere()) 
                 return False, None            
             
-            ev = event.Event('term_before_exec_command', command)
+            ev = event.Event('term_before_exec_command', command, input)
             if (self._mh.fire_event(ev) > 0):
                 command = ev.argv(0)            
+                input = ev.argv(1)
             
             if (ev.will_run_default()): 
                 stdin, stdout, stderr = self._client.exec_command(command)

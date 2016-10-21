@@ -3,7 +3,7 @@
 
 .. module:: lib.data.loader
    :platform: Unix
-   :synopsis: Module for data loading from external resources
+   :synopsis: Module for data loading from external sources
 .. moduleauthor:: Petr Rašek <bowman@hydratk.org>
 
 """
@@ -85,7 +85,7 @@ def load_from_db(engine, query, bindings=None, host=None, port=None, sid=None, u
     """Method loads data from database
         
     Args:        
-        engine (str): DB engine, SQLITE|ORACLE|MYSQL|POSTGRESQL
+        engine (str): DB engine, SQLITE|ORACLE|MYSQL|POSTGRESQL|MSSQL
         query (str): SQL query
         bindings (list): query bindings 
         host (str): hostname
@@ -99,7 +99,7 @@ def load_from_db(engine, query, bindings=None, host=None, port=None, sid=None, u
         list: list of records, record is dictionary
         
     Raises:
-        error: ValueError 
+        error: NotImplementedError 
                 
     """   
     
@@ -109,8 +109,10 @@ def load_from_db(engine, query, bindings=None, host=None, port=None, sid=None, u
     
     if (engine.upper() == 'SQLITE'):
         db.connect(db_file)
-    else:
+    elif (engine.upper() in ['ORACLE', 'MYSQL', 'POSTGRESQL', 'MSSQL']):
         db.connect(host, port, sid, user, passw)
+    else:
+        raise NotImplementedError
     
     res, records = db.exec_query(query, bindings)
     

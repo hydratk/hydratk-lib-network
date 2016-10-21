@@ -170,7 +170,7 @@ class SOAPClient(object):
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_soap_loading_wsdl', url,
                           user, passw, endpoint, headers), self._mh.fromhere())
             
-            ev = event.Event('soap_before_load_wsdl', url, proxies, location, user, passw, auth, endpoint, headers)
+            ev = event.Event('soap_before_load_wsdl', url, proxies, location, user, passw, auth, endpoint, headers, use_cache, timeout)
             if (self._mh.fire_event(ev) > 0):
                 url = ev.argv(0)
                 proxies = ev.argv(1)
@@ -179,7 +179,9 @@ class SOAPClient(object):
                 passw = ev.argv(4)
                 auth = ev.argv(5)
                 endpoint = ev.argv(6)
-                headers = ev.argv(7)                         
+                headers = ev.argv(7) 
+                use_cache = ev.argv(8)
+                timeout = ev.argv(9)              
         
             self._url = url
             self._proxies = proxies

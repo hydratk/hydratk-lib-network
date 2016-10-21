@@ -181,7 +181,7 @@ class DBClient(object):
             self._mh.dmsg('htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
             return False     
         
-    def exec_query(self, query, bindings=None, fetch_one=False,):
+    def exec_query(self, query, bindings=None, fetch_one=False):
         """Method executes query
         
         See Cassandra documentation for more info.
@@ -192,7 +192,7 @@ class DBClient(object):
            fetch_one (bool): fetch one row only
              
         Returns:
-           tuple: result (bool), rows (list) (accessible by row.columne)
+           tuple: result (bool), rows (list) (accessible by row.column)
           
         Raises:
            event: dbi_before_exec_query
@@ -209,10 +209,11 @@ class DBClient(object):
                 self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_dbi_not_connected'), self._mh.fromhere()) 
                 return False, None          
             
-            ev = event.Event('dbi_before_exec_query', query, bindings)
+            ev = event.Event('dbi_before_exec_query', query, bindings, fetch_one)
             if (self._mh.fire_event(ev) > 0):
                 query = ev.argv(0)
                 bindings = ev.argv(1)
+                fetch_one = ev.argv(2)
 
             if (ev.will_run_default()):
 
