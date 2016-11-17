@@ -32,11 +32,11 @@ classifiers = [
           
 setup(
       name='hydratk-lib-network',
-      version='0.2.0a.dev1',
+      version='0.2.0',
       description='Clients/API for many network protocols and technologies',
       long_description=readme,
       author='Petr Rašek, HydraTK team',
-      author_email='team@hydratk.org',
+      author_email='bowman@hydratk.org, team@hydratk.org',
       url='http://libraries.hydratk.org/network',
       license='BSD',
       packages=find_packages('src'),
