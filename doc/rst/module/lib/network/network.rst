@@ -29,7 +29,7 @@ database
 .. toctree::
    :maxdepth: 1
    
-   pgsql
+   dbo
 
 network
 ^^^^^^^   

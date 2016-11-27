@@ -1,37 +1,32 @@
 # -*- coding: utf-8 -*-
-"""DBO PostgreSQL driver
+"""DBO Oracle driver
 
-.. module:: lib.database.dbo.drivers.pgsql.driver
+.. module:: lib.database.dbo.drivers.oracle.driver
    :platform: Unix
-   :synopsis: DBO PosgreSQL driver
-.. moduleauthor:: Petr Czaderna <pc@hydratk.org>
+   :synopsis: DBO Oracle driver
+.. moduleauthor:: Petr Rašek <bowman@hydratk.org>
 
 """
 
-try:
-    import psycopg2
-    from  psycopg2.extras import RealDictCursor
-except ImportError:
-    import psycopg2cffi as psycopg2    
-    from  psycopg2cffi.extras import RealDictCursor
-    
-import os
-from hydratk.lib.database.dbo import dbodriver 
+import cx_Oracle
+from hydratk.lib.database.dbo import dbodriver
+from platform import python_implementation
 
 class DBODriver(dbodriver.DBODriver):
     """Class DBODriver
     """
         
     _host           = None
-    _port           = 5432
-    _dbname         = 'postgres'
+    _port           = 1521
+    _dbname         = None
     _driver_options = {
                    'timeout'           : 5.0,
                    'detect_types'      : 0,
                    'isolation_level'   : None, #available “DEFERRED”, “IMMEDIATE” or “EXCLUSIVE”
                    'check_same_thread' : None,
                    'factory'           : 'Connection',
-                   'cached_statements' : 100
+                   'cached_statements' : 100,
+                   'auto_commit'       : True
                   }    
         
     def _parse_dsn(self, dsn): 
@@ -91,8 +86,9 @@ class DBODriver(dbodriver.DBODriver):
            void
                 
         """ 
-
-        self._dbcon = psycopg2.connect(database=self._dbname, host=self._host, port=self._port, user=self._username, password=self._password)
+        
+        dsn = '{0}:{1}/{2}'.format(self._host, self._port, self._dbname)
+        self._dbcon = cx_Oracle.connect(dsn=dsn, user=self._username, password=self._password)
         self.result_as_dict(self._result_as_dict)
         
     def close(self):
@@ -168,7 +164,11 @@ class DBODriver(dbodriver.DBODriver):
                 
         """ 
       
-        self._cursor.execute(sql, *parameters)
+        self._cursor.execute(sql, *parameters)        
+        if (self._result_as_dict and 'SELECT' in sql.upper()):
+            self._cursor.rowfactory = self._make_dict(self._cursor)
+        elif (self._driver_options['auto_commit']):
+            self.commit()
         return self._cursor
         
     def quote(self):
@@ -207,8 +207,8 @@ class DBODriver(dbodriver.DBODriver):
                 
         """ 
                 
-        if hasattr(psycopg2, name):
-            return getattr(psycopg2, name)
+        if hasattr(cx_Oracle, name):
+            return getattr(cx_Oracle, name)
             
     def __getattr__(self,name):
         """Method gets attribute
@@ -225,8 +225,8 @@ class DBODriver(dbodriver.DBODriver):
             if hasattr(self._dbcon, name):
                 return getattr(self._dbcon,name)
             
-            if hasattr(psycopg2, name):
-                return getattr(psycopg2,name) 
+            if hasattr(cx_Oracle, name):
+                return getattr(cx_Oracle) 
             
     def table_exists(self, table_name):
         """Method checks if table exists
@@ -240,9 +240,10 @@ class DBODriver(dbodriver.DBODriver):
         """ 
                 
         if table_name is not None and table_name != '':
-            query = "SELECT count(*) found FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE' and table_name=%s"
-            self._cursor.execute(query, [table_name])
-            recs = self._cursor.fetchall()
+            query = "SELECT count(*) found FROM all_tables WHERE owner=:1 AND table_name=:2"
+            self._cursor.execute(query, [self._username.upper(), table_name.upper()])
+            self._cursor.rowfactory = self._make_dict(self._cursor)
+            recs = self._cursor.fetchall()            
             result = True if (recs[0]['found'] == 1) else False
         return result
         
@@ -263,12 +264,11 @@ class DBODriver(dbodriver.DBODriver):
                 
         """ 
         
-        self._cursor.execute("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'")
+        self._cursor.execute("SELECT table_name FROM all_tables WHERE owner=:1", [self._username.upper()])
+        self._cursor.rowfactory = self._make_dict(self._cursor)
         tables = list(self._cursor.fetchall())
-        query = ''
-        for col in tables:            
-            query += "drop table if exists {0} cascade;".format(col['table_name'])        
-        self._cursor.execute(query)
+        for col in tables:
+            self._cursor.execute("drop table {0} cascade constraints".format(col['table_name']))
         self.commit()
     
     def result_as_dict(self, state):   
@@ -287,10 +287,24 @@ class DBODriver(dbodriver.DBODriver):
                     
         if state in (True, False):
             self._result_as_dict = state
-            if state == True:                                                
-                self._cursor = self._dbcon.cursor(cursor_factory=RealDictCursor)                
-            else:                              
-                self._cursor = self._dbcon.cursor()
+            self._cursor = self._dbcon.cursor()
         else:
             raise TypeError('Boolean value expected')
         
+    def _make_dict(self, cursor):
+        """Method for overriding row factory to return dictionary  
+        
+        Args:   
+           cursor (obj): database cursor
+           
+        Returns:
+           method
+                
+        """         
+
+        columns = [d[0].lower() for d in cursor.description]
+        def create_row(*args):
+            if (python_implementation() == 'PyPy'):
+                args = args[0]        
+            return dict(zip(columns, args))
+        return create_row

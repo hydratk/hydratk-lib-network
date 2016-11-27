@@ -1,6 +1,6 @@
 Test-Scenario-1:
   Id: ts_01
-  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Path: hydratk/lib/database/dbo/mysql/01_methods_ut.jedi
   Name: ts_init
   Desc: Test method __init__
   Author: Petr Rasek <bowman@hydratk.org>
@@ -20,7 +20,7 @@ Test-Scenario-1:
       Desc: Initialize
       
       Test: |
-        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        dsn = 'mysql:host=127.0.0.1;port=3306;database=mysql;user=root;password=root'
         c = DBO(dsn)
         res = c.__class__.__name__
       
@@ -47,7 +47,7 @@ Test-Scenario-1:
         
 Test-Scenario-2:
   Id: ts_02
-  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Path: hydratk/lib/database/dbo/mysql/01_methods_ut.jedi
   Name: ts_parse_dsn
   Desc: Test method _parse_dsn
   Author: Petr Rasek <bowman@hydratk.org>
@@ -64,10 +64,10 @@ Test-Scenario-2:
     Test-Condition-1: 
       Id: tco_01
       Name: tco_parse
-      Desc: Parse    
+      Desc: Parse   
     
       Test: |
-        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        dsn = 'mysql:host=127.0.0.1;port=3306;database=mysql;user=root;password=root'
         c = DBO(dsn)
         d = c._dbo_driver   
         res = d._parse_dsn(dsn)
@@ -76,13 +76,13 @@ Test-Scenario-2:
         this.test_result = res
         assert (res), 'parse_dsn = True'
         res = [d._host, d._port, d._dbname, d._username, d._password]
-        exp = ['127.0.0.1', 5432, 'postgre', 'lynus', 'bowman']
+        exp = ['127.0.0.1', 3306, 'mysql', 'root', 'root']
         this.test_result = str(res)
         assert (res == exp), '_host, _port, _dbname, _username, _password = {0}'.format(exp)
         
 Test-Scenario-3:
   Id: ts_03
-  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Path: hydratk/lib/database/dbo/mysql/01_methods_ut.jedi
   Name: ts_apply_driver_options
   Desc: Test method _apply_driver_options
   Author: Petr Rasek <bowman@hydratk.org>
@@ -102,7 +102,7 @@ Test-Scenario-3:
       Desc: Apply option     
     
       Test: |
-        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        dsn = 'mysql:host=127.0.0.1;port=3306;database=mysql;user=root;password=root'
         c = DBO(dsn)
         d = c._dbo_driver 
         opt = {'timeout': 10}
@@ -129,7 +129,7 @@ Test-Scenario-3:
         
 Test-Scenario-4:
   Id: ts_04
-  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Path: hydratk/lib/database/dbo/mysql/01_methods_ut.jedi
   Name: ts_connect
   Desc: Test method connect
   Author: Petr Rasek <bowman@hydratk.org>
@@ -149,7 +149,7 @@ Test-Scenario-4:
       Desc: Connect     
     
       Test: |
-        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        dsn = 'mysql:host=127.0.0.1;port=3306;database=mysql;user=root;password=root'
         c = DBO(dsn, autoconnect=False)
         d = c._dbo_driver
         d.connect()
@@ -162,7 +162,7 @@ Test-Scenario-4:
         
 Test-Scenario-5:
   Id: ts_05
-  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Path: hydratk/lib/database/dbo/mysql/01_methods_ut.jedi
   Name: ts_close
   Desc: Test method close
   Author: Petr Rasek <bowman@hydratk.org>
@@ -183,7 +183,7 @@ Test-Scenario-5:
       Desc: Disconnect   
     
       Test: |
-        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        dsn = 'mysql:host=127.0.0.1;port=3306;database=mysql;user=root;password=root'
         c = DBO(dsn)
         d = c._dbo_driver
         d.close()             
@@ -211,7 +211,7 @@ Test-Scenario-5:
         
 Test-Scenario-6:
   Id: ts_06
-  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Path: hydratk/lib/database/dbo/mysql/01_methods_ut.jedi
   Name: ts_execute
   Desc: Test method execute
   Author: Petr Rasek <bowman@hydratk.org>
@@ -231,14 +231,14 @@ Test-Scenario-6:
       Desc: Read query 
     
       Test: |
-        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        dsn = 'mysql:host=127.0.0.1;port=3306;database=mysql;user=root;password=root'
         c = DBO(dsn)
         d = c._dbo_driver  
-        res = d.execute('SELECT count(*) FROM customer').fetchall()  
+        res = d.execute('SELECT count(*) as count FROM customer').fetchall()  
         
       Validate: |
         this.test_result = str(res)
-        assert (res[0] > 0), 'output > 0'
+        assert (res[0]['count'] > 0), 'output > 0'
         
     Test-Condition-2: 
       Id: tco_02
@@ -270,7 +270,7 @@ Test-Scenario-6:
         
 Test-Scenario-7:
   Id: ts_07
-  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Path: hydratk/lib/database/dbo/mysql/01_methods_ut.jedi
   Name: ts_commit
   Desc: Test method commit
   Author: Petr Rasek <bowman@hydratk.org>
@@ -290,7 +290,7 @@ Test-Scenario-7:
       Desc: Commit 
     
       Test: |
-        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        dsn = 'mysql:host=127.0.0.1;port=3306;database=mysql;user=root;password=root'
         c = DBO(dsn)
         d = c._dbo_driver  
         d.execute('INSERT INTO lov_status VALUES (4, \'test\')')
@@ -308,7 +308,7 @@ Test-Scenario-7:
         
 Test-Scenario-8:
   Id: ts_08
-  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Path: hydratk/lib/database/dbo/mysql/01_methods_ut.jedi
   Name: ts_rollback
   Desc: Test method rollback
   Author: Petr Rasek <bowman@hydratk.org>
@@ -328,7 +328,7 @@ Test-Scenario-8:
       Desc: Rollback
     
       Test: |
-        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        dsn = 'mysql:host=127.0.0.1;port=3306;database=mysql;user=root;password=root'
         c = DBO(dsn)
         d = c._dbo_driver  
         d.execute('INSERT INTO lov_status VALUES (4, \'test\')')
@@ -344,7 +344,7 @@ Test-Scenario-8:
         
 Test-Scenario-9:
   Id: ts_09
-  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Path: hydratk/lib/database/dbo/mysql/01_methods_ut.jedi
   Name: ts_table_exists
   Desc: Test method table_exists
   Author: Petr Rasek <bowman@hydratk.org>
@@ -364,7 +364,7 @@ Test-Scenario-9:
       Desc: Existing table
     
       Test: |
-        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        dsn = 'mysql:host=127.0.0.1;port=3306;database=mysql;user=root;password=root'
         c = DBO(dsn)
         d = c._dbo_driver
         res = d.table_exists('customer')                               
@@ -387,7 +387,7 @@ Test-Scenario-9:
         
 Test-Scenario-10:
   Id: ts_10
-  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Path: hydratk/lib/database/dbo/mysql/01_methods_ut.jedi
   Name: ts_result_as_dict
   Desc: Test method result_as_dict
   Author: Petr Rasek <bowman@hydratk.org>
@@ -407,7 +407,7 @@ Test-Scenario-10:
       Desc: Result as cursor
     
       Test: |
-        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        dsn = 'mysql:host=127.0.0.1;port=3306;database=mysql;user=root;password=root'
         c = DBO(dsn)
         d = c._dbo_driver   
         d.result_as_dict(False)
@@ -432,7 +432,7 @@ Test-Scenario-10:
         
 Test-Scenario-11:
   Id: ts_11
-  Path: hydratk/lib/database/dbo/pgsql/01_methods_ut.jedi
+  Path: hydratk/lib/database/dbo/mysql/01_methods_ut.jedi
   Name: ts_erase_database
   Desc: Test method erase_database
   Author: Petr Rasek <bowman@hydratk.org>
@@ -440,6 +440,7 @@ Test-Scenario-11:
   
   Pre-Req: |
     from hydratk.lib.database.dbo.dbo import DBO
+    from time import sleep
   
   Test-Case-1:
     Id: tc_01
@@ -452,11 +453,14 @@ Test-Scenario-11:
       Desc: Erase
     
       Test: |
-        dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
+        dsn = 'mysql:host=127.0.0.1;port=3306;database=mysql;user=root;password=root'
         c = DBO(dsn)
         d = c._dbo_driver   
-        d.erase_database() 
-        recs = d.execute("select count(*) from information_schema.tables where table_type = 'BASE TABLE' and table_schema = 'public'").fetchall()           
+        d.erase_database()
+        sleep(1)
+        c = DBO(dsn)
+        d = c._dbo_driver    
+        recs = d.execute("select count(*) as count from information_schema.tables where table_schema = 'mysql' and table_type = 'BASE TABLE' and engine = 'InnoDB'").fetchall()           
         
       Validate: |
         this.test_result = str(recs)

@@ -286,6 +286,27 @@ data
 database
 ^^^^^^^^
 
+.. _refman_hydra_lib_database_dbo_drivers_mssql:
+
+* mssql
+
+.. automodule:: hydratk.lib.database.dbo.drivers.mssql.driver
+   :member-order: bysource
+   
+.. _refman_hydra_lib_database_dbo_drivers_mysql:
+
+* mysql
+
+.. automodule:: hydratk.lib.database.dbo.drivers.mysql.driver
+   :member-order: bysource
+   
+.. _refman_hydra_lib_database_dbo_drivers_oracle:
+
+* oracle
+
+.. automodule:: hydratk.lib.database.dbo.drivers.oracle.driver
+   :member-order: bysource      
+
 .. _refman_hydra_lib_database_dbo_drivers_pgsql:
 
 * pgsql

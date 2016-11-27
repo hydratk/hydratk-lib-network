@@ -1,21 +1,18 @@
 # -*- coding: utf-8 -*-
-"""DBO PostgreSQL driver
+"""DBO MSSQL driver
 
-.. module:: lib.database.dbo.drivers.pgsql.driver
+.. module:: lib.database.dbo.drivers.mssql.driver
    :platform: Unix
-   :synopsis: DBO PosgreSQL driver
-.. moduleauthor:: Petr Czaderna <pc@hydratk.org>
+   :synopsis: DBO MSSQL driver
+.. moduleauthor:: Petr Rašek <bowman@hydratk.org>
 
 """
 
 try:
-    import psycopg2
-    from  psycopg2.extras import RealDictCursor
+    import pymssql
 except ImportError:
-    import psycopg2cffi as psycopg2    
-    from  psycopg2cffi.extras import RealDictCursor
-    
-import os
+    raise NotImplementedError('MSSQL client is not supported for PyPy')
+
 from hydratk.lib.database.dbo import dbodriver 
 
 class DBODriver(dbodriver.DBODriver):
@@ -23,8 +20,8 @@ class DBODriver(dbodriver.DBODriver):
     """
         
     _host           = None
-    _port           = 5432
-    _dbname         = 'postgres'
+    _port           = 1433
+    _dbname         = None
     _driver_options = {
                    'timeout'           : 5.0,
                    'detect_types'      : 0,
@@ -91,8 +88,8 @@ class DBODriver(dbodriver.DBODriver):
            void
                 
         """ 
-
-        self._dbcon = psycopg2.connect(database=self._dbname, host=self._host, port=self._port, user=self._username, password=self._password)
+        
+        self._dbcon = pymssql.connect(server=self._host, port=self._port, database=self._dbname, user=self._username, password=self._password)
         self.result_as_dict(self._result_as_dict)
         
     def close(self):
@@ -168,7 +165,7 @@ class DBODriver(dbodriver.DBODriver):
                 
         """ 
       
-        self._cursor.execute(sql, *parameters)
+        self._cursor.execute(sql, tuple(parameters))
         return self._cursor
         
     def quote(self):
@@ -207,8 +204,8 @@ class DBODriver(dbodriver.DBODriver):
                 
         """ 
                 
-        if hasattr(psycopg2, name):
-            return getattr(psycopg2, name)
+        if hasattr(pymssql, name):
+            return getattr(pymssql, name)
             
     def __getattr__(self,name):
         """Method gets attribute
@@ -225,8 +222,8 @@ class DBODriver(dbodriver.DBODriver):
             if hasattr(self._dbcon, name):
                 return getattr(self._dbcon,name)
             
-            if hasattr(psycopg2, name):
-                return getattr(psycopg2,name) 
+            if hasattr(pymssql, name):
+                return getattr(pymssql,name) 
             
     def table_exists(self, table_name):
         """Method checks if table exists
@@ -240,8 +237,8 @@ class DBODriver(dbodriver.DBODriver):
         """ 
                 
         if table_name is not None and table_name != '':
-            query = "SELECT count(*) found FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE' and table_name=%s"
-            self._cursor.execute(query, [table_name])
+            query = "SELECT count(*) found FROM information_schema.tables WHERE table_catalog=%s AND table_type='BASE TABLE' and table_name=%s"
+            self._cursor.execute(query, (self._dbname, table_name))
             recs = self._cursor.fetchall()
             result = True if (recs[0]['found'] == 1) else False
         return result
@@ -253,23 +250,7 @@ class DBODriver(dbodriver.DBODriver):
         pass
     
     def erase_database(self):
-        """Method drops database
-        
-        Args:  
-           none 
-           
-        Returns:
-           void
-                
-        """ 
-        
-        self._cursor.execute("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'")
-        tables = list(self._cursor.fetchall())
-        query = ''
-        for col in tables:            
-            query += "drop table if exists {0} cascade;".format(col['table_name'])        
-        self._cursor.execute(query)
-        self.commit()
+        pass
     
     def result_as_dict(self, state):   
         """Method enables query result in dictionary form
@@ -288,7 +269,7 @@ class DBODriver(dbodriver.DBODriver):
         if state in (True, False):
             self._result_as_dict = state
             if state == True:                                                
-                self._cursor = self._dbcon.cursor(cursor_factory=RealDictCursor)                
+                self._cursor = self._dbcon.cursor(as_dict=True)                
             else:                              
                 self._cursor = self._dbcon.cursor()
         else:
