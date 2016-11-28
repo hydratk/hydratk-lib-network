@@ -32,7 +32,7 @@ classifiers = [
           
 setup(
       name='hydratk-lib-network',
-      version='0.2.1a1',
+      version='0.2.1a.dev1',
       description='Clients/API for many network protocols and technologies',
       long_description=readme,
       author='Petr Rašek, HydraTK team',
@@ -42,7 +42,10 @@ setup(
       packages=find_packages('src'),
       package_dir={'' : 'src'},
       classifiers=classifiers,
-      zip_safe=False
+      zip_safe=False,
+      keywords='hydratk,database,soap,rest,jms,java,gui',
+      requires_python='>=2.6,!=3.0.*,!=3.1.*,!=3.2.*',
+      platforms='Linux'
      )        
 
 run_post_install(argv)
