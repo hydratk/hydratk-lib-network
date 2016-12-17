@@ -24,6 +24,10 @@ from suds import client, WebFault, MethodNotFound
 from suds.transport import Reply, TransportError
 from suds.transport.https import HttpAuthenticated, WindowsHttpAuthenticated
 from suds.cache import NoCache
+from suds.wsse import UsernameToken
+from hashlib import sha1
+from base64 import encodestring
+from datetime import datetime
 from requests import post
 from lxml.etree import Element, SubElement, fromstring, tostring, XMLSyntaxError
 from logging import getLogger, StreamHandler, CRITICAL, DEBUG
@@ -249,12 +253,13 @@ class SOAPClient(object):
             self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_soap_wsdl_not_loaded'), self._mh.fromhere())
             return None
         
-    def send_request(self, operation, body, headers=None):      
+    def send_request(self, operation, body=None, request=None, headers=None):      
         """Method sends request
         
         Args:   
            operation (str): operation name
            body (str|xml): request body
+           request (str|xml): SOAP request, use body or request
            headers (dict): HTTP headers, SOAPAction, Content-Type are set automatically       
 
         Returns:
@@ -268,37 +273,41 @@ class SOAPClient(object):
         
         try:
             
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_soap_request', operation, body, headers),
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_soap_request', operation, body, request, headers),
                           self._mh.fromhere()) 
             
             if (self._wsdl == None):
                 self._mh.dmsg('htk_on_warning', self._mh._trn.msg('htk_soap_wsdl_not_loaded'), self._mh.fromhere())
                 return None
             
-            ev = event.Event('soap_before_request', operation, body, headers)
+            ev = event.Event('soap_before_request', operation, body, request, headers)
             if (self._mh.fire_event(ev) > 0):
                 operation = ev.argv(0)
                 body = ev.argv(1)
-                headers = ev.argv(2)    
+                request = ev.argv(2)
+                headers = ev.argv(3)    
                 
             if (ev.will_run_default()):                             
             
                 if (headers != None):
                     self._client.set_options(headers=headers)
-            
-                nsmap = {'soapenv': 'http://schemas.xmlsoap.org/soap/envelope/'}
-                ns = '{%s}' % nsmap['soapenv']
-                root = Element(ns+'Envelope', nsmap=nsmap)
-                SubElement(root, ns+'Header')
-                elem = SubElement(root, ns+'Body')
-            
-                if (isinstance(body, str)):
-                    body = fromstring(body) 
-                elif (isinstance(body, bytes)):
-                    body = fromstring(body.decode())
-                elem.append(body)           
-            
-                response = getattr(self._client.service, operation)(__inject = {'msg': tostring(root)})                
+                            
+                if (body != None):                
+                    nsmap = {'soapenv': 'http://schemas.xmlsoap.org/soap/envelope/'}
+                    ns = '{%s}' % nsmap['soapenv']
+                    root = Element(ns+'Envelope', nsmap=nsmap)
+                
+                    elem = SubElement(root, ns+'Header')                                
+                    elem = SubElement(root, ns+'Body')            
+                    if (isinstance(body, str)):
+                        body = fromstring(body) 
+                    elif (isinstance(body, bytes)):
+                        body = fromstring(body.decode())
+                    elem.append(body)
+                    request = tostring(root)
+                           
+                request = request if (request != None) else ''
+                response = getattr(self._client.service, operation)(__inject = {'msg': request})                
         
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_soap_response', response), self._mh.fromhere()) 
             ev = event.Event('soap_after_request')
@@ -308,7 +317,36 @@ class SOAPClient(object):
             
         except (WebFault, TransportError, URLError, ValueError, XMLSyntaxError, MethodNotFound) as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
-            return None         
+            return None 
+        
+def gen_wss_token(user, passw, method='Digest', nonce=True, created=True):
+    """Method generates WSS token
+        
+    Args:   
+       user (str): username
+       passw (str): password
+       method (str): token method Text|Digest
+       nonce (bool): include nonce
+       created (bool): include created      
+
+    Returns:
+       dict
+                
+    """     
+    
+    token = UsernameToken(user, passw)
+    if (nonce):
+        token.setnonce()    
+    if (created):
+        token.setcreated()
+            
+    token = {'username': user, 'password': passw, 'nonce': str(token.nonce), 'created': str(token.created)}
+    if (method == 'Digest'):
+        token['created'] = datetime.now().isoformat()
+        token['password'] = encodestring(sha1(token['nonce'] + token['created'] + passw).digest())[:-1]
+        token['nonce'] = encodestring(token['nonce'])[:-1]
+        
+    return token
         
 class RequestsTransport(HttpAuthenticated):
     """Class RequestsTransport

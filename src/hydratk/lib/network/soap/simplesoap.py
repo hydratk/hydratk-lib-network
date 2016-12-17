@@ -110,7 +110,7 @@ class SoapResponse(object):
         self._msg = data    
  
     def _extract_info(self, curl_obj):
-        """Methods extracts parameters from CURL object
+        """Method extracts parameters from CURL object
 
         Args:
            curl_obj (obj): CURL object
@@ -126,7 +126,7 @@ class SoapResponse(object):
                 self._info[info_key] = curl_val
            
     def _apply_info(self):
-        """Methods stores response code
+        """Method stores response code
 
         Args:        
            none   
@@ -295,7 +295,7 @@ class SoapRequestMessage(XMLValidate):
         self._content = content
     
     def load_from_file(self, msg_file):
-        """Methods loads request content from file
+        """Method loads request content from file
 
         Args:
            msg_file (str): filename including path
@@ -308,7 +308,7 @@ class SoapRequestMessage(XMLValidate):
         self._content = fs.file_get_contents(msg_file)             
         
     def bind_var(self, *args, **kwargs):
-        """Methods binds input data to request template
+        """Method binds input data to request template
 
         Args:
            args (arg): arguments
@@ -332,7 +332,7 @@ class SoapRequestMessage(XMLValidate):
     
     
     def xsd_validate(self):
-        """Methods validates request xml according to xsd
+        """Method validates request xml according to xsd
 
         Args:
            none
@@ -393,7 +393,7 @@ class SoapClient():
         self._curl = pycurl.Curl()
     
     def set_auth(self, username, password, auth_type=HTTP_AUTH_BASIC):
-        """Methods sets authentication headers
+        """Method sets authentication headers
 
         Args:
            username (str): username
@@ -409,8 +409,25 @@ class SoapClient():
         if auth_type == HTTP_AUTH_BASIC:
             self._curl.setopt(self._curl.USERPWD, "{username}:{password}".format(username=username,password=password))                   
     
+    def set_cert(self, cert, key=None):
+        """Method sets certificate
+
+        Args:
+           cert (str): path to cert file
+           key (str): path to key file
+
+        Returns:
+           void
+    
+        """        
+        
+        self._curl.setopt(self._curl.SSL_VERIFYPEER, False)
+        self._curl.setopt(self._curl.SSLCERT, cert)
+        if (key != None):
+            self._curl.setopt(self._curl.SSLKEY, key)
+    
     def send(self, timeout=_connection_timeout):  
-        """Methods sends request
+        """Method sends request
 
         Args:
            timeout (int): connection timeout
@@ -433,7 +450,7 @@ class SoapClient():
 
          
 def xml_timestamp(location='Europe/Prague'):
-    """Methods creates timestamp including time zone
+    """Method creates timestamp including time zone
 
     Args:
        location (str): time zone location
