@@ -342,7 +342,7 @@ def gen_wss_token(user, passw, method='Digest', nonce=True, created=True):
             
     token = {'username': user, 'password': passw, 'nonce': str(token.nonce), 'created': str(token.created)}
     if (method == 'Digest'):
-        token['created'] = datetime.now().isoformat()
+        token['created'] = datetime.utcnow().isoformat()[:-3]+'Z'
         token['password'] = encodestring(sha1(token['nonce'] + token['created'] + passw).digest())[:-1]
         token['nonce'] = encodestring(token['nonce'])[:-1]
         
