@@ -410,7 +410,7 @@ class SoapClient():
             self._curl.setopt(self._curl.USERPWD, "{username}:{password}".format(username=username,password=password))                   
     
     def set_cert(self, cert, key=None):
-        """Method sets certificate
+        """Method sets certificate 
 
         Args:
            cert (str): path to cert file
