@@ -7,7 +7,6 @@ from subprocess import call
 from time import sleep
 from pkgutil import find_loader
 from platform import python_implementation
-import hydratk.lib.install.command as cmd
 import hydratk.lib.install.task as task
 
 with open("README.rst", "r") as f:
@@ -239,7 +238,7 @@ config = {
                            'JMSClient.java'
                           ],
             'classpath' : 'javaee.jar' 
-           },                           
+           }                           
 }    
     
 task.run_pre_install(argv, config)                          

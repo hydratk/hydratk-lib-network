@@ -288,4 +288,14 @@ Check hydratk-lib-network module is installed.
   
      $ pip list | grep hydratk-lib-network
 
-     hydratk-lib-network (0.2.0)       
+     hydratk-lib-network (0.2.0)    
+     
+Upgrade
+=======
+
+Use same procedure as for installation. Command options --upgrade (pip, easy_install) or --force (setup.py) are not necessary.
+
+Uninstall
+=========    
+
+Run command htkuninstall network.          

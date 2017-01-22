@@ -129,3 +129,20 @@ def get_dep_modules():
             dep_modules['cx_Oracle']= {'min-version' : '0.1',    'package' : 'cx-oracle-on-ctypes'}       
     
     return dep_modules
+
+def _uninstall():
+    """Method returns additional uninstall data 
+        
+    Args:            
+       none
+           
+    Returns:
+       list: files to delete    
+                
+    """            
+        
+    files = [
+             '/var/local/hydratk/java'
+            ]
+            
+    return files     
