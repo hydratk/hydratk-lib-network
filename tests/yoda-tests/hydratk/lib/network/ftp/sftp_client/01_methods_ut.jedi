@@ -258,7 +258,7 @@ Test-Scenario-3:
         assert (res), 'connect = True'
         res = [c.host, c.port, c.user, c.passw, c.path, c.is_connected]
         this.test_result = str(res)
-        exp = [host, port, user, passw, '/', True]
+        exp = [host, port, user, passw, None, True]
         assert (res == exp), 'host, port, user, passw, path, is_connected = {0}'.format(exp)
         c.disconnect() 
         

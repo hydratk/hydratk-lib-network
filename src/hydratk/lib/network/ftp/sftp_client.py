@@ -158,8 +158,7 @@ class FTPClient(object):
             self._port = port
             self._user = user
             self._passw = passw 
-            self._cert = cert
-            self._path = path                
+            self._cert = cert               
             
             if (ev.will_run_default()):
                 setdefaulttimeout(timeout)                  

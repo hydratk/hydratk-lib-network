@@ -22,6 +22,7 @@ from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
 from smtplib import SMTP, SMTP_SSL, SMTPException
 from socket import error
+from sys import version_info
 
 class EmailClient(object):
     """Class EmailClient
@@ -149,8 +150,11 @@ class EmailClient(object):
             self._passw = passw
             
             if (ev.will_run_default()):    
-                self._client.timeout = timeout              
-                self._client.connect(self.host, self.port)                      
+                self._client.timeout = timeout  
+                if (self._secured == True and version_info[0] == 3 and version_info[1] >= 4):
+                    self._client = SMTP_SSL(self.host, self.port)
+                else:            
+                    self._client.connect(self.host, self.port)                      
                     
                 if (self._user != None):
                     self._client.login(self.user, self.passw)  

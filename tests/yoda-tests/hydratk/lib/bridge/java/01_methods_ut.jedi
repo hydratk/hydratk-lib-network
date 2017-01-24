@@ -319,11 +319,13 @@ Test-Scenario-6:
         res = sorted(attrs)
         this.test_result = str(res)        
         exp = ['conn', 'host', 'passw', 'port', 'sid', 'user', 'verbose']
-        assert (res == exp), 'attrs = {0}'.format(exp)
+        for i in exp:
+            assert (i in res), 'attrs {0} contain {1}'.format(exp, i)
         res = sorted(methods)
         this.test_result = str(res)
         exp = ['commit', 'connect', 'disconnect', 'exec_query', 'rollback']
-        assert (res == exp), 'methods = {0}'.format(exp)   
+        for i in exp:
+            assert (i in res), 'methods {0} contain {1}'.format(exp, i)  
         
     Test-Condition-2: 
       Id: tco_02
@@ -338,11 +340,13 @@ Test-Scenario-6:
         res = sorted(attrs)
         this.test_result = str(res)
         exp = ['connected', 'connection', 'consumer', 'ctx', 'factory', 'producer', 'session', 'verbose']
-        assert (res == exp), 'attrs = {0}'.format(exp)
+        for i in exp:
+            assert (i in res), 'attrs {0} contain {1}'.format(exp, i)
         res = sorted(methods)
         this.test_result = str(res)
         exp = ['browse', 'connect', 'disconnect', 'receive', 'send']
-        assert (res == exp), 'methods = {0}'.format(exp)  
+        for i in exp:
+            assert (i in res), 'methods {0} contain {1}'.format(exp, i)
         
     Test-Condition-3: 
       Id: tco_03

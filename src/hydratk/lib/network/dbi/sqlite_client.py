@@ -84,7 +84,7 @@ class DBClient(object):
             ev = event.Event('dbi_before_connect', db_file, timeout)
             if (self._mh.fire_event(ev) > 0):
                 db_file = ev.argv(0)    
-                timeout = ev.arv(1)           
+                timeout = ev.argv(1)           
             
             if (ev.will_run_default()):
                 self._db_file = db_file

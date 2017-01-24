@@ -19,11 +19,6 @@ Supported protocols:
 * IMAP/IMAPS: module imap_client
 * POP/POPS: module pop_client
 
-  .. note::
-      
-     SMTPS initialization for versions Py3.4, Py3.5 can raise 
-     starttls fails with tlsv1 alert decode error. The error is already reported.
-
 Methods:
 
 * connect: connect to mail server as sender (SMTP) or receiver (IMAP, POP)

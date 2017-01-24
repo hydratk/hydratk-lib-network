@@ -245,15 +245,21 @@ class DBClient(object):
             
             if (ev.will_run_default()):
                 arraylist = self.bridge.init_arraylist(bindings)
-                rows = self._client.exec_query(query, arraylist, fetch_one)
+                db_rows = self._client.exec_query(query, arraylist, fetch_one)
                 
-                if (rows != None):                                                        
-                    
-                    if (len(rows) > 1):
-                        columns = [i.lower() for i in rows[0]]  
-                        if (len(rows) > 1):     
-                            del rows[0]        
-                            rows = [dict(zip(columns, row)) for row in rows] 
+                rows = None
+                if (db_rows != None):                                                        
+                    if (len(db_rows) > 1):
+                        columns = [i.lower() for i in db_rows[0]]
+                        col_len = len(columns)  
+                        if (len(db_rows) > 1):     
+                            rows = []
+                            for i in range(1, len(db_rows)):
+                                db_row = db_rows[i]
+                                row = {}
+                                for j in range(0, col_len):        
+                                    row[columns[j]] = db_row[j]
+                                rows.append(row)
 
                         if (fetch_one):
                             rows = rows[0]                                                      

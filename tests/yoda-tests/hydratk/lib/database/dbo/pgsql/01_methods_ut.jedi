@@ -234,11 +234,11 @@ Test-Scenario-6:
         dsn = 'pgsql:host=127.0.0.1;port=5432;database=postgre;user=lynus;password=bowman'
         c = DBO(dsn)
         d = c._dbo_driver  
-        res = d.execute('SELECT count(*) FROM customer').fetchall()  
+        res = d.execute('SELECT count(*) as cnt FROM customer').fetchall()  
         
       Validate: |
         this.test_result = str(res)
-        assert (res[0] > 0), 'output > 0'
+        assert (res[0]['cnt'] > 0), 'output > 0'
         
     Test-Condition-2: 
       Id: tco_02
