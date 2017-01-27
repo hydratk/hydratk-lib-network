@@ -179,8 +179,10 @@ class RESTClient(object):
         
         try:
             
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_rest_request', url, proxies, user, passw,
-                          auth, cert, method, headers, cookies, body, params, file, content_type, timeout), self._mh.fromhere()) 
+            message = 'url:{0}, proxies:{1}, user:{2}, passw:{3}, auth:{4}, cert:{5}, '.format(url, proxies, user, passw, auth, cert) + \
+                      'method:{0}, headers:{1}, cookies:{2}, body:{3}, params:{4}, '.format(method, headers, cookies, body, params) + \
+                      'file:{0}, content_type:{1}, timeout:{2}'.format(file, content_type, timeout)            
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_rest_request', message), self._mh.fromhere()) 
             
             ev = event.Event('rest_before_request', url, proxies, user, passw, auth, cert, method,
                              headers, cookies, body, params, file, content_type, timeout)

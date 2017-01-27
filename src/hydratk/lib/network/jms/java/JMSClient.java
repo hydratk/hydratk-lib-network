@@ -108,7 +108,7 @@ public class JMSClient {
                 if (mappedValue != null)
                     connectionProperties.put(mappedValue, property.getValue());
                 else
-                    System.out.println("WARN - Unknown property: " + property.getKey());
+                	System.out.println("WARN - Unknown property: " + property.getKey());
 
             }
             
