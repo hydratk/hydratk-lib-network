@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Bridge to Selenium webdriver
+"""Bridge to Selenium WebDriver
 
 .. module:: bridge.selen
    :platform: Unix
-   :synopsis: Bridge to Selenium webdriver
+   :synopsis: Bridge to Selenium WebDriver
 .. moduleauthor:: Petr Rašek <bowman@hydratk.org>
 
 """
@@ -28,7 +28,7 @@ selen_after_save_screen
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
 from selenium.common.exceptions import WebDriverException
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.common.utils import is_url_connectable
 from importlib import import_module
 from os import path
@@ -52,6 +52,7 @@ class SeleniumBridge(object):
     _client = None
     _browser = None
     _url = None
+    _confirm_alert = True
     
     def __init__(self, browser='PhantomJS'):
         """Class constructor
@@ -101,7 +102,19 @@ class SeleniumBridge(object):
     def url(self):
         """ url property getter """
         
-        return self._url        
+        return self._url 
+    
+    @property
+    def confirm_alert(self):
+        """ confirm_alert property getter """
+        
+        return self._confirm_alert
+    
+    @confirm_alert.setter
+    def confirm_alert(self, value):
+        """ confirm_alert property setter """
+        
+        self._confirm_alert = value              
     
     def open(self, url, timeout=20):
         """Method opens web page from URL
@@ -324,7 +337,7 @@ class SeleniumBridge(object):
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None         
     
-    def set_element(self, ident, val=None, method='id', attr=None, attr_val=None):    
+    def set_element(self, ident, val=None, method='id', attr=None, attr_val=None, el_type=None):    
         """Method sets element value
         
         Args:            
@@ -333,6 +346,7 @@ class SeleniumBridge(object):
            method (str): search method, id|class|css|text|name|tag|xpath
            attr (str): element attribute or text, used as additional condition in element search
            attr_val (str): attribute or text value
+           el_type (str): expected element type (read from attribute type by default)
              
         Returns:
            bool: result
@@ -344,7 +358,7 @@ class SeleniumBridge(object):
         
         try:
         
-            message = 'ident:{0}, val:{1}, method:{2}, attr:{3}, attr_val:{4}'.format(ident, val, method, attr, attr_val)
+            message = 'ident:{0}, val:{1}, method:{2}, attr:{3}, attr_val:{4}, el_type:{5}'.format(ident, val, method, attr, attr_val, el_type)
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_selen_set', message), self._mh.fromhere())
             
             ev = event.Event('selen_before_set_elem', ident, val, method, attr, attr_val)
@@ -373,13 +387,15 @@ class SeleniumBridge(object):
                 if (element == None):
                     return False
               
-                elem_type = element.get_attribute('type')            
-                if (elem_type == 'checkbox'):    
+                elem_type = element.get_attribute('type') if (el_type == None) else el_type           
+                if (elem_type in ['checkbox', 'radio']):    
                     selected = element.is_selected()
                     if ((selected and not val) or (not selected and val)):
                         element.click()
                 elif (elem_type == 'submit'):
                     element.click()
+                elif (elem_type == 'select'):
+                    Select(element).select_by_visible_text(val)
                 else:
                     element.send_keys(val)
                             
@@ -462,4 +478,110 @@ class SeleniumBridge(object):
             
         except WebDriverException as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
-            return False                                                                                             
+            return False  
+        
+    def check_alert(self, confirm=None):
+        """Method checks if alert is present
+        
+        Args:    
+           confirm (bool): confirm dialogue
+             
+        Returns:
+           tuple: result (bool), value (str)
+                
+        """         
+        
+        try:
+                    
+            alert = self._client.switch_to_alert()
+            value = alert.text
+            confirm = confirm if (confirm != None) else self._confirm_alert
+            
+            if (confirm):
+                alert.accept()
+            else:
+                alert.dismiss()
+            
+            return True, value
+        
+        except WebDriverException as ex:
+            self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
+            return False, None   
+        
+    def get_current_url(self):
+        """Method gets current URL
+        
+        Args:    
+           none        
+             
+        Returns:
+           str
+                
+        """         
+        
+        try:
+            
+            return self._client.current_url
+        
+        except WebDriverException as ex:
+            self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
+            return False 
+        
+    def get_title(self):
+        """Method gets page title
+        
+        Args:    
+           none        
+             
+        Returns:
+           str
+                
+        """         
+        
+        try:
+            
+            return self._client.title
+        
+        except WebDriverException as ex:
+            self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
+            return False                                                                                                                 
+        
+    def go_back(self):
+        """Method goes to previous page
+        
+        Args:    
+           none        
+             
+        Returns:
+           bool
+                
+        """         
+        
+        try:
+            
+            self._client.back()
+            return True
+        
+        except WebDriverException as ex:
+            self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
+            return False      
+        
+    def refresh(self):
+        """Method refreshes page
+        
+        Args:    
+           none        
+             
+        Returns:
+           bool
+                
+        """         
+        
+        try:
+            
+            self._client.refresh()
+            return True
+        
+        except WebDriverException as ex:
+            self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
+            return False               

@@ -34,12 +34,18 @@ Supported browsers:
 * _client - selen client instance
 * _browser - browser name
 * _url - web page URL
+* _confirm_alert - confirm or dimiss alert form
 
 **Properties (Getters)** :
 
 * client - returns _client
 * browser - returns _browser
 * url - returns _url
+* confirm_alert - return _confirm_alert
+
+**Properties (Setters)** :
+
+* confirm_alert - sets _confirm_alert
 
 **Methods** :
 
@@ -152,7 +158,7 @@ Otherwise method use selenium method send_keys (it is considered text field). Af
 
   .. code-block:: python
   
-     # elemnt id
+     # element id
      elem, val = 'customerId', 'xx'
      res = c.set_element(elem, val)
      
@@ -184,4 +190,26 @@ It uses selenium method save_screenshot. After that fires event selen_after_save
   .. code-block:: python
   
      file = '/var/local/hydratk/test.png'
-     res = c.save_screen(file)                                
+     res = c.save_screen(file)
+     
+* check_alert
+
+Methods checks if alert is present and returns bool, str (alert text).
+The form is confirmed or dismissed according to _confirm_url.
+It uses selenium methods switch_to_alert, accept, dismiss.
+
+* get_current_url
+
+Methods returns current url using selenium method get_current_url.
+
+* get_title
+
+Method returns page title using selenium attribute title.
+
+* go_back
+
+Method emulates browser button back using selenium method back, it returns bool.
+
+* refresh                                     
+
+Method emulates browser button refresh using selenium method refresh, it returns bool.

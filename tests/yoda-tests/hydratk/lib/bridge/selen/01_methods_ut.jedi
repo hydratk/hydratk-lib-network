@@ -122,7 +122,41 @@ Test-Scenario-2:
         this.test_result = res
         exp = c._url
         assert (res == exp), 'url = {0}'.format(exp)
-        c.close()     
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_confirm_alert
+      Desc: Getter confirm_alert
+      
+      Test: |
+        res = c.confirm_alert
+      
+      Validate: |        
+        this.test_result = res
+        exp = c._confirm_alert
+        assert (res == exp), 'confirm_alert = {0}'.format(exp)        
+        c.close()  
+        
+  Test-Case-2:
+    Id: tc_02
+    Name: tc_setters
+    Desc: Setter methods
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_confirm_alert
+      Desc: Setter confirm_alert
+      
+      Test: |
+        c = SeleniumBridge()
+        c.open('http://localhost:8080/Autobot/')
+        obj = False
+        c.confirm_url = obj
+        res = c.confirm_url
+      
+      Validate: |        
+        this.test_result = res
+        assert (res == obj), 'confirm_url = {0}'.format(obj)           
         
 Test-Scenario-3:
   Id: ts_03

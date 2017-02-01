@@ -33,6 +33,11 @@ Methods:
 * set_element: set element value
 * exe_script: execute JavaScript code
 * save_screen: save screenshot
+* check_alert: check if alert is present
+* get_current_url: get current url
+* get_title: get page title
+* go_back: emulates browser back button
+* refresh: emulates browser refresh button
 
   .. note::
    

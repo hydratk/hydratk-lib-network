@@ -1,0 +1,157 @@
+Test-Scenario-1:
+  Id: ts_01
+  Path: hydratk/lib/bridge/selen/02_methods_ut.jedi
+  Name: ts_check_alert
+  Desc: Test method check_alert
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.bridge.selen import SeleniumBridge
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_alert
+    Desc: Check alert
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_no_alert
+      Desc: Alert not present
+      
+      Test: |
+        c = SeleniumBridge('FIREFOX')
+        c.open('http://localhost:8080/Autobot/')
+        res = c.check_alert()
+      
+      Validate: |
+        this.test_result = str(res)
+        exp = (False, None)
+        assert (res == exp), 'check_alert = {0}'.format(exp)  
+        c.close()
+        
+Test-Scenario-2:
+  Id: ts_02
+  Path: hydratk/lib/bridge/selen/02_methods_ut.jedi
+  Name: ts_get_current_url
+  Desc: Test method get_current_url
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.bridge.selen import SeleniumBridge
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_get
+    Desc: Get url
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_get
+      Desc: Get
+      
+      Test: |
+        c = SeleniumBridge('FIREFOX')
+        c.open('http://localhost:8080/Autobot/')
+        res = c.get_current_url()
+      
+      Validate: |
+        this.test_result = str(res)
+        exp = 'http://localhost:8080/Autobot/'
+        assert (res == exp), 'get_current_url = {0}'.format(exp)  
+        c.close()    
+        
+Test-Scenario-3:
+  Id: ts_03
+  Path: hydratk/lib/bridge/selen/02_methods_ut.jedi
+  Name: ts_get_title
+  Desc: Test method get_title
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.bridge.selen import SeleniumBridge
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_get
+    Desc: Get title
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_get
+      Desc: Get
+      
+      Test: |
+        c = SeleniumBridge('FIREFOX')
+        c.open('http://localhost:8080/Autobot/')
+        res = c.get_title()
+      
+      Validate: |
+        this.test_result = str(res)
+        exp = ''
+        assert (res == exp), 'get_title = {0}'.format(exp)  
+        c.close()     
+        
+Test-Scenario-4:
+  Id: ts_04
+  Path: hydratk/lib/bridge/selen/02_methods_ut.jedi
+  Name: ts_go_back
+  Desc: Test method go_back
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.bridge.selen import SeleniumBridge
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_back
+    Desc: Go back
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_back
+      Desc: Back
+      
+      Test: |
+        c = SeleniumBridge('FIREFOX')
+        c.open('http://localhost:8080/Autobot/')
+        res = c.go_back()
+      
+      Validate: |
+        this.test_result = str(res)
+        assert (res), 'go_back = True'.format(exp)  
+        c.close()     
+        
+Test-Scenario-5:
+  Id: ts_05
+  Path: hydratk/lib/bridge/selen/02_methods_ut.jedi
+  Name: ts_refresh
+  Desc: Test method refresh
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.bridge.selen import SeleniumBridge
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_refresh
+    Desc: Refresh
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_refresh
+      Desc: Refresh
+      
+      Test: |
+        c = SeleniumBridge('FIREFOX')
+        c.open('http://localhost:8080/Autobot/')
+        res = c.refresh()
+      
+      Validate: |
+        this.test_result = str(res)
+        assert (res), 'refresh = True'.format(exp)  
+        c.close()                           
