@@ -241,10 +241,6 @@ PostgreSQL
 MSSQL
 ^^^^^ 
 
-  .. note ::
-  
-     MSSQL is not supported for PyPy due to module pymssql.
-
   .. code-block:: python
   
      # import library

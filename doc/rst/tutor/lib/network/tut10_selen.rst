@@ -38,6 +38,7 @@ Methods:
 * get_title: get page title
 * go_back: emulates browser back button
 * refresh: emulates browser refresh button
+* get_screen: get screenshot content
 
   .. note::
    

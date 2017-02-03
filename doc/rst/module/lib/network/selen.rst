@@ -12,7 +12,7 @@ Module provides class SeleniumBridge which implements bridge to Selenium WebDriv
 `selenium <http://selenium-python.readthedocs.io/>`_ in version >= 2.46.1.
 selenium requires non-Python libraries which are automatically installed by setup script (libfontconfig for apt-get, fontconfig for yum).
 
-Unit tests available at hydratk/lib/bridge/selen/01_methods_ut.jedi
+Unit tests available at hydratk/lib/bridge/selen/01_methods_ut.jedi, 02_methods_ut.jedi
 
 selen uses running browser to execute tests on web page. Browsers are not bundled with hydratk and must be installed separately.
 The recommended browser is `PhantomJS <http://phantomjs.org/>`_ because it is headless (it doesn't require OS with GUI).
@@ -213,3 +213,7 @@ Method emulates browser button back using selenium method back, it returns bool.
 * refresh                                     
 
 Method emulates browser button refresh using selenium method refresh, it returns bool.
+
+* get_screen
+
+Methods gets screenshot content in png (default) or base64 format.

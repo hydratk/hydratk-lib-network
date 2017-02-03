@@ -584,4 +584,29 @@ class SeleniumBridge(object):
         
         except WebDriverException as ex:
             self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
-            return False               
+            return False  
+        
+    def get_screen(self, output='png'):  
+        """Method gets screenshot content
+        
+        Args:    
+           output (str): output type png|base64
+             
+        Returns:
+           str
+                
+        """                   
+        
+        try:
+            
+            screen = None
+            if (output == 'png'):
+                screen = self._client.get_screenshot_as_png()
+            elif (output == 'base64'):
+                screen = self._client.get_screenshot_as_base64()
+                
+            return screen
+            
+        except WebDriverException as ex:
+            self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
+            return False              

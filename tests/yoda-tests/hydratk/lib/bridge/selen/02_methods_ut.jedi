@@ -154,4 +154,59 @@ Test-Scenario-5:
       Validate: |
         this.test_result = str(res)
         assert (res), 'refresh = True'.format(exp)  
-        c.close()                           
+        c.close()       
+        
+Test-Scenario-6:
+  Id: ts_06
+  Path: hydratk/lib/bridge/selen/02_methods_ut.jedi
+  Name: ts_get_screen
+  Desc: Test method get_screen
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.bridge.selen import SeleniumBridge
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_get_screen
+    Desc: Get screenshot
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_png
+      Desc: PNG output
+      
+      Test: |
+        c = SeleniumBridge('PHANTOMJS')
+        c.open('http://localhost:8080/Autobot/')
+        res = c.get_screen('png')
+        
+      Validate: |
+        this.test_result = res
+        assert (res != None), 'get_screen != None' 
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_base64
+      Desc: Base64 output
+      
+      Test: |
+        res = c.get_screen('base64')
+        
+      Validate: |
+        this.test_result = res
+        assert (res != None), 'get_screen != None' 
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_invalid
+      Desc: Invalid output
+      
+      Test: |
+        res = c.get_screen('xxx')
+      
+      Validate: |
+        this.test_result = res
+        assert (res == None), 'get_screen == None'                  
+        c.close()                              

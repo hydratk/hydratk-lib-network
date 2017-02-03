@@ -12,8 +12,6 @@ Module driver provides class DBODriver which impletements client MSSQL database 
 `pymssql <http://pymssql.org/en/stable/>`_ in version >= 2.1.3.
 Unit tests available at hydratk/lib/database/dbo/mssql/01_methods_ut.jedi
 
-When PyPy is used pymssql is not installed because the module is not compatible without any alternative. Method DBClient raises NotImplementedError.
-
 **Attributes** :
 
 * _host - server hostname (or IP address)

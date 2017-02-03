@@ -570,9 +570,6 @@ Module provides class DBClient which implements client for MSSQL database using 
 `pymssql <http://pymssql.org/en/stable/>`_ in version >= 2.1.3.
 Unit tests available at hydratk/lib/network/dbi/mssql_client/01_methods_ut.jedi
 
-psycopg2 requires non-Python libraries which are automatically installed by setup script (freetds-dev for apt-get, freetds, freetds-devel for yum).
-When PyPy is used pymssql is not installed because the module is not compatible without any alternative. Method DBClient raises NotImplementedError.
-
 **Attributes** :
 
 * _mh - MasterHead reference

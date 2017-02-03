@@ -8,11 +8,7 @@
 
 """
 
-try:
-    import pymssql
-except ImportError:
-    raise NotImplementedError('MSSQL client is not supported for PyPy')
-
+import pymssql
 from hydratk.lib.database.dbo import dbodriver 
 
 class DBODriver(dbodriver.DBODriver):

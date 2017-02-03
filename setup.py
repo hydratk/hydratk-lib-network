@@ -66,7 +66,11 @@ def version_update(cfg):
         cfg['modules'].append('psycopg2>=2.4.5')
         cfg['modules'].append('pymssql>=2.1.3')
     else:
-        cfg['modules'].append('psycopg2cffi>=2.7.4')           
+        cfg['modules'].append('psycopg2cffi>=2.7.4') 
+        cfg['modules'].append('git+https://github.com/dholth/pymssql.git')
+        
+        cfg['libs']['psycopg2cffi>=2.7.4'] = cfg['libs']['psycopg2>=2.4.5']
+        cfg['libs']['git+https://github.com/dholth/pymssql.git'] = cfg['libs']['pymssql>=2.1.3']          
         
     if ('ORACLE_HOME' not in environ):
         print ('Oracle has not been detected ($ORACLE_HOME is not set). If you want to use HydraTK Oracle client, install Oracle first.')
