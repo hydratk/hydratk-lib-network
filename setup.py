@@ -44,8 +44,10 @@ def version_update(cfg):
         cfg['modules'].append('python-ldap>=2.4.25')
         cfg['modules'].append('scapy>=2.3.1')
         if (minor == 6):
-            cfg['modules'].append('stompest==2.1.6')
+            cfg['modules'].append('simplejson==3.8.2')
+            cfg['modules'].append('stompest==2.1.6')            
         else:
+            cfg['modules'].append('simplejson>=3.8.2')
             cfg['modules'].append('stompest>=2.2.5')        
         cfg['modules'].append('suds>=0.4')        
         cfg['modules'].append('tftpy>=0.6.2')
@@ -54,6 +56,7 @@ def version_update(cfg):
         cfg['modules'].append('mysqlclient>=1.3.7')
         cfg['modules'].append('pyldap>=2.4.25')
         cfg['modules'].append('scapy-python3>=0.18')
+        cfg['modules'].append('simplejson>=3.8.2')
         cfg['modules'].append('stompest>=2.2.5')
         cfg['modules'].append('suds-py3>=1.3.2.0')
         if (find_loader('tftpy') == None):
@@ -131,8 +134,7 @@ config = {
                'redis>=2.10.5', 
                'requests>=2.11.1',
                'requests-ntlm>=0.3.0',   
-               'selenium>=2.46.1',                         
-               'simplejson>=3.8.2'          
+               'selenium>=2.46.1'                         
               ],
           
   'files' : {

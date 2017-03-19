@@ -104,9 +104,9 @@ def get_dep_modules():
         dep_modules['ldap']         = {'min-version' : '2.4.25', 'package' : 'python-ldap'}
         dep_modules['scapy']        = {'min-version' : '2.3.1',  'package' : 'scapy'}
         if (minor == 6):
-            dep_modules['stompest'] = {'min-version' : '2.1.6','package' : 'stompest'}
+            dep_modules['stompest'] = {'min-version' : '2.1.6',  'package' : 'stompest'}
         else:
-            dep_modules['stompest'] = {'min-version' : '2.2.5','package' : 'stompest'}
+            dep_modules['stompest'] = {'min-version' : '2.2.5',  'package' : 'stompest'}
         dep_modules['suds']         = {'min-version' : '0.4',    'package' : 'suds'}
     else:
         dep_modules['jsonrpclib']   = {'min-version' : '0.2.8',  'package' : 'jsonrpclib-pelix'}    
@@ -124,7 +124,8 @@ def get_dep_modules():
         if ('JAVA_HOME' in environ):
             dep_modules['jpype']    = {'min-version' : '0.6.1',  'package' : 'JPype1'}            
     else:
-        dep_modules['psycopg2cffi'] = {'min-version' : '2.7.4',  'package' : 'psycopg2cffi'}      
+        dep_modules['psycopg2cffi'] = {'min-version' : '2.7.4',  'package' : 'psycopg2cffi'}  
+        dep_modules['pymssql']      = {'min-version' : '2.1.2',  'package' : 'pymssql'}    
         if ('ORACLE_HOME' in environ):   
             dep_modules['cx_Oracle']= {'min-version' : '0.1',    'package' : 'cx-oracle-on-ctypes'}       
     
