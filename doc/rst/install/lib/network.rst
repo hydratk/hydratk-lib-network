@@ -39,7 +39,7 @@ Full PyPi URL contains MD5 hash, adapt sample code.
      
   .. code-block:: bash
   
-     $ wget https://pypi.python.org/pypihydratk-lib-network -O hydratk-lib-network.tar.gz
+     $ wget https://pypi.python.org/pypi/hydratk-lib-network -O hydratk-lib-network.tar.gz
      $ tar -xf hydratk-lib-network.tar.gz
      $ cd ./hydratk-lib-network
      $ sudo python setup.py install

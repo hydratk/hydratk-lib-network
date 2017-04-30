@@ -148,7 +148,7 @@ class RESTClient(object):
         
         return self._history          
         
-    def send_request(self, url, proxies=None, user=None, passw=None, auth='Basic', cert=None, method='GET', headers=None, 
+    def send_request(self, url, proxies=None, user=None, passw=None, auth='Basic', cert=None, verify_cert=True, method='GET', headers=None, 
                      cookies=None, body=None, params=None, file=None, content_type=None, timeout=10):
         """Method sends request to server
         
@@ -159,6 +159,7 @@ class RESTClient(object):
            passw (str): password     
            auth (str): authentication type Basic|Digest|NTLM      
            cert (obj): str (path to cert.perm path), tuple (path to cert.pem path, path to key.pem path)
+           verify_cert (bool): verify certificate
            method (str): HTTP method GET|POST|PUT|DELETE|HEAD|OPTIONS
            headers (dict): HTTP headers
            cookies (dict): cookies (name:value)
@@ -180,12 +181,12 @@ class RESTClient(object):
         try:
             
             message = 'url:{0}, proxies:{1}, user:{2}, passw:{3}, auth:{4}, cert:{5}, '.format(url, proxies, user, passw, auth, cert) + \
-                      'method:{0}, headers:{1}, cookies:{2}, body:{3}, params:{4}, '.format(method, headers, cookies, body, params) + \
+                      'verify_cert:{0}, method:{1}, headers:{2}, cookies:{3}, body:{4}, params:{5}, '.format(verify_cert, method, headers, cookies, body, params) + \
                       'file:{0}, content_type:{1}, timeout:{2}'.format(file, content_type, timeout)            
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_rest_request', message), self._mh.fromhere()) 
             
-            ev = event.Event('rest_before_request', url, proxies, user, passw, auth, cert, method,
-                             headers, cookies, body, params, file, content_type, timeout)
+            ev = event.Event('rest_before_request', url, proxies, user, passw, auth, cert, verify_cert, 
+                             method, headers, cookies, body, params, file, content_type, timeout)
             if (self._mh.fire_event(ev) > 0):
                 url = ev.argv(0)
                 proxies = ev.argv(1)
@@ -193,14 +194,15 @@ class RESTClient(object):
                 passw = ev.argv(3)
                 auth= ev.argv(4)
                 cert = ev.argv(5)
-                method = ev.argv(6)
-                headers = ev.argv(7)
-                cookies = ev.argv(8)
-                body = ev.argv(9)
-                params = ev.argv(10)
-                file = ev.argv(11)
-                content_type = ev.argv(12)     
-                timeout = ev.argv(13)        
+                verify_cert = ev.argv(6)
+                method = ev.argv(7)
+                headers = ev.argv(8)
+                cookies = ev.argv(9)
+                body = ev.argv(10)
+                params = ev.argv(11)
+                file = ev.argv(12)
+                content_type = ev.argv(13)     
+                timeout = ev.argv(14)        
             
             if (ev.will_run_default()):   
                                 
@@ -219,7 +221,7 @@ class RESTClient(object):
                 self._url = url
                 self._proxies = proxies
                 self._cert = cert
-                verify = True if (cert != None) else False
+                verify = True if (cert != None and verify_cert) else False
                 
                 method = method.lower() if (method.lower() in ['get', 'post', 'put', 'delete', 'head', 'options']) else 'get'
                 if (params != None and method in ('post', 'put', 'delete')):                        
