@@ -34,65 +34,65 @@ classifiers = [
     "Topic :: Utilities"
 ]     
 
-def version_update(cfg):
+def version_update(cfg, *args):
     
     major, minor = version_info[0], version_info[1]  
 
     if (major == 2):
-        cfg['modules'].append('jsonrpclib>=0.1.7')
-        cfg['modules'].append('MySQL-python>=1.2.3')
-        cfg['modules'].append('python-ldap>=2.4.25')
-        cfg['modules'].append('scapy>=2.3.1')
+        cfg['modules'].append({'module': 'jsonrpclib',   'version': '>=0.1.7',  'profile': 'basic'})
+        cfg['modules'].append({'module': 'MySQL-python', 'version': '>=1.2.3',  'profile': 'db'})
+        cfg['modules'].append({'module': 'python-ldap',  'version': '>=2.4.25', 'profile': 'basic'})
+        cfg['modules'].append({'module': 'scapy',        'version': '>=2.3.1',  'profile': 'basic'})
         if (minor == 6):
-            cfg['modules'].append('simplejson==3.8.2')
-            cfg['modules'].append('stompest==2.1.6')            
+            cfg['modules'].append({'module': 'simplejson', 'version': '==3.8.2', 'profile': 'basic'})
+            cfg['modules'].append({'module': 'stompest',   'version': '==2.1.6', 'profile': 'jms'})            
         else:
-            cfg['modules'].append('simplejson>=3.8.2')
-            cfg['modules'].append('stompest>=2.2.5')        
-        cfg['modules'].append('suds>=0.4')        
-        cfg['modules'].append('tftpy>=0.6.2')
+            cfg['modules'].append({'module': 'simplejson', 'version': '>=3.8.2', 'profile': 'basic'})
+            cfg['modules'].append({'module': 'stompest',   'version': '>=2.2.5', 'profile': 'jms'})        
+        cfg['modules'].append({'module': 'suds',  'version': '>=0.4',   'profile': 'basic'})        
+        cfg['modules'].append({'module': 'tftpy', 'version': '>=0.6.2', 'profile': 'basic'})
     else:
-        cfg['modules'].append('jsonrpclib-pelix>=0.2.8')
-        cfg['modules'].append('mysqlclient>=1.3.7')
-        cfg['modules'].append('pyldap>=2.4.25')
-        cfg['modules'].append('scapy-python3>=0.18')
-        cfg['modules'].append('simplejson>=3.8.2')
-        cfg['modules'].append('stompest>=2.2.5')
-        cfg['modules'].append('suds-py3>=1.3.2.0')
+        cfg['modules'].append({'module': 'jsonrpclib-pelix', 'version': '>=0.2.8',   'profile': 'basic'})
+        cfg['modules'].append({'module': 'mysqlclient',      'version': '>=1.3.7',   'profile': 'db'})
+        cfg['modules'].append({'module': 'pyldap',           'version': '>=2.4.25',  'profile': 'basic'})
+        cfg['modules'].append({'module': 'scapy-python3',    'version': '>=0.18',    'profile': 'basic'})
+        cfg['modules'].append({'module': 'simplejson',       'version': '>=3.8.2',   'profile': 'basic'})
+        cfg['modules'].append({'module': 'stompest',         'version': '>=2.2.5',   'profile': 'jms'})
+        cfg['modules'].append({'module': 'suds-py3',         'version': '>=1.3.2.0', 'profile': 'basic'})
         if (find_loader('tftpy') == None):
-            cfg['modules'].append('git+https://github.com/ZuljinSBK/tftpy.git@master#egg=tftpy')
+            cfg['modules'].append({'module': 'git+https://github.com/ZuljinSBK/tftpy.git@master#egg=tftpy', 'profile': 'basic'})
             
-        cfg['libs']['mysqlclient>=1.3.7'] = cfg['libs']['MySQL-python>=1.2.3']
-        cfg['libs']['pyldap>=2.4.25'] = cfg['libs']['python-ldap>=2.4.25'] 
+        cfg['libs']['mysqlclient'] = cfg['libs']['MySQL-python']
+        cfg['libs']['pyldap']      = cfg['libs']['python-ldap'] 
     
     if (python_implementation() != 'PyPy'):
-        cfg['modules'].append('psycopg2>=2.4.5')
-        cfg['modules'].append('pymssql>=2.1.3')
+        cfg['modules'].append({'module': 'psycopg2', 'version': '>=2.4.5', 'profile': 'db'})
+        cfg['modules'].append({'module': 'pymssql',  'version': '>=2.1.3', 'profile': 'db'})
     else:
-        cfg['modules'].append('psycopg2cffi>=2.7.4') 
-        cfg['modules'].append('git+https://github.com/dholth/pymssql.git')
+        cfg['modules'].append({'module': 'psycopg2cffi', 'version': '>=2.7.4', 'profile': 'db'}) 
+        cfg['modules'].append({'module': 'git+https://github.com/dholth/pymssql.git', 'profile': 'db'})
         
-        cfg['libs']['psycopg2cffi>=2.7.4'] = cfg['libs']['psycopg2>=2.4.5']
-        cfg['libs']['git+https://github.com/dholth/pymssql.git'] = cfg['libs']['pymssql>=2.1.3']          
+        cfg['libs']['psycopg2cffi'] = cfg['libs']['psycopg2']
+        cfg['libs']['git+https://github.com/dholth/pymssql.git'] = cfg['libs']['pymssql']          
         
     if ('ORACLE_HOME' not in environ):
         print ('Oracle has not been detected ($ORACLE_HOME is not set). If you want to use HydraTK Oracle client, install Oracle first.')
         sleep(5)
     else:
         if (python_implementation() != 'PyPy'):
-            cfg['modules'].append('cx_Oracle>=5.1.3')
+            cfg['modules'].append({'module': 'cx_Oracle', 'version': '>=5.1.3', 'profile': 'db'})
         else:
-            cfg['modules'].append('git+https://github.com/lameiro/cx_oracle_on_ctypes.git')
-            cfg['libs']['git+https://github.com/lameiro/cx_oracle_on_ctypes.git'] = cfg['libs']['cx_Oracle>=5.1.3']        
+            cfg['modules'].append({'module': 'git+https://github.com/lameiro/cx_oracle_on_ctypes.git', 'profile': 'db'})
+            cfg['libs']['git+https://github.com/lameiro/cx_oracle_on_ctypes.git'] = cfg['libs']['cx_Oracle']        
       
     if (python_implementation() != 'PyPy'):  
         if ('JAVA_HOME' not in environ):
             print ('Java has not been detected ($JAVA_HOME is not set). If you want to use HydraTK Java bridge, install Java first.')
             sleep(5)
         else: 
-            cfg['modules'].append('JPype1>=0.6.1')  
+            cfg['modules'].append({'module': 'JPype1', 'version': '>=0.6.1', 'profile': 'bridge'})  
 
-def compile_java_classes(cfg):    
+def compile_java_classes(cfg, *args):    
     
     dir = cfg['java']['dir'] 
     if (path.exists(dir)):
@@ -119,22 +119,22 @@ config = {
                  ],
           
   'modules' : [   
-               'hydratk', 
-               'cassandra-driver>=3.7.0', 
-               'lxml>=3.3.3',
-               'paho-mqtt>=1.2',  
-               'paramiko>=1.16.0',                              
-               'pycurl>=7.19.5.1',           
-               'pyexcel>=0.2.0',
-               'pyexcel-xlsx>=0.1.0',
-               'pyexcel-ods3>=0.1.1',  
-               'pymongo>=3.3.0',                                                                               
-               'python-qpid-proton>=0.10',
-               'pytz>=2016.6.1',  
-               'redis>=2.10.5', 
-               'requests>=2.11.1',
-               'requests-ntlm>=0.3.0',   
-               'selenium>=2.46.1'                         
+               {'module': 'hydratk',            'version': '>=0.4.0',    'profile': 'basic'}, 
+               {'module': 'cassandra-driver',   'version': '>=3.7.0',    'profile': 'db'}, 
+               {'module': 'lxml',               'version': '>=3.3.3',    'profile': 'basic'},
+               {'module': 'paho-mqtt',          'version': '>=1.2',      'profile': 'jms'},  
+               {'module': 'paramiko',           'version': '>=1.16.0',   'profile': 'basic'},                              
+               {'module': 'pycurl',             'version': '>=7.19.5.1', 'profile': 'basic'},           
+               {'module': 'pyexcel',            'version': '>=0.2.0',    'profile': 'db'},
+               {'module': 'pyexcel-xlsx',       'version': '>=0.1.0',    'profile': 'db'},
+               {'module': 'pyexcel-ods3',       'version': '>=0.1.1',    'profile': 'db'},  
+               {'module': 'pymongo',            'version': '>=3.3.0',    'profile': 'db'},                                                                               
+               {'module': 'python-qpid-proton', 'version': '>=0.10',     'profile': 'jms'},
+               {'module': 'pytz',               'version': '>=2016.6.1', 'profile': 'basic'},  
+               {'module': 'redis',              'version': '>=2.10.5',   'profile': 'db'}, 
+               {'module': 'requests',           'version': '>=2.11.1',   'profile': 'basic'},
+               {'module': 'requests-ntlm',      'version': '>=0.3.0',    'profile': 'basic'},   
+               {'module': 'selenium',           'version': '>=2.46.1',   'profile': 'bridge'}                         
               ],
           
   'files' : {
@@ -146,57 +146,57 @@ config = {
             },
           
   'libs' : {
-            'cx_Oracle>=5.1.3'    : {
-                                     'apt-get' : [
-                                                  'libaio1',
-                                                  'libaio-dev'
-                                                 ],
-                                     'yum'     : [
-                                                  'libaio'
-                                                 ]
-                                    },
-            'lxml>=3.3.3'         : {
-                                     'repo'    : [
-                                                  'python-lxml'
-                                                 ],
-                                     'apt-get' : [
-                                                  'libxml2-dev',
-                                                  'libxslt1-dev'
-                                                 ],
-                                     'yum'     : [
-                                                  'libxml2-devel',
-                                                  'libxslt-devel'
-                                                 ]
-                                    },
-            'MySQL-python>=1.2.3' : {
-                                     'apt-get' : [
-                                                  'python-mysqldb',
-                                                  'libmysqlclient-dev'
-                                                 ],
-                                     'yum'     : [
-                                                  'mysql-devel'
-                                                 ]                                     
-                                    },
-            'paramiko>=1.16.0'    : {
-                                     'apt-get' : [
-                                                  'libffi-dev',
-                                                  'libssl-dev'                                        
-                                                 ],
-                                     'yum'     : [
-                                                  'libffi-devel',
-                                                  'openssl-devel'
-                                                 ]
-                                    },
-            'pymssql>=2.1.3'     : {
-                                     'apt-get' : [
-                                                  'freetds-dev'
-                                                 ],
-                                     'yum'     : [
-                                                  'freetds',
-                                                  'freetds-devel'
-                                                 ]
-                                    },              
-            'psycopg2>=2.4.5'     : {
+            'cx_Oracle'    : {
+                              'apt-get' : [
+                                           'libaio1',
+                                           'libaio-dev'
+                                          ],
+                              'yum'     : [
+                                           'libaio'
+                                          ]
+                             },
+            'lxml'         : {
+                              'repo'    : [
+                                           'python-lxml'
+                                          ],
+                              'apt-get' : [
+                                           'libxml2-dev',
+                                           'libxslt1-dev'
+                                          ],
+                              'yum'     : [
+                                           'libxml2-devel',
+                                           'libxslt-devel'
+                                          ]
+                             },
+            'MySQL-python' : {
+                              'apt-get' : [
+                                           'python-mysqldb',
+                                           'libmysqlclient-dev'
+                                          ],
+                              'yum'     : [
+                                           'mysql-devel'
+                                          ]                                     
+                             },
+            'paramiko'     : {
+                              'apt-get' : [
+                                           'libffi-dev',
+                                           'libssl-dev'                                        
+                                          ],
+                              'yum'     : [
+                                           'libffi-devel',
+                                           'openssl-devel'
+                                          ]
+                             },
+            'pymssql'      : {
+                              'apt-get' : [
+                                           'freetds-dev'
+                                          ],
+                              'yum'     : [
+                                           'freetds',
+                                           'freetds-devel'
+                                          ]
+                             },              
+            'psycopg2'     : {
                                      'repo'    : [
                                                   'python-psycopg2'
                                                  ],
@@ -206,36 +206,36 @@ config = {
                                      'yum'     : [
                                                   'postgresql-devel'
                                                  ]
-                                    },             
-            'pycurl>=7.19.5.1'    : {
-                                     'repo'    : [
-                                                  'python-pycurl'
-                                                 ],
-                                     'apt-get' : [
-                                                  'libcurl4-openssl-dev'
-                                                 ],
-                                     'yum'     : [
-                                                  'libcurl-devel'
-                                                 ]
-                                    },
-            'python-ldap>=2.4.25' : {
-                                     'apt-get' : [
-                                                  'libldap2-dev',
-                                                  'libsasl2-dev',
-                                                  'libssl-dev'
-                                                 ],
-                                     'yum'     : [
-                                                  'openldap-devel'
-                                                 ]
-                                    },                      
-            'selenium>=2.46.1'    : {
-                                     'apt-get' : [
-                                                  'libfontconfig'
-                                                 ],
-                                     'yum'     : [
-                                                  'fontconfig'
-                                                 ]
-                                    }                
+                             },             
+            'pycurl'       : {
+                              'repo'    : [
+                                           'python-pycurl'
+                                          ],
+                              'apt-get' : [
+                                           'libcurl4-openssl-dev'
+                                          ],
+                              'yum'     : [
+                                           'libcurl-devel'
+                                          ]
+                             },
+            'python-ldap'  : {
+                              'apt-get' : [
+                                           'libldap2-dev',
+                                           'libsasl2-dev',
+                                           'libssl-dev'
+                                          ],
+                              'yum'     : [
+                                           'openldap-devel'
+                                          ]
+                             },                      
+            'selenium'     : {
+                              'apt-get' : [
+                                           'libfontconfig'
+                                          ],
+                              'yum'     : [
+                                           'fontconfig'
+                                          ]
+                             }                
            },          
           
   'java' : {
