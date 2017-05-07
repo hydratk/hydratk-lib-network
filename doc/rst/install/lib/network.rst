@@ -23,8 +23,9 @@ Install it via Python package managers PIP or easy_install.
      PIP needs option --no-binary to run setup.py install.
      Otherwise it runs setup.py bdist_wheel.   
      
-  .. Use option --install-option="--profile=p1,p2" to install only Python dependent modules included
-     in requested profiles. Offered profiles are basic, bridge, db, jms. Full profile is installed by default.        
+  .. Use PIP option --install-option="--profile=p1,p2" to install only Python dependent modules included
+     in requested profiles. Offered profiles are basic, bridge, db, jms. Full profile is installed by default.   
+     Not supported for easy_install because it doesn't provide custom options.        
 
 Source
 ^^^^^^

@@ -4,8 +4,9 @@
 # All configuration values have a default values that are commented out
 # serve to show the default.
 
-import sys, os
-import sphinx_rtd_theme 
+import sys
+import os
+import sphinx_rtd_theme
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -13,41 +14,42 @@ import sphinx_rtd_theme
 #sys.path.insert(0, os.path.abspath('.'))
 sys.path.append('../src')
 
-# -- General configuration -----------------------------------------------------
+# -- General configuration -----------------------------------------------
 
 autodoc_default_flags = ['members', 'private-members', 'special-members']
 autodoc_mock_imports = [
-                        'cassandra.cluster', 'cassandra.auth', 'cassandra.protocol',
-                        'cx_Oracle', 
-                        'jpype', 
-                        'jsonrpclib', 'jsonrpclib.jsonrpc', 
-                        'ldap', 'ldap.modlist', 
-                        'lxml', 'lxml.etree', 
-                        'MySQLdb',
-                        'paho.mqtt', 'paho.mqtt.client',
-                        'paramiko', 'paramiko.exception', 'paramiko.ssh_exception', 'paramiko.rsakey',
-                        'proton', 'proton.utils', 'proton.reactor', 
-                        'psycopg2', 'psycopg2.extras', 
-                        'pycurl', 
-                        'pymongo', 'pymongo.errors',
-                        'pymssql',
-                        'pytz',
-                        'redis',
-                        'requests', 'requests.exceptions', 'requests.packages.urllib3', 'requests.auth', 'requests_ntlm',
-                        'scapy.all', 'scapy.error', 
-                        'selenium', 'selenium.common.exceptions', 'selenium.webdriver.support.ui', 'selenium.webdriver.common.utils', 
-                        'simplejson', 'simplejson.scanner',
-                        'stompest', 'stompest.config', 'stompest.sync', 'stompest.protocol', 'stompest.error', 
-                        'suds', 'suds.cache', 'suds.client', 'suds.transport', 'suds.transport.https',
-                        'tftpy'
-                        ]
+    'cassandra.cluster', 'cassandra.auth', 'cassandra.protocol',
+    'cx_Oracle',
+    'jpype',
+    'jsonrpclib', 'jsonrpclib.jsonrpc',
+    'ldap', 'ldap.modlist',
+    'lxml', 'lxml.etree',
+    'MySQLdb',
+    'paho.mqtt', 'paho.mqtt.client',
+    'paramiko', 'paramiko.exception', 'paramiko.ssh_exception', 'paramiko.rsakey',
+    'proton', 'proton.utils', 'proton.reactor',
+    'psycopg2', 'psycopg2.extras',
+    'pycurl',
+    'pymongo', 'pymongo.errors',
+    'pymssql',
+    'pytz',
+    'redis',
+    'requests', 'requests.exceptions', 'requests.packages.urllib3', 'requests.auth', 'requests_ntlm',
+    'scapy.all', 'scapy.error',
+    'selenium', 'selenium.common.exceptions', 'selenium.webdriver.support.ui', 'selenium.webdriver.common.utils',
+    'simplejson', 'simplejson.scanner',
+    'stompest', 'stompest.config', 'stompest.sync', 'stompest.protocol', 'stompest.error',
+    'suds', 'suds.cache', 'suds.client', 'suds.transport', 'suds.transport.https',
+    'tftpy'
+]
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #needs_sphinx = '1.0'
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.intersphinx', 'sphinx.ext.todo', 'sphinx.ext.pngmath','sphinx.ext.napoleon', 'sphinx.ext.graphviz','sphinx.ext.inheritance_diagram','sphinxcontrib.mscgen']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.intersphinx', 'sphinx.ext.todo', 'sphinx.ext.pngmath',
+              'sphinx.ext.napoleon', 'sphinx.ext.graphviz', 'sphinx.ext.inheritance_diagram', 'sphinxcontrib.mscgen']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -109,7 +111,7 @@ pygments_style = 'sphinx'
 #modindex_common_prefix = []
 
 
-# -- Options for HTML output ---------------------------------------------------
+# -- Options for HTML output ---------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
@@ -190,24 +192,24 @@ html_static_path = ['_static']
 htmlhelp_basename = 'Hydradoc'
 
 
-# -- Options for LaTeX output --------------------------------------------------
+# -- Options for LaTeX output --------------------------------------------
 
 latex_elements = {
-# The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
+    # The paper size ('letterpaper' or 'a4paper').
+    #'papersize': 'letterpaper',
 
-# The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+    # The font size ('10pt', '11pt' or '12pt').
+    #'pointsize': '10pt',
 
-# Additional stuff for the LaTeX preamble.
-#'preamble': '',
+    # Additional stuff for the LaTeX preamble.
+    #'preamble': '',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'Hydra.tex', u'Hydra Documentation',
-   u'Hydra Toolkit Team', 'manual'),
+    ('index', 'Hydra.tex', u'Hydra Documentation',
+     u'Hydra Toolkit Team', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -231,7 +233,7 @@ latex_documents = [
 #latex_domain_indices = True
 
 
-# -- Options for manual page output --------------------------------------------
+# -- Options for manual page output --------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
@@ -244,15 +246,15 @@ man_pages = [
 #man_show_urls = False
 
 
-# -- Options for Texinfo output ------------------------------------------------
+# -- Options for Texinfo output ------------------------------------------
 
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'Hydra', u'Hydra Documentation',
-   u'Hydra Toolkit Team', 'Hydra', 'One line description of project.',
-   'Miscellaneous'),
+    ('index', 'Hydra', u'Hydra Documentation',
+     u'Hydra Toolkit Team', 'Hydra', 'One line description of project.',
+     'Miscellaneous'),
 ]
 
 # Documents to append as an appendix to all manuals.
@@ -266,4 +268,4 @@ texinfo_documents = [
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = { './' : 'objects.inv'}
+intersphinx_mapping = {'./': 'objects.inv'}

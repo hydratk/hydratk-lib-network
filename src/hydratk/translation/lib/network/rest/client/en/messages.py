@@ -10,19 +10,19 @@
 """
 
 language = {
-  'name' : 'English',
-  'ISO-639-1' : 'en'
+    'name': 'English',
+    'ISO-639-1': 'en'
 }
 
 from hydratk.core import const
 
-HIGHLIGHT_START = chr(27)+chr(91)+"1m"
-HIGHLIGHT_US    = chr(27)+chr(91)+"4m"
-HIGHLIGHT_END   = chr(27)+chr(91)+"0m"
+HIGHLIGHT_START = chr(27) + chr(91) + "1m"
+HIGHLIGHT_US = chr(27) + chr(91) + "4m"
+HIGHLIGHT_END = chr(27) + chr(91) + "0m"
 
 msg = {
-    'htk_rest_request'      : ["Sending request on server: {0}"],
-    'htk_rest_response'     : ["Received response from server: status:{0}, header: {1}, body: {2}"],
-    'htk_rest_unknown_dir'  : ["Unknown directory: '{0}'"],
-    'htk_rest_unknown_file' : ["Unknown file: '{0}'"] 
+    'htk_rest_request': ["Sending request on server: {0}"],
+    'htk_rest_response': ["Received response from server: status:{0}, header: {1}, body: {2}"],
+    'htk_rest_unknown_dir': ["Unknown directory: '{0}'"],
+    'htk_rest_unknown_file': ["Unknown file: '{0}'"]
 }

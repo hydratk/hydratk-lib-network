@@ -10,19 +10,19 @@
 """
 
 language = {
-  'name' : 'Čeština',
-  'ISO-639-1' : 'cs'
+    'name': 'Čeština',
+    'ISO-639-1': 'cs'
 }
 
 from hydratk.core import const
 
-HIGHLIGHT_START = chr(27)+chr(91)+"1m"
-HIGHLIGHT_US    = chr(27)+chr(91)+"4m"
-HIGHLIGHT_END   = chr(27)+chr(91)+"0m"
+HIGHLIGHT_START = chr(27) + chr(91) + "1m"
+HIGHLIGHT_US = chr(27) + chr(91) + "4m"
+HIGHLIGHT_END = chr(27) + chr(91) + "0m"
 
 msg = {
-    'htk_rest_request'     : ["Posílám požadavek na server: {0}"],
-    'htk_rest_response'    : ["Obdržena odpověď ze serveru: status: {0}, hlavička: {1}, tělo: {2}"],
-    'htk_rest_unknown_dir' : ["Neznámý adresář: '{0}'"], 
-    'htk_rest_unknown_file' : ["Neznámý soubor: '{0}'"],
+    'htk_rest_request': ["Posílám požadavek na server: {0}"],
+    'htk_rest_response': ["Obdržena odpověď ze serveru: status: {0}, hlavička: {1}, tělo: {2}"],
+    'htk_rest_unknown_dir': ["Neznámý adresář: '{0}'"],
+    'htk_rest_unknown_file': ["Neznámý soubor: '{0}'"],
 }
