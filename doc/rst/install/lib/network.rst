@@ -193,59 +193,95 @@ See installation example for Linux based on Debian distribution, Python 2.7.
      **************************************
      *     Running pre-install tasks      *
      **************************************
-
+     
      *** Running task: version_update ***
-
      Oracle has not been detected ($ORACLE_HOME is not set). If you want to use HydraTK Oracle client, install Oracle first.
      Java has not been detected ($JAVA_HOME is not set). If you want to use HydraTK Java bridge, install Java first.
-
-     *** Running task: install_libs_from_repo ***
-
-     Installing package: python-lxml
-     Installing package: libxml2-dev
-     Installing package: libxslt1-dev
-     Installing package: libfontconfig
-     Installing package: libffi-dev
-     Installing package: libssl-dev
-     Installing package: python-mysqldb
-     Installing package: libmysqlclient-dev
-     Installing package: freetds-dev
-     Installing package: libldap2-dev
-     Installing package: libsasl2-dev
-     Installing package: libssl-dev
-     Installing package: python-pycurl
-     Installing package: libcurl4-openssl-dev
-     Installing package: python-psycopg2
-     Installing package: libpq-dev
+     *** Running task: install_libs ***
+     Checking libcurl4-openssl-dev...FAILED
+        Unable to locate package libcurl4-openssl-dev
+     Checking python-mysqldb...FAILED
+        Unable to locate package python-mysqldb
+     Checking libmysqlclient-dev...FAILED
+        Unable to locate package libmysqlclient-dev
+     Checking libssl-dev...FAILED
+        Unable to locate package libssl-dev
+     Checking libsasl2-dev...FAILED
+        Unable to locate package libsasl2-dev
+     Checking libfontconfig...OK
+     Checking libffi-dev...FAILED
+        Unable to locate package libffi-dev
+     Checking python-pycurl...FAILED
+        Unable to locate package python-pycurl
+     Checking freetds-dev...FAILED
+        Unable to locate package freetds-dev
+     Checking libxslt1-dev...OK
+     Checking libpq-dev...FAILED
+        Unable to locate package libpq-dev
+     Checking python-psycopg2...FAILED
+        Unable to locate package python-psycopg2
+     Checking libldap2-dev...FAILED
+        Unable to locate package libldap2-dev
+     Checking python-lxml...OK
+     Checking libxml2-dev...OK
+     Installing package libcurl4-openssl-dev
+     Installing package python-mysqldb
+     Installing package libmysqlclient-dev
+     Installing package libssl-dev
+     Installing package libsasl2-dev
+     Installing package libffi-dev
+     Installing package python-pycurl
+     Installing package freetds-dev
+     Installing package libpq-dev
+     Installing package python-psycopg2
+     Installing package libldap2-dev
      
-     *** Running task: install_pip ***
-
-     Installing module hydratk
+     *** Running task: install_modules ***
+     Module hydratk already installed with version 0.5.0rc1
      Installing module cassandra-driver>=3.7.0
-     Installing module lxml>=3.3.3
+     pip install "cassandra-driver>=3.7.0"
+     Module lxml already installed with version 3.4.0
      Installing module paho-mqtt>=1.2
+     pip install "paho-mqtt>=1.2"
      Installing module paramiko>=1.16.0
-     Installing module pycurl>=7.19.5.1
+     pip install "paramiko>=1.16.0"
+     Upgrading module pycurl to version 7.19.5.1
      Installing module pyexcel>=0.2.0
+     pip install "pyexcel>=0.2.0"
      Installing module pyexcel-xlsx>=0.1.0
+     pip install "pyexcel-xlsx>=0.1.0"
      Installing module pyexcel-ods3>=0.1.1
+     pip install "pyexcel-ods3>=0.1.1"
      Installing module pymongo>=3.3.0
+     pip install "pymongo>=3.3.0"
      Installing module python-qpid-proton>=0.10
-     Installing module pytz>=2016.6.1
+     pip install "python-qpid-proton>=0.10"
+     Module pytz already installed with version 2017.2
      Installing module redis>=2.10.5
+     pip install "redis>=2.10.5"
      Installing module requests>=2.11.1
+     pip install "requests>=2.11.1"
      Installing module requests-ntlm>=0.3.0
+     pip install "requests-ntlm>=0.3.0"
      Installing module selenium>=2.46.1
-     Installing module simplejson>=3.8.2
+     pip install "selenium>=2.46.1"
      Installing module jsonrpclib>=0.1.7
-     Installing module MySQL-python>=1.2.3
+     pip install "jsonrpclib>=0.1.7"
+     Module MySQL-python already installed with version 1.2.3
      Installing module python-ldap>=2.4.25
+     pip install "python-ldap>=2.4.25"
      Installing module scapy>=2.3.1
+     pip install "scapy>=2.3.1"
+     Module simplejson already installed with version 3.11.1
      Installing module stompest>=2.2.5
+     pip install "stompest>=2.2.5"
      Installing module suds>=0.4
+     pip install "suds>=0.4"
      Installing module tftpy>=0.6.2
-     Installing module psycopg2>=2.4.5
+     pip install "tftpy>=0.6.2"
+     Module psycopg2 already installed with version 2.5.4
      Installing module pymssql>=2.1.3
+     pip install "pymssql>=2.1.3"
      
      running install
      running bdist_egg
@@ -264,22 +300,34 @@ See installation example for Linux based on Debian distribution, Python 2.7.
      creating build
      creating build/lib.linux-x86_64-2.7
      creating build/lib.linux-x86_64-2.7/hydratk
-     
-     Installed /usr/local/lib/python2.7/dist-packages/hydratk_lib_network-0.2.0-py2.7.egg
-     Processing dependencies for hydratk-lib-network==0.2.0
-     Finished processing dependencies for hydratk-lib-network==0.2.0     
+     ...
+     creating build/bdist.linux-x86_64/egg/EGG-INFO
+     copying src/hydratk_lib_network.egg-info/PKG-INFO -> build/bdist.linux-x86_64/egg/EGG-INFO
+     copying src/hydratk_lib_network.egg-info/SOURCES.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+     copying src/hydratk_lib_network.egg-info/dependency_links.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+     copying src/hydratk_lib_network.egg-info/not-zip-safe -> build/bdist.linux-x86_64/egg/EGG-INFO
+     copying src/hydratk_lib_network.egg-info/top_level.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+     creating dist
+     creating 'dist/hydratk_lib_network-0.2.1rc1-py2.7.egg' and adding 'build/bdist.linux-x86_64/egg' to it
+     removing 'build/bdist.linux-x86_64/egg' (and everything under it)
+     Processing hydratk_lib_network-0.2.1rc1-py2.7.egg
+     creating /usr/local/lib/python2.7/dist-packages/hydratk_lib_network-0.2.1rc1-py2.7.egg
+     Extracting hydratk_lib_network-0.2.1rc1-py2.7.egg to /usr/local/lib/python2.7/dist-packages
+     Adding hydratk-lib-network 0.2.1rc1 to easy-install.pth file
+     Installed /usr/local/lib/python2.7/dist-packages/hydratk_lib_network-0.2.1rc1-py2.7.egg
+     Processing dependencies for hydratk-lib-network==0.2.1rc1
+     Finished processing dependencies for hydratk-lib-network==0.2.1rc1
      
      **************************************
      *     Running post-install tasks     *
-     **************************************  
-     
-     only if Java is installed
+     **************************************
+
      *** Running task: copy_files ***
 
      Creating directory /var/local/hydratk/java
-     Copying file src/hydratk/lib/network/jms/java/JMSClient.java to /var/local/hydratk/java  
-     Copying file src/hydratk/lib/network/jms/java/javaee.jar to /var/local/hydratk/java 
-     Copying file src/hydratk/lib/network/dbi/java/DBClient.java to /var/local/hydratk/java                  
+     Copying file src/hydratk/lib/network/dbi/java/DBClient.java to /var/local/hydratk/java
+     Copying file src/hydratk/lib/network/jms/java/javaee.jar to /var/local/hydratk/java
+     Copying file src/hydratk/lib/network/jms/java/JMSClient.java to /var/local/hydratk/java               
      
      *** Running task: compile_java_classes ***
 
@@ -288,7 +336,7 @@ See installation example for Linux based on Debian distribution, Python 2.7.
      
 Application installs following (paths depend on your OS configuration)
 
-* modules in /usr/local/lib/python2.7/dist-packages/hydratk-lib-network-0.2.0-py2.7egg 
+* modules in /usr/local/lib/python2.7/dist-packages/hydratk-lib-network-0.2.1-py2.7egg 
 * application folder in /var/local/hydratk/java with files javaee.jar, DBClient.java, DBClient.class, JMSClient.java, JMSClient.class, JMSMessage.class       
      
 Run
@@ -302,7 +350,7 @@ Check hydratk-lib-network module is installed.
   
      $ pip list | grep hydratk-lib-network
 
-     hydratk-lib-network (0.2.0)    
+     hydratk-lib-network (0.2.1)    
      
 Upgrade
 =======
