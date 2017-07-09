@@ -131,7 +131,7 @@ config = {
     ],
 
     'modules': [
-        {'module': 'hydratk', 'version': '>=0.4.0', 'profile': 'basic'},
+        {'module': 'hydratk', 'version': '>=0.5.0', 'profile': 'basic'},
         {'module': 'cassandra-driver', 'version': '>=3.7.0', 'profile': 'db'},
         {'module': 'lxml', 'version': '>=3.3.3', 'profile': 'basic'},
         {'module': 'paho-mqtt', 'version': '>=1.2', 'profile': 'jms'},
