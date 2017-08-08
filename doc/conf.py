@@ -24,7 +24,7 @@ autodoc_mock_imports = [
     'jsonrpclib', 'jsonrpclib.jsonrpc',
     'ldap', 'ldap.modlist',
     'lxml', 'lxml.etree',
-    'MySQLdb',
+    'MySQLdb', 'MySQLdb.cursors',
     'paho.mqtt', 'paho.mqtt.client',
     'paramiko', 'paramiko.exception', 'paramiko.ssh_exception', 'paramiko.rsakey',
     'proton', 'proton.utils', 'proton.reactor',
@@ -39,7 +39,7 @@ autodoc_mock_imports = [
     'selenium', 'selenium.common.exceptions', 'selenium.webdriver.support.ui', 'selenium.webdriver.common.utils',
     'simplejson', 'simplejson.scanner',
     'stompest', 'stompest.config', 'stompest.sync', 'stompest.protocol', 'stompest.error',
-    'suds', 'suds.cache', 'suds.client', 'suds.transport', 'suds.transport.https',
+    'suds', 'suds.cache', 'suds.client', 'suds.transport', 'suds.transport.https', 'suds.wsse',
     'tftpy'
 ]
 
