@@ -50,7 +50,7 @@ def version_update(cfg, *args):
     if (major == 2):
         cfg['modules'].append({'module': 'jsonrpclib', 'version': '>=0.1.7', 'profile': 'basic'})
         cfg['modules'].append({'module': 'MySQL-python', 'version': '>=1.2.3', 'profile': 'db'})
-        cfg['modules'].append({'module': 'python-ldap', 'version': '>=2.4.25', 'profile': 'basic'})
+        cfg['modules'].append({'module': 'python-ldap', 'version': '>=2.4.25', 'profile': 'db'})
         cfg['modules'].append({'module': 'scapy', 'version': '>=2.3.1', 'profile': 'basic'})
         if (minor == 6):
             cfg['modules'].append({'module': 'simplejson', 'version': '==3.8.2', 'profile': 'basic'})
@@ -63,7 +63,8 @@ def version_update(cfg, *args):
     else:
         cfg['modules'].append({'module': 'jsonrpclib-pelix', 'version': '>=0.2.8', 'profile': 'basic'})
         cfg['modules'].append({'module': 'mysqlclient', 'version': '>=1.3.7', 'profile': 'db'})
-        cfg['modules'].append({'module': 'pyldap', 'version': '>=2.4.25', 'profile': 'basic'})
+        if (python_implementation() != 'PyPy'):
+            cfg['modules'].append({'module': 'pyldap', 'version': '>=2.4.25', 'profile': 'db'})
         cfg['modules'].append({'module': 'scapy-python3', 'version': '>=0.18', 'profile': 'basic'})
         cfg['modules'].append({'module': 'simplejson', 'version': '>=3.8.2', 'profile': 'basic'})
         cfg['modules'].append({'module': 'stompest', 'version': '>=2.2.5', 'profile': 'jms'})
@@ -80,10 +81,6 @@ def version_update(cfg, *args):
     else:
         cfg['modules'].append({'module': 'psycopg2cffi', 'version': '>=2.7.4', 'profile': 'db'})
         cfg['libs']['psycopg2cffi'] = cfg['libs']['psycopg2']
-
-        if (find_loader('pymssql') == None):
-            cfg['modules'].append({'module': 'git+https://github.com/dholth/pymssql.git', 'profile': 'db'})
-            cfg['libs']['git+https://github.com/dholth/pymssql.git'] = cfg['libs']['pymssql']
 
     if ('ORACLE_HOME' not in environ):
         print ('Oracle has not been detected ($ORACLE_HOME is not set). If you want to use HydraTK Oracle client, install Oracle first.')
@@ -489,7 +486,7 @@ task.run_pre_install(argv, config)
 
 st_setup(
     name='hydratk-lib-network',
-    version='0.2.1',
+    version='0.2.2.dev0',
     description='Clients/API for many network protocols and technologies',
     long_description=readme,
     author='Petr Rašek, HydraTK team',

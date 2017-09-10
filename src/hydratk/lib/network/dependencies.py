@@ -112,7 +112,7 @@ def get_dependencies():
     if (major == 2):
         dep_modules['jsonrpclib'] = {'min-version': '0.1.7', 'package': 'jsonrpclib'}
         dep_modules['MySQLdb'] = {'min-version': '1.2.3', 'package': 'MySQL-python', 'optional': True}
-        dep_modules['ldap'] = {'min-version': '2.4.25', 'package': 'python-ldap'}
+        dep_modules['ldap'] = {'min-version': '2.4.25', 'package': 'python-ldap', 'optional': True}
         dep_modules['scapy'] = {'min-version': '2.3.1', 'package': 'scapy'}
         if (minor == 6):
             dep_modules['stompest'] = {'min-version': '2.1.6', 'package': 'stompest', 'optional': True}
@@ -122,7 +122,7 @@ def get_dependencies():
     else:
         dep_modules['jsonrpclib'] = {'min-version': '0.2.8', 'package': 'jsonrpclib-pelix'}
         dep_modules['MySQLdb'] = {'min-version': '1.3.7', 'package': 'mysqlclient', 'optional': True}
-        dep_modules['ldap'] = {'min-version': '2.4.25', 'package': 'pyldap'}
+        dep_modules['ldap'] = {'min-version': '2.4.25', 'package': 'pyldap', 'optional': True}
         dep_modules['scapy'] = {'min-version': '0.18', 'package': 'scapy-python3'}
         dep_modules['stompest'] = {'min-version': '2.2.5', 'package': 'stompest', 'optional': True}
         dep_modules['suds'] = {'min-version': '1.3.2.0', 'package': 'suds-py3'}

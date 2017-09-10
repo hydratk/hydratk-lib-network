@@ -542,6 +542,7 @@ Test-Scenario-8:
     from hydratk.lib.network.inet.packet import sniffer
     from yodahelpers.hydratk.core.events import events, reg_ev_hook
     from os import path, remove
+    from sys import prefix
   
   Test-Case-1:
     Id: tc_01
@@ -558,7 +559,7 @@ Test-Scenario-8:
         evs = ['inet_before_sniff', 'inet_after_sniff']
         reg_ev_hook(mh, evs[0])
         reg_ev_hook(mh, evs[1])
-        file = '/var/local/hydratk/test.pcap'
+        file = prefix+'/var/local/hydratk/test.pcap'
         sniffer(file)  
       
       Validate: |      

@@ -139,6 +139,7 @@ Test-Scenario-3:
     from hydratk.lib.network.ftp.client import FTPClient
     from yodahelpers.hydratk.core.events import events, reg_ev_hook
     from os import path, remove
+    from sys import prefix
   
   Test-Case-1:
     Id: tc_01
@@ -156,7 +157,7 @@ Test-Scenario-3:
         reg_ev_hook(mh, evs[0])
         reg_ev_hook(mh, evs[1])
         
-        rpath = '/var/local/hydratk/'
+        rpath = prefix+'/var/local/hydratk/'
         file = 'test.txt'
         with open(rpath+file, 'w') as f:
             f.write('test')
@@ -220,7 +221,7 @@ Test-Scenario-3:
       Desc: Invalid local path
       
       Test: |
-        rpath = '/var/local/hydratk/'
+        rpath = prefix+'/var/local/hydratk/'
         file = 'test.txt'
         with open(rpath+file, 'w') as f:
             f.write('test')  
@@ -258,6 +259,7 @@ Test-Scenario-4:
     from hydratk.lib.network.ftp.client import FTPClient
     from yodahelpers.hydratk.core.events import events, reg_ev_hook
     from os import path, remove
+    from sys import prefix
   
   Test-Case-1:
     Id: tc_01
@@ -275,7 +277,7 @@ Test-Scenario-4:
         reg_ev_hook(mh, evs[0])
         reg_ev_hook(mh, evs[1])
         
-        rpath = '/var/local/hydratk/'
+        rpath = prefix+'/var/local/hydratk/'
         file = 'test.txt'
         with open(file, 'w') as f:
             f.write('test')
