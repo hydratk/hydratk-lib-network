@@ -108,58 +108,94 @@ Module cassandra-driver installation takes longer time (not so fast as other mod
      Module scapy-python3 is installed instead of scapy.
      Module suds-py3 is installed instead of suds.
      Module tftpy is not installed from PyPi but from https://github.com/ZuljinSBK/tftpy.git@master#egg=tftpy
+     Library git is installed for mpdule tftpy (Debian apt-get, Red Hat yum, Fedora dnf, SuSe zypper, Gentoo emerge dev-vcs/git)
+     Library py36-lxml is installed instead of py27-lxml.
+     Library py36-mysqlclient is installed instead of py27-MySQLdb.
+     Library py36-psycopg2 is installed instead of py27-psycopg2.
      
   .. note ::
   
      Installation for PyPy has some differences.
      Module cx-oracle-on-ctypes is installed instead of cx_Oracle.
      Module psycopg2cffi is installed instead of psycopg2.
-     Modules JPype1, pymssql are not supported and installed.     
+     Modules JPype1, pymssql, python-ldap are not supported and installed.
+     
+  .. note ::
+   
+     Module pymssql is not installed on Slackware, FreeBSD.
+     MOdule python-qpid-proton is not installed on Arch.     
 
 cx_Oracle
 
-* apt-get: libaio1, libaio-dev
-* yum: libaio     
+* Debian apt-get: libaio1, libaio-dev
+* Red Hat yum: libaio
+* Fedora dnf: libaio
+* SuSe zypper: libaio1     
     
 lxml
 
-* apt-get: python-lxml, libxml2-dev, libxslt1-dev
-* yum: python-lxml, libxml2-devel, libxslt-devel
+* Debian apt-get: python-lxml, libxml2-dev, libxslt1-dev
+* Red Hat yum: python-lxml, libxml2-devel, libxslt-devel
+* Fedora dnf: python-lxml, libxml2-devel, libxslt-devel
+* SuSe zypper: python-lxml, libxml2-devel, libxslt-devel
+* FreeBSD pkg: py27-lxml
 
 MySQL-python
 
-* apt-get: python-mysqldb, libmysqlclient-dev
-* yum: mysql-devel   
+* Debian apt-get: python-mysqldb, libmysqlclient-dev
+* Red Hat yum: mysql-devel
+* Fedora dnf: mysql-devel
+* SuSe zypper: libmysqlclient-devel
+* Gentoo emerge: mysqlclient
+* Arch pacman: mysql-python
+* FreeBSD pkg: py27-MySQLdb   
 
 paramiko
 
-* apt-get: libffi-dev, libssl-dev
-* yum: libffi-devel, openssl-devel
-
-pymssql
-
-* apt-get: freetds-dev
-* yum: freetds, freetds-devel
+* Debian apt-get: libffi-dev, libssl-dev
+* Red hat yum: libffi-devel, openssl-devel
+* Fedora dnf: libffi-devel, openssl-devel
+* SuSe zypper: libffi-devel
 
 psycopg2
 
-* apt-get: python-psycopg2, libpq-dev
-* yum: python-psycopg2, postgresql-devel   
+* Debian apt-get: python-psycopg2, libpq-dev
+* Red Hat yum: python-psycopg2, postgresql-devel
+* Fedora dnf: python-psycopg2, postgresql-devel 
+* SuSe zypper: python-psycopg2, postgresql-devel
+* FreeBSD pkg: py27-psycopg2  
 
 pycurl
 
-* apt-get: python-pycurl, libcurl2-openssl-dev
-* yum: python-pycurl, libcurl-devel
+* Debian apt-get: python-pycurl, libcurl4-openssl-dev
+* Red Hat yum: python-pycurl, libcurl-devel
+* Fedora dnf: python-pycurl, libcurl-devel
+* SuSe zypper: python-pycurl, libcurl-devel
+* Gentoo emerge: pycurl
+* FreeBSD pkg: curl
+
+pymssql
+
+* Debian apt-get: freetds-dev
+* Red Hat yum: freetds, freetds-devel
+* Fedora dnf: freetds, freetds-devel
+* SuSe zypper: freetds, freetds-devel  
 
 python-ldap
 
-* apt-get: libldap2-dev, libsasl2-dev, libssl-dev
-* yum: openldap-devel
+* Debian apt-get: libldap2-dev, libsasl2-dev, libssl-dev
+* Red Hat yum: openldap-devel
+* Fedora dnf: openldap-devel
+* SuSe zypper: openldap2-devel
+* Gentoo emerge: openldap, cyrus-sasl
+* FreeBSD pkg: openldap-sasl-client
 
 selenium
 
-* apt-get: libfontconfig
-* yum: fontconfig 
+* Debian apt-get: libfontconfig
+* Red Hat yum: fontconfig
+* Fedora dnf: fontconfig
+* SuSe zypper: fontconfig
 
 Oracle client is not bundled with library and must be installed individually.
 Setup script checks if environment variable ORACLE_HOME is set. If not the module cx_Oracle is excluded.
@@ -171,9 +207,9 @@ When you install JVM, you can update library and JPype1 including jar files will
     
 Library offers following profiles.
 
-* basic - hydratk, jsonrpclib, lxml, paramiko, pycurl, python-ldap, python-ntlm, requests, requests_ntlm, scapy, simplejson, suds, tftpy
+* basic - hydratk, jsonrpclib, lxml, paramiko, pycurl, python-ntlm, requests, requests_ntlm, scapy, simplejson, suds, tftpy
 * bridge - basic profile, JPype1, pyexcel, pyexcel-xlsx, pyexcel-ods3, selenium
-* db - basic profile, cassandra-driver, cx_Oracle, MySQL-python, mysqlclient, pymongo, pymssql, psycopg2, redis
+* db - basic profile, cassandra-driver, cx_Oracle, MySQL-python, mysqlclient, psycopg2, pymongo, pymssql, python-ldap redis
 * jms - basic profile, paho-mqtt, python-qpid-proton, stompest
 * full - everything    
     
@@ -331,7 +367,9 @@ See installation example for Linux based on Debian distribution, Python 2.7.
      *** Running task: compile_java_classes ***
 
      Compiling DBClient.java
-     Compiling JMSClient.java         
+     Compiling JMSClient.java
+     
+     *** Running task: fix_pycurl ***         
      
 Application installs following (paths depend on your OS configuration)
 
