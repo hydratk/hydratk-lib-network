@@ -50,7 +50,8 @@ def version_update(cfg, *args):
     if (major == 2):
         cfg['modules'].append({'module': 'jsonrpclib', 'version': '>=0.1.7', 'profile': 'basic'})
         cfg['modules'].append({'module': 'MySQL-python', 'version': '>=1.2.3', 'profile': 'db'})
-        cfg['modules'].append({'module': 'python-ldap', 'version': '>=2.4.25', 'profile': 'db'})
+        if (python_implementation() != 'PyPy'):
+            cfg['modules'].append({'module': 'python-ldap', 'version': '>=2.4.25', 'profile': 'db'})
         cfg['modules'].append({'module': 'scapy', 'version': '>=2.3.1', 'profile': 'basic'})
         if (minor == 6):
             cfg['modules'].append({'module': 'simplejson', 'version': '==3.8.2', 'profile': 'basic'})
