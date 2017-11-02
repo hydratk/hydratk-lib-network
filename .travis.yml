@@ -8,6 +8,7 @@ python:
   - "3.5"
   - "3.6"
   - "pypy"
+  - "pypy3"
   
 sudo: required  
   
@@ -22,6 +23,7 @@ install:
   - "cd hydratk-ext-yoda"
   - "sudo -H python setup.py install"
   - "cd .."  
+<<<<<<< HEAD
   - "sudo -H python setup.py install"
   - "cd hydratk"  
   - "sudo cp -R tests/yodalib/hydratk /var/local/hydratk/yoda/lib/yodalib"
@@ -32,6 +34,20 @@ install:
   - "sudo cp -R tests/yodahelpers/hydratk /var/local/hydratk/yoda/helpers/yodahelpers"
   - "sudo cp -R tests/yoda-tests/hydratk /var/local/hydratk/yoda/yoda-tests"  
   - "sudo cp tests/travis.yoda /var/local/hydratk/yoda/yoda-tests"
+=======
+  - "sudo -H $cmdpath setup.py install"
+  - "cd hydratk" 
+  - "cmdpath=`which yoda`"  
+  - "yodarepo=`echo $cmdpath | rev | cut -c10- | rev`"     
+  - "sudo cp -R tests/yodalib/hydratk $yodarepo/var/local/hydratk/yoda/lib/yodalib"
+  - "sudo cp -R tests/yodahelpers/hydratk $yodarepo/var/local/hydratk/yoda/helpers/yodahelpers"
+  - "sudo cp -R tests/yoda-tests/hydratk $yodarepo/var/local/hydratk/yoda/yoda-tests"
+  - "cd .."
+  - "sudo cp -R tests/yodalib/hydratk $yodarepo/var/local/hydratk/yoda/lib/yodalib"
+  - "sudo cp -R tests/yodahelpers/hydratk $yodarepo/var/local/hydratk/yoda/helpers/yodahelpers"
+  - "sudo cp -R tests/yoda-tests/hydratk $yodarepo/var/local/hydratk/yoda/yoda-tests"  
+  - "sudo cp tests/travis.yoda $yodarepo/var/local/hydratk/yoda/yoda-tests"
+>>>>>>> refs/remotes/origin/develop
   
 script:
   - "sudo yoda -tp travis.yoda run" 

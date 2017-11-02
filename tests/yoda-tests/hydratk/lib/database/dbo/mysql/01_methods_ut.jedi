@@ -459,7 +459,7 @@ Test-Scenario-11:
         d.erase_database()
         sleep(1)
         c = DBO(dsn)
-        d = c._dbo_driver    
+        d = c._dbo_driver   
         recs = d.execute("select count(*) as count from information_schema.tables where table_schema = 'mysql' and table_type = 'BASE TABLE' and engine = 'InnoDB'").fetchall()           
         
       Validate: |

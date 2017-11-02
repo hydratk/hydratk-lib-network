@@ -104,14 +104,14 @@ Test-Scenario-1:
                 DBClient('MSSQL')
                 ex = False
             except NotImplementedError:
-                ex = True            
+                ex = True                
       
       Validate: |
         if (python_implementation() != 'PyPy'):
             this.test_result = res
-            assert (res == 'DBClient'), 'DBClient = DBClient' 
+            assert (res == 'DBClient'), 'DBClient = DBClient'
         else:
-            assert (ex), 'raises NotImplementedError'                              
+            assert (ex), 'raises NotImplementedError'                                             
         
     Test-Condition-7: 
       Id: tco_07

@@ -20,6 +20,7 @@ java_after_stop
 
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
+import hydratk.lib.system.config as syscfg
 from os import path, walk
 
 try:
@@ -68,10 +69,8 @@ class JavaBridge(object):
         if (jvm_path != None):
             self._jvm_path = jvm_path
         else:
-            cfg = self._mh.cfg['Libraries'][
-                'hydratk.lib.bridge.java']['jvm_path']
-            self._jvm_path = cfg if (
-                cfg != 'default') else get_default_jvm_path()
+            cfg = self._mh.cfg['Libraries']['hydratk.lib.bridge.java']['jvm_path']
+            self._jvm_path = cfg if (cfg != 'default') else get_default_jvm_path()
 
         self._classpath = self._set_classpath(classpath)
 
@@ -339,7 +338,7 @@ class JavaBridge(object):
 
         """
 
-        cfg = self._mh.cfg['Libraries']['hydratk.lib.bridge.java']['classpath']
+        cfg = self._mh.cfg['Libraries']['hydratk.lib.bridge.java']['classpath'].format(var_dir=syscfg.HTK_VAR_DIR)
         if (classpath != None):
             cfg += ':' + classpath
 
