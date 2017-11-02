@@ -9,12 +9,10 @@ Package
 ^^^^^^^
 
 Install it via Python package managers PIP or easy_install.
-Filename after PIP download contains version, adapt sample code.
 
   .. code-block:: bash
   
-     $ sudo pip download hydratk-lib-network
-     $ sudo pip install hydratk-lib-network.tar.gz 
+     $ sudo pip install --no-binary :all: hydratk-lib-network
      
   .. code-block:: bash
   
@@ -22,8 +20,12 @@ Filename after PIP download contains version, adapt sample code.
      
   .. note::
   
-     Use PIP to install package from local file for correct installation.
-     When installed from remote repository, PIP sometimes doesn't call setup.py.     
+     PIP needs option --no-binary to run setup.py install.
+     Otherwise it runs setup.py bdist_wheel.   
+     
+  .. Use PIP option --install-option="--profile=p1,p2" to install only Python dependent modules included
+     in requested profiles. Offered profiles are basic, bridge, db, jms. Full profile is installed by default.   
+     Not supported for easy_install because it doesn't provide custom options.        
 
 Source
 ^^^^^^
@@ -39,10 +41,13 @@ Full PyPi URL contains MD5 hash, adapt sample code.
      
   .. code-block:: bash
   
-     $ wget https://pypi.python.org/pypihydratk-lib-network -O hydratk-lib-network.tar.gz
+     $ wget https://pypi.python.org/pypi/hydratk-lib-network -O hydratk-lib-network.tar.gz
      $ tar -xf hydratk-lib-network.tar.gz
      $ cd ./hydratk-lib-network
      $ sudo python setup.py install
+     
+  .. Use option --profile=p1,p2 to install only Python dependent modules included
+     in requested profiles. Offered profiles are basic, bridge, db, jms. Full profile is installed by default.      
      
   .. note::
   
@@ -164,6 +169,14 @@ When you install Oracle, you can update library and cx_Oracle will be installed.
 Java virtual machine is not bundled with library and must be installed individually.
 Setup script checks if environment variable JAVA_HOME is set. If not the module JPype1 is excluded.
 When you install JVM, you can update library and JPype1 including jar files will be installed. 
+    
+Library offers following profiles.
+
+* basic - hydratk, jsonrpclib, lxml, paramiko, pycurl, python-ldap, python-ntlm, requests, requests_ntlm, scapy, simplejson, suds, tftpy
+* bridge - basic profile, JPype1, pyexcel, pyexcel-xlsx, pyexcel-ods3, selenium
+* db - basic profile, cassandra-driver, cx_Oracle, MySQL-python, mysqlclient, pymongo, pymssql, psycopg2, redis
+* jms - basic profile, paho-mqtt, python-qpid-proton, stompest
+* full - everything    
     
 Installation
 ^^^^^^^^^^^^
@@ -294,9 +307,9 @@ Check hydratk-lib-network module is installed.
 Upgrade
 =======
 
-Use same procedure as for installation. Command options --upgrade (pip, easy_install) or --force (setup.py) are not necessary.
+Use same procedure as for installation. Use command option --upgrade for pip, easy_install, --force for setup.py.
 
 Uninstall
 =========    
 
-Run command htkuninstall network.          
+Run command htkuninstall. Use option -y if you want to uninstall also dependent Python modules (for advanced user).            

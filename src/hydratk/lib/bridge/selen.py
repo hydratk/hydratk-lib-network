@@ -54,6 +54,26 @@ class SeleniumBridge(object):
     _url = None
     _confirm_alert = True
     
+   
+        
+    @property
+    def client(self):
+        """ client property getter """
+        
+        return self._client
+    
+    @property
+    def browser(self):
+        """ browser property getter """
+        
+        return self._browser
+    
+    @property
+    def url(self):
+        """ url property getter """
+        
+        return self._url 
+
     def __init__(self, browser='PhantomJS', **kwargs):
         """Class constructor
            
@@ -90,25 +110,7 @@ class SeleniumBridge(object):
             self._client = client            
 
         else:
-            raise NotImplementedError('Unknown browser:{0}'.format(browser)) 
-        
-    @property
-    def client(self):
-        """ client property getter """
-        
-        return self._client
-    
-    @property
-    def browser(self):
-        """ browser property getter """
-        
-        return self._browser
-    
-    @property
-    def url(self):
-        """ url property getter """
-        
-        return self._url 
+            raise NotImplementedError('Unknown browser:{0}'.format(browser))      
     
     @property
     def confirm_alert(self):

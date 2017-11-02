@@ -45,10 +45,22 @@ def version_update(cfg):
         cfg['modules'].append('scapy>=2.3.1')
         if (minor == 6):
             cfg['modules'].append('stompest==2.1.6')
+            cfg['modules'].append(
+                {'module': 'simplejson', 'version': '==3.8.2', 'profile': 'basic'})
+            cfg['modules'].append(
+                {'module': 'stompest',   'version': '==2.1.6', 'profile': 'jms'})
         else:
             cfg['modules'].append('stompest>=2.2.5')        
         cfg['modules'].append('suds>=0.4')        
         cfg['modules'].append('tftpy>=0.6.2')
+            cfg['modules'].append(
+                {'module': 'simplejson', 'version': '>=3.8.2', 'profile': 'basic'})
+            cfg['modules'].append(
+                {'module': 'stompest',   'version': '>=2.2.5', 'profile': 'jms'})
+        cfg['modules'].append(
+            {'module': 'suds',  'version': '>=0.4',   'profile': 'basic'})
+        cfg['modules'].append(
+            {'module': 'tftpy', 'version': '>=0.6.2', 'profile': 'basic'})
     else:
         cfg['modules'].append('jsonrpclib-pelix>=0.2.8')
         cfg['modules'].append('mysqlclient>=1.3.7')
@@ -56,6 +68,20 @@ def version_update(cfg):
         cfg['modules'].append('scapy-python3>=0.18')
         cfg['modules'].append('stompest>=2.2.5')
         cfg['modules'].append('suds-py3>=1.3.2.0')
+        cfg['modules'].append(
+            {'module': 'jsonrpclib-pelix', 'version': '>=0.2.8',   'profile': 'basic'})
+        cfg['modules'].append(
+            {'module': 'mysqlclient',      'version': '>=1.3.7',   'profile': 'db'})
+        cfg['modules'].append(
+            {'module': 'pyldap',           'version': '>=2.4.25',  'profile': 'basic'})
+        cfg['modules'].append(
+            {'module': 'scapy-python3',    'version': '>=0.18',    'profile': 'basic'})
+        cfg['modules'].append(
+            {'module': 'simplejson',       'version': '>=3.8.2',   'profile': 'basic'})
+        cfg['modules'].append(
+            {'module': 'stompest',         'version': '>=2.2.5',   'profile': 'jms'})
+        cfg['modules'].append(
+            {'module': 'suds-py3',         'version': '>=1.3.2.0', 'profile': 'basic'})
         if (find_loader('tftpy') == None):
             cfg['modules'].append('git+https://github.com/ZuljinSBK/tftpy.git@master#egg=tftpy')
             
@@ -265,5 +291,21 @@ setup(
       requires_python='>=2.6,!=3.0.*,!=3.1.*,!=3.2.*',
       platforms='Linux'
      )        
+    name='hydratk-lib-network',
+    version='0.2.1a.dev3',
+    description='Clients/API for many network protocols and technologies',
+    long_description=readme,
+    author='Petr Rašek, HydraTK team',
+    author_email='bowman@hydratk.org, team@hydratk.org',
+    url='http://libraries.hydratk.org/network',
+    license='BSD',
+    packages=find_packages('src'),
+    package_dir={'': 'src'},
+    classifiers=classifiers,
+    zip_safe=False,
+    keywords='hydratk,database,soap,rest,jms,java,gui',
+    requires_python='>=2.6,!=3.0.*,!=3.1.*,!=3.2.*',
+    platforms='Linux'
+)
 
 task.run_post_install(argv, config)

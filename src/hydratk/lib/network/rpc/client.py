@@ -12,32 +12,34 @@ from hydratk.core.masterhead import MasterHead
 from importlib import import_module
 
 providers = {
-  'RMI'     : 'rmi_client',
-  'XMLRPC'  : 'xmlrpc_client',
-  'JSONRPC' : 'jsonrpc_client'
+    'RMI': 'rmi_client',
+    'XMLRPC': 'xmlrpc_client',
+    'JSONRPC': 'jsonrpc_client'
 }
+
 
 def RPCClient(provider, *args):
     """RPC client factory method
-        
+
     Args:            
         provider (str): RPC provider, RMI
         args (args): arguments 
         kwargs (kwargs): key value arguments
-           
+
     Returns:
         obj: RPCClient
-       
+
     Raises:
         error: NotImplementedError
-                
-    """       
 
-    provider = provider.upper()        
+    """
+
+    provider = provider.upper()
     if (provider in providers):
         mh = MasterHead.get_head()
-        mod = import_module('hydratk.lib.network.rpc.{0}'.format(providers[provider]))
-        mh.find_module('hydratk.lib.network.rpc.client', None)                  
+        mod = import_module(
+            'hydratk.lib.network.rpc.{0}'.format(providers[provider]))
+        mh.find_module('hydratk.lib.network.rpc.client', None)
         return mod.RPCClient(*args)
     else:
-        raise NotImplementedError('Unknown provider:{0}'.format(provider))                     
+        raise NotImplementedError('Unknown provider:{0}'.format(provider))
