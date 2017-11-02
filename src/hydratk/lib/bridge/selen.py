@@ -54,7 +54,7 @@ class SeleniumBridge(object):
     _url = None
     _confirm_alert = True
     
-    def __init__(self, browser='PhantomJS'):
+    def __init__(self, browser='PhantomJS', **kwargs):
         """Class constructor
            
         Called when the object is initialized   
@@ -68,18 +68,24 @@ class SeleniumBridge(object):
         """           
         
         self._mh = MasterHead.get_head()
-        self._mh.find_module('hydratk.lib.bridge.selen', None)  
+        
+        #TODO problematic
+        #self._mh.find_module('hydratk.lib.bridge.selen', None)  
                 
         self._browser = browser.upper()
         if (self._browser in browsers):
             
             mod = import_module('selenium.webdriver')   
-            if (self._browser == 'PHANTOMJS'):                
-                client = mod.__dict__[browsers[self._browser]](service_args=['--ignore-ssl-errors=true', '--ssl-protocol=any'],
+            if (self._browser == 'PHANTOMJS'):
+                if 'profile' in kwargs and kwargs['profile'] != None:                
+                    client = mod.__dict__[browsers[self._browser]](profile=kwargs['profile'], service_args=['--ignore-ssl-errors=true', '--ssl-protocol=any'],
+                                                               service_log_path=path.devnull)
+                else:
+                    client = mod.__dict__[browsers[self._browser]](service_args=['--ignore-ssl-errors=true', '--ssl-protocol=any'],
                                                                service_log_path=path.devnull)
                 client.set_window_size(1024, 768)         
             else:
-                client = mod.__dict__[browsers[self._browser]]()
+                client = mod.__dict__[browsers[self._browser]](**kwargs)
                 
             self._client = client            
 

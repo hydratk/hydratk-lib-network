@@ -59,6 +59,7 @@ curl_info_map  = {
 }
 
 HTTP_AUTH_BASIC = pycurl.HTTPAUTH
+HTTP_AUTH_NTLM  = pycurl.HTTPAUTH_NTLM
 
 class SoapResponse(object):
     """Class SoapResponse
@@ -199,6 +200,10 @@ class SoapRequest(object):
         
         self._req_headers = header
     
+    def add_header(self, header):
+        if header not in (None, ''):
+            self._req_headers.append(header)
+            
     @property
     def msg(self):
         """ msg property getter, setter """
@@ -363,6 +368,11 @@ class SoapClient():
     _curl               = None
 
     @property
+    def curl(self):
+        """ Pycurl object getter """
+        return self._curl
+    
+    @property
     def request(self):
         """ request property getter, setter """
         
@@ -406,8 +416,7 @@ class SoapClient():
         """
                 
         self._curl.setopt(self._curl.HTTPAUTH, auth_type)
-        if auth_type == HTTP_AUTH_BASIC:
-            self._curl.setopt(self._curl.USERPWD, "{username}:{password}".format(username=username,password=password))                   
+        self._curl.setopt(self._curl.USERPWD, "{username}:{password}".format(username=username,password=password))                   
     
     def set_cert(self, cert, key=None):
         """Method sets certificate 
