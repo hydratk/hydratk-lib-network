@@ -115,25 +115,12 @@ def get_dependencies():
         dep_modules['ldap'] = {'min-version': '2.4.25', 'package': 'python-ldap', 'optional': True}
         dep_modules['scapy'] = {'min-version': '2.3.1', 'package': 'scapy'}
         if (minor == 6):
-<<<<<<< HEAD
-            dep_modules['stompest'] = {'min-version' : '2.1.6','package' : 'stompest'}
-            dep_modules['stompest'] = {
-                'min-version': '2.1.6',  'package': 'stompest',            'optional': True}
-            dep_modules['stompest'] = {
-                'min-version': '2.1.6',  'package': 'stompest',            'optional': True}
-=======
             dep_modules['stompest'] = {'min-version': '2.1.6', 'package': 'stompest', 'optional': True}
->>>>>>> refs/remotes/origin/develop
         else:
-<<<<<<< HEAD
             dep_modules['stompest'] = {'min-version' : '2.2.5','package' : 'stompest'}
-        dep_modules['suds']         = {'min-version' : '0.4',    'package' : 'suds'}
+            dep_modules['suds']         = {'min-version' : '0.4',    'package' : 'suds'}
             dep_modules['stompest'] = {
                 'min-version': '2.2.5',  'package': 'stompest',            'optional': True}
-=======
-            dep_modules['stompest'] = {'min-version': '2.2.5', 'package': 'stompest', 'optional': True}
->>>>>>> refs/remotes/origin/develop
-        dep_modules['suds'] = {'min-version': '0.4',    'package': 'suds'}
     else:
         dep_modules['jsonrpclib'] = {'min-version': '0.2.8', 'package': 'jsonrpclib-pelix'}
         dep_modules['MySQLdb'] = {'min-version': '1.3.7', 'package': 'mysqlclient', 'optional': True}
@@ -150,7 +137,6 @@ def get_dependencies():
         if ('JAVA_HOME' in environ):
             dep_modules['jpype'] = {'min-version': '0.6.1', 'package': 'JPype1', 'optional': True}
     else:
-<<<<<<< HEAD
         dep_modules['psycopg2cffi'] = {'min-version' : '2.7.4',  'package' : 'psycopg2cffi'}      
         if ('ORACLE_HOME' in environ):   
             dep_modules['cx_Oracle']= {'min-version' : '0.1',    'package' : 'cx-oracle-on-ctypes'}       
@@ -159,10 +145,6 @@ def get_dependencies():
             'min-version': '2.7.4',  'package': 'psycopg2cffi',        'optional': True}
         dep_modules['pymssql'] = {
             'min-version': '2.1.2',  'package': 'pymssql',             'optional': True}
-=======
-        dep_modules['psycopg2cffi'] = {'min-version': '2.7.4', 'package': 'psycopg2cffi', 'optional': True}
-        dep_modules['pymssql'] = {'min-version': '2.1.2', 'package': 'pymssql', 'optional': True}
->>>>>>> refs/remotes/origin/develop
         if ('ORACLE_HOME' in environ):
             dep_modules['cx_Oracle'] = {'min-version': '0.1', 'package': 'cx-oracle-on-ctypes', 'optional': True}
 

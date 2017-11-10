@@ -30,6 +30,7 @@ from hydratk.core import event
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.common.utils import is_url_connectable
+from selenium.webdriver.remote.webelement import WebElement
 from importlib import import_module
 from os import path
 
@@ -231,7 +232,7 @@ class SeleniumBridge(object):
         """Method gets element
         
         Args:            
-           ident (str): element identification, method specific
+           ident (mixed): (str) element identification, method specific or (object) WebElement   
            method (str): search method, id|class|css|text|name|tag|xpath
            single (bool): get single element, used for method class|css|text|name|tag|xpath
              
@@ -252,7 +253,10 @@ class SeleniumBridge(object):
                 method = ev.argv(1)
                 single = ev.argv(2)         
         
-            if (ev.will_run_default()): 
+            if (ev.will_run_default()):
+                if isinstance(ident,WebElement):
+                    return ident
+                     
                 if (method == 'id'):
                     elements = self._client.find_element_by_id(ident)
                 elif (method == 'class'):            
@@ -323,7 +327,7 @@ class SeleniumBridge(object):
                 attr = ev.argv(2)
                 attr_val = ev.argv(3)
         
-            if (ev.will_run_default()): 
+            if (ev.will_run_default()):                 
                 element = None
                 if (attr != None):
                     elements = self.get_element(ident, method, False)
