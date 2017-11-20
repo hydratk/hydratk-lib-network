@@ -128,7 +128,7 @@ By default it returns first element which is found, uses single=False to return 
      
 * read_element
 
-Method reads element value. First it fires event selen_before_read_elem where parameters (ident, method, attr, attr_val) can be rewritten.
+Method reads element value. First it fires event selen_before_read_elem where parameters (ident, method, attr, attr_val, el_type) can be rewritten.
 Parameters attr, attr_val are used to precise element search. attr is additional HTML element attribute, attr_val is requested value.
 It gets elements object using method get_element (supports all methods) and searches the valid one.
 
@@ -148,7 +148,7 @@ When you want to read elements which has not attribute text, you can use method 
      
 * set_element
 
-Methods sets element value. First it fires event selen_before_set_elem where parameters (ident, val, method, attr, attr_val) can be rewritten.
+Methods sets element value. First it fires event selen_before_set_elem where parameters (ident, val, method, attr, attr_val, el_type) can be rewritten.
 Parameters attr, attr_val are used to precise element search. attr is additional HTML element attribute, attr_val is requested value.      
 It gets elements object using method get_element (supports all methods) and searches the valid one.
 

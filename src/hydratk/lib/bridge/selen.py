@@ -306,7 +306,7 @@ class SeleniumBridge(object):
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None
 
-    def read_element(self, ident, method='id', attr=None, attr_val=None):
+    def read_element(self, ident, method='id', attr=None, attr_val=None, el_type=None):
         """Method reads element value
 
         Args:            
@@ -314,6 +314,7 @@ class SeleniumBridge(object):
            method (str): search method, id|class|css|text|name|tag|xpath
            attr (str): element attribute or text, used as additional condition in element search
            attr_val (str): attribute or text value
+           el_type (str): expected element type (read from attribute type by default)
 
         Returns:
            str: element value
@@ -325,8 +326,8 @@ class SeleniumBridge(object):
 
         try:
 
-            message = 'ident:{0}, method:{1}, attr:{2}, attr_val:{3}'.format(
-                ident, method, attr, attr_val)
+            message = 'ident:{0}, method:{1}, attr:{2}, attr_val:{3}, el_type:{4}'.format(
+                ident, method, attr, attr_val, el_type)
             self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_selen_read', message), self._mh.fromhere())
 
@@ -337,6 +338,7 @@ class SeleniumBridge(object):
                 method = ev.argv(1)
                 attr = ev.argv(2)
                 attr_val = ev.argv(3)
+                el_type = ev.argv(4)
 
             if (ev.will_run_default()):
                 element = None
@@ -354,12 +356,22 @@ class SeleniumBridge(object):
                 else:
                     element = self.get_element(ident, method)
 
-                result = element.text if (hasattr(element, 'text')) else None
+                elem_type = element.get_attribute('type') if (el_type == None) else el_type
+                if (elem_type in ['checkbox', 'radio']):
+                    result = element.is_selected()
+                elif (elem_type == 'select'):
+                    result = Select(element).first_selected_option.text
+                elif (element.get_attribute('value') != None):
+                    result = element.get_attribute('value')
+                elif (hasattr(element, 'text')):
+                    result = element.text
+                else:
+                    result = None
+
                 return result
 
         except WebDriverException as ex:
-            self._mh.dmsg(
-                'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
+            self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None
 
     def set_element(self, ident, val=None, method='id', attr=None, attr_val=None, el_type=None):
@@ -396,6 +408,7 @@ class SeleniumBridge(object):
                 method = ev.argv(2)
                 attr = ev.argv(3)
                 attr_val = ev.argv(4)
+                el_type = ev.argv(5)
 
             if (ev.will_run_default()):
                 element = None
@@ -416,8 +429,7 @@ class SeleniumBridge(object):
                 if (element == None):
                     return False
 
-                elem_type = element.get_attribute(
-                    'type') if (el_type == None) else el_type
+                elem_type = element.get_attribute('type') if (el_type == None) else el_type
                 if (elem_type in ['checkbox', 'radio']):
                     selected = element.is_selected()
                     if ((selected and not val) or (not selected and val)):
@@ -427,6 +439,7 @@ class SeleniumBridge(object):
                 elif (elem_type == 'select'):
                     Select(element).select_by_visible_text(val)
                 else:
+                    element.clear()
                     element.send_keys(val)
 
             return True
