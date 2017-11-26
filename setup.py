@@ -907,7 +907,7 @@ task.run_pre_install(argv, config)
 
 st_setup(
     name='hydratk-lib-network',
-    version='0.2.2.dev0',
+    version='0.2.2.dev4',
     description='Clients/API for many network protocols and technologies',
     long_description=readme,
     author='Petr Rašek, HydraTK team',

@@ -30,6 +30,7 @@ from hydratk.core import event
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.common.utils import is_url_connectable
+from selenium.webdriver.remote.webelement import WebElement
 from importlib import import_module
 from os import path
 
@@ -55,13 +56,14 @@ class SeleniumBridge(object):
     _url = None
     _confirm_alert = True
 
-    def __init__(self, browser='PhantomJS'):
+    def __init__(self, browser='PhantomJS', **kwargs):
         """Class constructor
 
         Called when the object is initialized   
 
         Args:            
            browser (str): browser name, default PhantomJS
+           kwargs (dict): keyword arguments
 
         Raises:
            error: NotImplementedError
@@ -76,11 +78,15 @@ class SeleniumBridge(object):
 
             mod = import_module('selenium.webdriver')
             if (self._browser == 'PHANTOMJS'):
-                client = mod.__dict__[browsers[self._browser]](service_args=['--ignore-ssl-errors=true', '--ssl-protocol=any'],
-                                                               service_log_path=path.devnull)
+                if 'profile' in kwargs and kwargs['profile'] != None:
+                    client = mod.__dict__[browsers[self._browser]](profile=kwargs['profile'], service_args=['--ignore-ssl-errors=true', '--ssl-protocol=any'],
+                                                                   service_log_path=path.devnull)
+                else:
+                    client = mod.__dict__[browsers[self._browser]](service_args=['--ignore-ssl-errors=true', '--ssl-protocol=any'],
+                                                                   service_log_path=path.devnull)
                 client.set_window_size(1024, 768)
             else:
-                client = mod.__dict__[browsers[self._browser]]()
+                client = mod.__dict__[browsers[self._browser]](**kwargs)
 
             self._client = client
 
@@ -234,7 +240,7 @@ class SeleniumBridge(object):
         """Method gets element
 
         Args:            
-           ident (str): element identification, method specific
+           ident (mixed): (str) element identification, method specific or (object) WebElement
            method (str): search method, id|class|css|text|name|tag|xpath
            single (bool): get single element, used for method class|css|text|name|tag|xpath
 
@@ -257,6 +263,9 @@ class SeleniumBridge(object):
                 single = ev.argv(2)
 
             if (ev.will_run_default()):
+                if isinstance(ident, WebElement):
+                    return ident
+
                 if (method == 'id'):
                     elements = self._client.find_element_by_id(ident)
                 elif (method == 'class'):
@@ -332,7 +341,7 @@ class SeleniumBridge(object):
                 'htk_selen_read', message), self._mh.fromhere())
 
             ev = event.Event(
-                'selen_before_read_elem', ident, method, attr, attr_val)
+                'selen_before_read_elem', ident, method, attr, attr_val, el_type)
             if (self._mh.fire_event(ev) > 0):
                 ident = ev.argv(0)
                 method = ev.argv(1)
@@ -344,8 +353,7 @@ class SeleniumBridge(object):
                 element = None
                 if (attr != None):
                     elements = self.get_element(ident, method, False)
-                    elements = [elements] if (
-                        elements.__class__.__name__ != 'list') else elements
+                    elements = [elements] if (elements.__class__.__name__ != 'list') else elements
                     for item in elements:
                         if (attr == 'text' and item.text == attr_val):
                             element = item
@@ -395,13 +403,10 @@ class SeleniumBridge(object):
 
         try:
 
-            message = 'ident:{0}, val:{1}, method:{2}, attr:{3}, attr_val:{4}, el_type:{5}'.format(
-                ident, val, method, attr, attr_val, el_type)
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
-                'htk_selen_set', message), self._mh.fromhere())
+            message = 'ident:{0}, val:{1}, method:{2}, attr:{3}, attr_val:{4}, el_type:{5}'.format(ident, val, method, attr, attr_val, el_type)
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_selen_set', message), self._mh.fromhere())
 
-            ev = event.Event(
-                'selen_before_set_elem', ident, val, method, attr, attr_val)
+            ev = event.Event('selen_before_set_elem', ident, val, method, attr, attr_val, el_type)
             if (self._mh.fire_event(ev) > 0):
                 ident = ev.argv(0)
                 val = ev.argv(1)
@@ -414,8 +419,7 @@ class SeleniumBridge(object):
                 element = None
                 if (attr != None):
                     elements = self.get_element(ident, method, False)
-                    elements = [elements] if (
-                        elements.__class__.__name__ != 'list') else elements
+                    elements = [elements] if (elements.__class__.__name__ != 'list') else elements
                     for item in elements:
                         if (attr == 'text' and item.text == attr_val):
                             element = item
@@ -445,8 +449,7 @@ class SeleniumBridge(object):
             return True
 
         except WebDriverException as ex:
-            self._mh.dmsg(
-                'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
+            self._mh.dmsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
     def exec_script(self, script, *args):

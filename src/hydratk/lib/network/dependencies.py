@@ -118,7 +118,7 @@ def get_dependencies():
             dep_modules['stompest'] = {'min-version': '2.1.6', 'package': 'stompest', 'optional': True}
         else:
             dep_modules['stompest'] = {'min-version': '2.2.5', 'package': 'stompest', 'optional': True}
-        dep_modules['suds'] = {'min-version': '0.4',    'package': 'suds'}
+        dep_modules['suds'] = {'min-version': '0.4', 'package': 'suds'}
     else:
         dep_modules['jsonrpclib'] = {'min-version': '0.2.8', 'package': 'jsonrpclib-pelix'}
         dep_modules['MySQLdb'] = {'min-version': '1.3.7', 'package': 'mysqlclient', 'optional': True}
