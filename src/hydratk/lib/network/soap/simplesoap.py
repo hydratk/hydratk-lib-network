@@ -409,8 +409,9 @@ class SoapClient():
         """
 
         self._curl.setopt(self._curl.HTTPAUTH, auth_type)
-        self._curl.setopt(self._curl.HTTPAUTH, auth_type)
-        self._curl.setopt(self._curl.USERPWD, "{username}:{password}".format(username=username,password=password))
+        if auth_type == HTTP_AUTH_BASIC:
+            self._curl.setopt(self._curl.USERPWD, "{username}:{password}".format(
+                username=username, password=password))
 
     def set_cert(self, cert, key=None):
         """Method sets certificate 
