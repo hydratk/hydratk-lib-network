@@ -64,7 +64,7 @@ class JMSClient(object):
                 self._client.on_log = self._on_log
 
         except MQTTException as ex:
-            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
 
     @property
     def client(self):
@@ -141,7 +141,7 @@ class JMSClient(object):
 
             msg = 'host:{0}, port:{1}, user:{2}, passw:{3}, timeout:{4}'.format(
                 host, port, user, passw, timeout)
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_jms_connecting', msg), self._mh.fromhere())
 
             ev = event.Event(
@@ -166,7 +166,7 @@ class JMSClient(object):
                 self._client.connect(self._host, self._port)
                 self._is_connected = True
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_jms_connected'), self._mh.fromhere())
             ev = event.Event('jms_after_connect')
             self._mh.fire_event(ev)
@@ -174,7 +174,7 @@ class JMSClient(object):
             return True
 
         except (MQTTException, error, ValueError) as ex:
-            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
             return False
 
     def disconnect(self):
@@ -190,22 +190,22 @@ class JMSClient(object):
 
         try:
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_jms_disconnecting'), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_jms_not_connected'), self._mh.fromhere())
                 return False
             else:
                 self._client.disconnect()
                 self._is_connected = False
-                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+                self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                     'htk_jms_disconnected'), self._mh.fromhere())
                 return True
 
         except (MQTTException, error, ValueError) as ex:
-            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
             return False
 
     def send(self, destination_name, message):
@@ -228,11 +228,11 @@ class JMSClient(object):
 
             msg = 'destination_name:{0}, message:{1}'.format(
                 destination_name, message)
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_jms_sending_msg', msg), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_jms_not_connected'), self._mh.fromhere())
                 return False
 
@@ -245,10 +245,10 @@ class JMSClient(object):
                 res, id = self._client.publish(destination_name, message)
 
                 if (res != 0):
-                    self._mh.dmsg('htk_on_error', self._mh._trn.msg(
+                    self._mh.demsg('htk_on_error', self._mh._trn.msg(
                         'htk_jms_sending_error'), self._mh.fromhere())
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_jms_msg_sent'), self._mh.fromhere())
             ev = event.Event('jms_after_send')
             self._mh.fire_event(ev)
@@ -256,7 +256,7 @@ class JMSClient(object):
             return True
 
         except (MQTTException, error, ValueError) as ex:
-            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
             return False
 
     def receive(self, destination_name, cnt=1, timeout=10):
@@ -280,11 +280,11 @@ class JMSClient(object):
 
             msg = 'destination_name:{0}, count:{1}'.format(
                 destination_name, cnt)
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_jms_receiving_msg', msg), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_jms_not_connected'), self._mh.fromhere())
                 return None
 
@@ -296,7 +296,7 @@ class JMSClient(object):
             if (ev.will_run_default()):
                 res, id = self._client.subscribe(destination_name)
                 if (res != 0):
-                    self._mh.dmsg('htk_on_error', self._mh._trn.msg(
+                    self._mh.demsg('htk_on_error', self._mh._trn.msg(
                         'htk_jms_sending_error'), self._mh.fromhere())
                     return None
 
@@ -315,7 +315,7 @@ class JMSClient(object):
                 self._client.unsubscribe(destination_name)
                 self._messages = []
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_jms_msg_received', len(messages)), self._mh.fromhere())
             ev = event.Event('jms_after_receive')
             self._mh.fire_event(ev)
@@ -323,5 +323,5 @@ class JMSClient(object):
             return messages
 
         except (MQTTException, error, ValueError) as ex:
-            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
             return None

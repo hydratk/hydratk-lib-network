@@ -185,7 +185,7 @@ class RESTClient(object):
                       'verify_cert:{0}, method:{1}, headers:{2}, cookies:{3}, body:{4}, params:{5}, '.format(verify_cert, method, headers, cookies, body, params) + \
                       'file:{0}, content_type:{1}, timeout:{2}'.format(
                           file, content_type, timeout)
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_rest_request', message), self._mh.fromhere())
 
             ev = event.Event('rest_before_request', url, proxies, user, passw, auth, cert, verify_cert,
@@ -236,14 +236,14 @@ class RESTClient(object):
                 if (file != None):
                     if (method in ['post', 'put']):
                         if (not path.exists(file)):
-                            self._mh.dmsg('htk_on_error', self._mh._trn.msg(
+                            self._mh.demsg('htk_on_error', self._mh._trn.msg(
                                 'htk_rest_unknown_file', file), self._mh.fromhere())
                             return None, None
                         file_dict = {'file': open(file, 'rb')}
                     elif (method == 'get'):
                         filepath = '/'.join(file.split('/')[:-1])
                         if (filepath != '' and not path.exists(filepath)):
-                            self._mh.dmsg('htk_on_error', self._mh._trn.msg(
+                            self._mh.demsg('htk_on_error', self._mh._trn.msg(
                                 'htk_rest_unknown_dir', filepath), self._mh.fromhere())
                             return None, None
                 if (content_type != None and content_type in mime_types):
@@ -262,7 +262,7 @@ class RESTClient(object):
                     with open(file, 'wb') as f:
                         f.write(res.content)
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_rest_response', self._res_status, self._res_header, body), self._mh.fromhere())
             ev = event.Event('rest_after_request')
             self._mh.fire_event(ev)
@@ -283,7 +283,7 @@ class RESTClient(object):
         except (RequestException, JSONDecodeError, XMLSyntaxError) as ex:
             if (str(ex) == 'WWW-Authenticate'):
                 return (401, None)
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             status = res.status_code if (res != None) else None
             body = res.text if (res != None) else None

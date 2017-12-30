@@ -107,7 +107,7 @@ class DBClient(object):
 
             message = '{0}:{1}/{2} passw:{3}, timeout:{4}'.format(
                 host, port, db, passw, timeout)
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_dbi_connecting', message), self._mh.fromhere())
 
             ev = event.Event(
@@ -130,7 +130,7 @@ class DBClient(object):
                 self._client.execute_command('PING')
                 self._is_connected = True
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_dbi_connected'), self._mh.fromhere())
             ev = event.Event('dbi_after_connect')
             self._mh.fire_event(ev)
@@ -138,7 +138,7 @@ class DBClient(object):
             return True
 
         except RedisError as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -161,11 +161,11 @@ class DBClient(object):
 
         try:
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_dbi_executing_command', command), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_dbi_not_connected'), self._mh.fromhere())
                 return False, None
 
@@ -178,7 +178,7 @@ class DBClient(object):
                 if (version_info[0] == 3 and output.__class__.__name__ == 'bytes'):
                     output = output.decode()
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_dbi_command_executed'), self._mh.fromhere())
             ev = event.Event('dbi_after_exec_command', True, output)
             self._mh.fire_event(ev)
@@ -186,7 +186,7 @@ class DBClient(object):
             return True, output
 
         except RedisError as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
             return False, None
 

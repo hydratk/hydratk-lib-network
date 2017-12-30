@@ -329,14 +329,9 @@ config = {
         'MySQL-python': {
             'debian': {
                 'apt-get': [
-                    'python-mysqldb',
                     'libmysqlclient-dev'                            
                 ],
                 'check': {
-                    'python-mysqldb': {
-                        'cmd': 'dpkg --get-selections | grep python-mysqldb',
-                        'errmsg': 'Unable to locate package python-mysqldb'
-                    },
                     'libmysqlclient-dev': {
                         'cmd': 'dpkg --get-selections | grep libmysqlclient-dev',
                         'errmsg': 'Unable to locate package libmysqlclient-dev'
@@ -478,14 +473,9 @@ config = {
         'psycopg2': {
             'debian': {
                 'apt-get': [
-                    'python-psycopg2',
                     'libpq-dev'
                 ],
                 'check': {
-                   'python-psycopg2': {
-                        'cmd': 'dpkg --get-selections | grep python-psycopg2',
-                        'errmsg': 'Unable to locate package python-psycopg2'
-                    },
                    'libpq-dev': {
                         'cmd': 'dpkg --get-selections | grep libpq-dev',
                         'errmsg': 'Unable to locate package libpq-dev'
@@ -494,14 +484,9 @@ config = {
             },
             'redhat': {
                 'yum': [
-                    'python-psycopg2',
                     'postgresql-devel'
                 ],
                 'check': {
-                   'python-psycopg2': {
-                        'cmd': 'yum list installed | grep python-psycopg2',
-                        'errmsg': 'Unable to locate package python-psycopg2'
-                    },
                    'postgresql-devel': {
                         'cmd': 'yum list installed | grep postgresql-devel',
                         'errmsg': 'Unable to locate package postgresql-devel'
@@ -510,14 +495,9 @@ config = {
             },
             'fedora': {
                 'dnf': [
-                    'python-psycopg2',
                     'postgresql-devel'
                 ],
                 'check': {
-                   'python-psycopg2': {
-                        'cmd': 'dnf list installed | grep python-psycopg2',
-                        'errmsg': 'Unable to locate package python-psycopg2'
-                    },
                    'postgresql-devel': {
                         'cmd': 'dnf list installed | grep postgresql-devel',
                         'errmsg': 'Unable to locate package postgresql-devel'
@@ -526,14 +506,9 @@ config = {
             },
             'suse': {
                 'zypper': [
-                    'python-psycopg2',
                     'postgresql-devel'
                 ],
                 'check': {
-                   'python-psycopg2': {
-                        'cmd': 'rpm -qa | grep python-psycopg2',
-                        'errmsg': 'Unable to locate package python-psycopg2'
-                    },
                    'postgresql-devel': {
                         'cmd': 'rpm -qa | grep postgresql-devel',
                         'errmsg': 'Unable to locate package postgresql-devel'
@@ -559,14 +534,9 @@ config = {
         'pycurl': {
             'debian': {
                 'apt-get': [
-                    'python-pycurl',
                     'libcurl4-openssl-dev'
                 ],
                 'check': {
-                   'python-pycurl': {
-                        'cmd': 'dpkg --get-selections | grep python-pycurl',
-                        'errmsg': 'Unable to locate package python-pycurl'
-                    },
                    'libcurl4-openssl-dev': {
                         'cmd': 'dpkg --get-selections | grep libcurl4-openssl-dev',
                         'errmsg': 'Unable to locate package libcurl4-openssl-dev'
@@ -575,14 +545,9 @@ config = {
             },
             'redhat': {
                 'yum': [
-                    'python-pycurl',
                     'libcurl-devel'
                 ],
                 'check': {
-                   'python-pycurl': {
-                        'cmd': 'yum list installed | grep python-pycurl',
-                        'errmsg': 'Unable to locate package python-pycurl'
-                    },
                    'libcurl-devel': {
                         'cmd': 'yum list installed | grep libcurl-devel',
                         'errmsg': 'Unable to locate package libcurl-devel'
@@ -591,14 +556,9 @@ config = {
             },
             'fedora': {
                 'dnf': [
-                    'python-pycurl',
                     'libcurl-devel'
                 ],
                 'check': {
-                   'python-pycurl': {
-                        'cmd': 'dnf list installed | grep python-pycurl',
-                        'errmsg': 'Unable to locate package python-pycurl'
-                    },
                    'libcurl-devel': {
                         'cmd': 'dnf list installed | grep libcurl-devel',
                         'errmsg': 'Unable to locate package libcurl-devel'
@@ -607,14 +567,9 @@ config = {
             },
             'suse': {
                 'zypper': [
-                    'python-pycurl',
                     'libcurl-devel'
                 ],
                 'check': {
-                   'python-pycurl': {
-                        'cmd': 'rpm -qa | grep python-pycurl',
-                        'errmsg': 'Unable to locate package python-pycurl'
-                    },
                    'libcurl-devel': {
                         'cmd': 'rpm -qa | grep libcurl-devel',
                         'errmsg': 'Unable to locate package libcurl-devel'
