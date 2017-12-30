@@ -110,15 +110,15 @@ class JavaBridge(object):
         try:
 
             if (self._status):
-                self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                     'htk_java_already_started'), self._mh.fromhere())
                 return True
             elif (isJVMStarted()):
-                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
                     'htk_java_restart_tried'), self._mh.fromhere())
                 return False
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg('htk_java_starting_jvm', self._jvm_path,
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_java_starting_jvm', self._jvm_path,
                                                                  self.classpath, options), self._mh.fromhere())
 
             ev = event.Event('java_before_start', options)
@@ -135,7 +135,7 @@ class JavaBridge(object):
                 self._status = True
                 result = True
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_java_started'), self._mh.fromhere())
             ev = event.Event('java_after_start')
             self._mh.fire_event(ev)
@@ -143,7 +143,7 @@ class JavaBridge(object):
             return result
 
         except (RuntimeError, JavaException) as ex:
-            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None
 
     def stop(self):
@@ -164,11 +164,11 @@ class JavaBridge(object):
         try:
 
             if (not self._status):
-                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
                     'htk_java_not_started'), self._mh.fromhere())
                 return False
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_java_stopping_jvm'), self._mh.fromhere())
             ev = event.Event('java_before_stop')
             self._mh.fire_event(ev)
@@ -177,7 +177,7 @@ class JavaBridge(object):
             self._status = False
             result = True
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_java_stopped'), self._mh.fromhere())
             ev = event.Event('java_after_stop')
             self._mh.fire_event(ev)
@@ -185,7 +185,7 @@ class JavaBridge(object):
             return result
 
         except (RuntimeError, JavaException) as ex:
-            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None
 
     def get_var(self, datatype, value):
@@ -203,14 +203,14 @@ class JavaBridge(object):
         try:
 
             if (datatype not in java_types):
-                self._mh.demsg('htk_on_error', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_error', self._mh._trn.msg(
                     'htk_java_unknown_type', datatype), self._mh.fromhere())
                 return None
             else:
                 return java_types[datatype](value)
 
         except (RuntimeError, JavaException) as ex:
-            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None
 
     def get_class(self, name, *attrs):
@@ -230,7 +230,7 @@ class JavaBridge(object):
             return JClass(name)(*attrs)
 
         except (RuntimeError, JavaException) as ex:
-            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None
 
     def desc_class(self, name):
@@ -258,7 +258,7 @@ class JavaBridge(object):
             return attrs, methods
 
         except (RuntimeError, JavaException) as ex:
-            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None
 
     def get_package(self, name):
@@ -278,7 +278,7 @@ class JavaBridge(object):
             return package
 
         except (RuntimeError, JavaException) as ex:
-            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None
 
     def init_arraylist(self, array):
@@ -301,7 +301,7 @@ class JavaBridge(object):
             return arraylist
 
         except (RuntimeError, JavaException) as ex:
-            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None
 
     def init_hashmap(self, dictionary):
@@ -324,7 +324,7 @@ class JavaBridge(object):
             return hashmap
 
         except (RuntimeError, JavaException) as ex:
-            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None
 
     def _set_classpath(self, classpath=None):

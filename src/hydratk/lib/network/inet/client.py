@@ -77,7 +77,7 @@ class Client(object):
                     self._protocols[self._lay3_prot], self._protocols[self._lay4_prot])
 
         except error as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -139,12 +139,12 @@ class Client(object):
         try:
 
             if (self._lay4_prot != 'TCP'):
-                self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                     'htk_inet_unknown_method', self._lay4_prot), self._mh.fromhere())
                 return False
 
             message = '{0}:{1} timeout:{2}'.format(host, port, timeout)
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_inet_connecting', message), self._mh.fromhere())
 
             ev = event.Event('inet_before_connect', host, port, timeout)
@@ -161,7 +161,7 @@ class Client(object):
                 self._client.connect((host, port))
                 self._is_connected = True
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_inet_connected'), self._mh.fromhere())
             ev = event.Event('inet_after_connect')
             self._mh.fire_event(ev)
@@ -169,7 +169,7 @@ class Client(object):
             return True
 
         except error as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -188,23 +188,23 @@ class Client(object):
         try:
 
             if (not self._is_connected):
-                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
                     'htk_inet_not_connected'), self._mh.fromhere())
                 return False
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_inet_disconnecting'), self._mh.fromhere())
             if (self._lay4_prot == 'TCP'):
                 self._client.shutdown(SHUT_RDWR)
             self._client.close()
             self._is_connected = False
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_inet_disconnected'), self._mh.fromhere())
 
             return True
 
         except error as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -228,11 +228,11 @@ class Client(object):
         try:
 
             if (self._lay4_prot == 'TCP'):
-                self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                     'htk_inet_sending_data', data), self._mh.fromhere())
 
                 if (not self._is_connected):
-                    self._mh.demsg('htk_on_warning', self._mh._trn.msg(
+                    self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
                         'htk_inet_not_connected'), self._mh.fromhere())
                     return False
 
@@ -245,7 +245,7 @@ class Client(object):
 
             elif (self._lay4_prot == 'UDP'):
                 message = '{0}, server: {1}:{2}'.format(data, host, port)
-                self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                     'htk_inet_sending_data', message), self._mh.fromhere())
 
                 ev = event.Event('inet_before_send', data, host, port)
@@ -262,7 +262,7 @@ class Client(object):
                         data.encode('utf-8'), (self._host, self._port))
                     self._is_connected = True
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_inet_data_sent'), self._mh.fromhere())
             ev = event.Event('inet_after_send')
             self._mh.fire_event(ev)
@@ -270,7 +270,7 @@ class Client(object):
             return True
 
         except error as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -292,11 +292,11 @@ class Client(object):
 
         try:
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_inet_receiving_data', size), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
                     'htk_inet_not_connected'), self._mh.fromhere())
                 return None
 
@@ -310,13 +310,13 @@ class Client(object):
 
                 if (self._lay4_prot == 'TCP'):
                     data = self._client.recv(size)
-                    self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+                    self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                         'htk_inet_data_received', data), self._mh.fromhere())
 
                 elif (self._lay4_prot == 'UDP'):
                     data, ip = self._client.recvfrom(size)
                     message = '{0}, IP:{1}'.format(data, ip)
-                    self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+                    self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                         'htk_inet_data_received', message), self._mh.fromhere())
 
                 self._client.settimeout(None)
@@ -327,7 +327,7 @@ class Client(object):
             return data.decode()
 
         except error as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None
 
@@ -348,7 +348,7 @@ class Client(object):
             return (host[0] if (len(host) > 0) else None)
 
         except error as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None
 
@@ -368,6 +368,6 @@ class Client(object):
             return (addr[0][4][0] if (len(addr) > 0) else None)
 
         except error as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None

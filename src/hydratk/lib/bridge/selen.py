@@ -135,7 +135,7 @@ class SeleniumBridge(object):
 
         try:
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_selen_opening', url), self._mh.fromhere())
             ev = event.Event('selen_before_open', url, timeout)
             if (self._mh.fire_event(ev) > 0):
@@ -148,7 +148,7 @@ class SeleniumBridge(object):
                 self._client.set_page_load_timeout(timeout)
                 self._client.get(url)
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_selen_opened'), self._mh.fromhere())
             ev = event.Event('selen_after_open')
             self._mh.fire_event(ev)
@@ -156,7 +156,7 @@ class SeleniumBridge(object):
             return True
 
         except WebDriverException as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -174,12 +174,12 @@ class SeleniumBridge(object):
         try:
 
             self._client.quit()
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_selen_closed'), self._mh.fromhere())
             return True
 
         except WebDriverException as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -202,7 +202,7 @@ class SeleniumBridge(object):
 
         try:
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_selen_waiting', ident, timeout), self._mh.fromhere())
             ev = event.Event('selen_before_wait', ident, method, timeout)
             if (self._mh.fire_event(ev) > 0):
@@ -218,7 +218,7 @@ class SeleniumBridge(object):
                     WebDriverWait(self._client, timeout).until(
                         lambda cond: self._client.find_element_by_xpath(ident))
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_selen_wait_finished'), self._mh.fromhere())
             ev = event.Event('selen_after_wait')
             self._mh.fire_event(ev)
@@ -226,7 +226,7 @@ class SeleniumBridge(object):
             return True
 
         except WebDriverException as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -248,7 +248,7 @@ class SeleniumBridge(object):
 
         try:
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_selen_get', ident, method, single), self._mh.fromhere())
             ev = event.Event('selen_before_get_elem', ident, method, single)
             if (self._mh.fire_event(ev) > 0):
@@ -302,7 +302,7 @@ class SeleniumBridge(object):
             return elements
 
         except WebDriverException as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None
 
@@ -327,7 +327,7 @@ class SeleniumBridge(object):
 
             message = 'ident:{0}, method:{1}, attr:{2}, attr_val:{3}'.format(
                 ident, method, attr, attr_val)
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_selen_read', message), self._mh.fromhere())
 
             ev = event.Event(
@@ -358,7 +358,7 @@ class SeleniumBridge(object):
                 return result
 
         except WebDriverException as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None
 
@@ -385,7 +385,7 @@ class SeleniumBridge(object):
 
             message = 'ident:{0}, val:{1}, method:{2}, attr:{3}, attr_val:{4}, el_type:{5}'.format(
                 ident, val, method, attr, attr_val, el_type)
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_selen_set', message), self._mh.fromhere())
 
             ev = event.Event(
@@ -432,7 +432,7 @@ class SeleniumBridge(object):
             return True
 
         except WebDriverException as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -454,7 +454,7 @@ class SeleniumBridge(object):
 
         try:
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_selen_executing_script', script), self._mh.fromhere())
 
             ev = event.Event('selen_before_script', script)
@@ -464,7 +464,7 @@ class SeleniumBridge(object):
             if (ev.will_run_default()):
                 output = self._client.execute_script(script, *args)
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_selen_script_executed'), self._mh.fromhere())
             ev = event.Event('selen_after_script')
             self._mh.fire_event(ev)
@@ -472,7 +472,7 @@ class SeleniumBridge(object):
             return output
 
         except WebDriverException as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None
 
@@ -493,7 +493,7 @@ class SeleniumBridge(object):
 
         try:
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_selen_saving_screen', outfile), self._mh.fromhere())
 
             ev = event.Event('selen_before_save_screen', outfile)
@@ -504,7 +504,7 @@ class SeleniumBridge(object):
                 res = self._client.save_screenshot(outfile)
 
             if (res):
-                self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                     'htk_selen_screen_saved'), self._mh.fromhere())
                 ev = event.Event('selen_after_save_screen')
                 self._mh.fire_event(ev)
@@ -513,7 +513,7 @@ class SeleniumBridge(object):
                 raise WebDriverException('Invalid path: {0}'.format(outfile))
 
         except WebDriverException as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -542,7 +542,7 @@ class SeleniumBridge(object):
             return True, value
 
         except WebDriverException as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False, None
 
@@ -562,7 +562,7 @@ class SeleniumBridge(object):
             return self._client.current_url
 
         except WebDriverException as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -582,7 +582,7 @@ class SeleniumBridge(object):
             return self._client.title
 
         except WebDriverException as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -603,7 +603,7 @@ class SeleniumBridge(object):
             return True
 
         except WebDriverException as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -624,7 +624,7 @@ class SeleniumBridge(object):
             return True
 
         except WebDriverException as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -650,6 +650,6 @@ class SeleniumBridge(object):
             return screen
 
         except WebDriverException as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False

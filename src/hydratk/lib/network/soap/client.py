@@ -172,7 +172,7 @@ class SOAPClient(object):
 
         try:
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg('htk_soap_loading_wsdl', url,
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_soap_loading_wsdl', url,
                                                                  user, passw, endpoint, headers), self._mh.fromhere())
 
             ev = event.Event('soap_before_load_wsdl', url, proxies, location,
@@ -227,7 +227,7 @@ class SOAPClient(object):
                     self._url, **options) if (use_cache) else client.Client(self._url, cache=NoCache(), **options)
                 self._wsdl = self._client.wsdl
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_soap_wsdl_loaded'), self._mh.fromhere())
             ev = event.Event('soap_after_load_wsdl')
             self._mh.fire_event(ev)
@@ -235,7 +235,7 @@ class SOAPClient(object):
             return True
 
         except (WebFault, TransportError, URLError, ValueError) as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -256,7 +256,7 @@ class SOAPClient(object):
                 operations.append(operation.name)
             return operations
         else:
-            self._mh.demsg('htk_on_warning', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
                 'htk_soap_wsdl_not_loaded'), self._mh.fromhere())
             return None
 
@@ -280,11 +280,11 @@ class SOAPClient(object):
 
         try:
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg('htk_soap_request', operation, body, request, headers),
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg('htk_soap_request', operation, body, request, headers),
                           self._mh.fromhere())
 
             if (self._wsdl == None):
-                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
                     'htk_soap_wsdl_not_loaded'), self._mh.fromhere())
                 return None
 
@@ -320,7 +320,7 @@ class SOAPClient(object):
                 response = getattr(self._client.service, operation)(
                     __inject={'msg': request})
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_soap_response', response), self._mh.fromhere())
             ev = event.Event('soap_after_request')
             self._mh.fire_event(ev)
@@ -328,7 +328,7 @@ class SOAPClient(object):
             return response
 
         except (WebFault, TransportError, URLError, ValueError, XMLSyntaxError, MethodNotFound) as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None
 

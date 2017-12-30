@@ -142,7 +142,7 @@ class LDAPClient(object):
 
             message = 'host:{0}, base_dn:{1}, port:{2}, secured:{3}, user:{4}, passw:{5}, timeout:{6}'.format(
                 host, base_dn, port, secured, user, passw, timeout)
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ldap_connecting', message), self._mh.fromhere())
 
             ev = event.Event(
@@ -183,7 +183,7 @@ class LDAPClient(object):
 
                 self._is_connected = True
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ldap_connected'), self._mh.fromhere())
             ev = event.Event('ldap_after_connect')
             self._mh.fire_event(ev)
@@ -191,7 +191,7 @@ class LDAPClient(object):
             return True
 
         except LDAPError as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -209,18 +209,18 @@ class LDAPClient(object):
         try:
 
             if (not self._is_connected):
-                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
                     'htk_ldap_not_connected'), self._mh.fromhere())
                 return False
             else:
                 self._client.unbind()
                 self._is_connected = False
-                self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                     'htk_ldap_disconnected'), self._mh.fromhere())
                 return True
 
         except LDAPError as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -251,11 +251,11 @@ class LDAPClient(object):
             message = 'rdn:{0}, filter:{1}, attrs:{2}'.format(rdn, filter, attrs) + \
                       ', fetch_one:{0}, cn_only:{1}, attrs:{2}'.format(
                           fetch_one, cn_only, attrs_only)
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ldap_reading', message), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
                     'htk_ldap_not_connected'), self._mh.fromhere())
                 return None
 
@@ -304,7 +304,7 @@ class LDAPClient(object):
 
                         records.append(record)
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ldap_read', len(records)), self._mh.fromhere())
             ev = event.Event('ldap_after_read')
             self._mh.fire_event(ev)
@@ -312,7 +312,7 @@ class LDAPClient(object):
             return records
 
         except LDAPError as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None
 
@@ -334,11 +334,11 @@ class LDAPClient(object):
 
         try:
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ldap_creating', rdn, attrs), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
                     'htk_ldap_not_connected'), self._mh.fromhere())
                 return False
 
@@ -358,7 +358,7 @@ class LDAPClient(object):
                 ldif = addModlist(attrs)
                 self._client.add_s(dn, ldif)
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ldap_created'), self._mh.fromhere())
             ev = event.Event('ldap_after_create')
             self._mh.fire_event(ev)
@@ -366,7 +366,7 @@ class LDAPClient(object):
             return True
 
         except LDAPError as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -389,11 +389,11 @@ class LDAPClient(object):
 
         try:
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ldap_updating', rdn, attrs), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
                     'htk_ldap_not_connected'), self._mh.fromhere())
                 return False
 
@@ -438,7 +438,7 @@ class LDAPClient(object):
                     rdn_new = rdn.replace(rdn.split('=')[1], rdn_new)
                     self._client.modrdn_s(dn, rdn_new)
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ldap_updated'), self._mh.fromhere())
             ev = event.Event('ldap_after_update')
             self._mh.fire_event(ev)
@@ -446,7 +446,7 @@ class LDAPClient(object):
             return True
 
         except LDAPError as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -467,11 +467,11 @@ class LDAPClient(object):
 
         try:
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ldap_deleting', rdn), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
                     'htk_ldap_not_connected'), self._mh.fromhere())
                 return False
 
@@ -483,7 +483,7 @@ class LDAPClient(object):
                 dn = '{0},{1}'.format(rdn, self._base_dn)
                 self._client.delete_s(dn)
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ldap_deleted'), self._mh.fromhere())
             ev = event.Event('ldap_after_delete')
             self._mh.fire_event(ev)
@@ -491,6 +491,6 @@ class LDAPClient(object):
             return True
 
         except LDAPError as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False

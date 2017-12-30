@@ -233,10 +233,15 @@ config = {
         },
         'MySQL-python': {
             'debian': {
-                'apt-get': [                    
+                'apt-get': [
+                    'python-mysqldb',
                     'libmysqlclient-dev'                            
                 ],
-                'check': {                    
+                'check': {
+                    'python-mysqldb': {
+                        'cmd': 'dpkg --get-selections | grep python-mysqldb',
+                        'errmsg': 'Unable to locate package python-mysqldb'
+                    },
                     'libmysqlclient-dev': {
                         'cmd': 'dpkg --get-selections | grep libmysqlclient-dev',
                         'errmsg': 'Unable to locate package libmysqlclient-dev'
@@ -320,10 +325,15 @@ config = {
         },
         'psycopg2': {
             'debian': {
-                'apt-get': [                    
+                'apt-get': [
+                    'python-psycopg2',
                     'libpq-dev'
                 ],
-                'check': {                   
+                'check': {
+                   'python-psycopg2': {
+                        'cmd': 'dpkg --get-selections | grep python-psycopg2',
+                        'errmsg': 'Unable to locate package python-psycopg2'
+                    },
                    'libpq-dev': {
                         'cmd': 'dpkg --get-selections | grep libpq-dev',
                         'errmsg': 'Unable to locate package libpq-dev'
@@ -331,10 +341,15 @@ config = {
                 }
             },
             'redhat': {
-                'yum': [                    
+                'yum': [
+                    'python-psycopg2',
                     'postgresql-devel'
                 ],
-                'check': {                   
+                'check': {
+                   'python-psycopg2': {
+                        'cmd': 'yum -q list installed python-psycopg2',
+                        'errmsg': 'Unable to locate package python-psycopg2'
+                    },
                    'postgresql-devel': {
                         'cmd': 'yum -q list installed postgresql-devel',
                         'errmsg': 'Unable to locate package postgresql-devel'
@@ -344,10 +359,15 @@ config = {
         },
         'pycurl': {
             'debian': {
-                'apt-get': [                    
+                'apt-get': [
+                    'python-pycurl',
                     'libcurl4-openssl-dev'
                 ],
-                'check': {                   
+                'check': {
+                   'python-pycurl': {
+                        'cmd': 'dpkg --get-selections | grep python-pycurl',
+                        'errmsg': 'Unable to locate package python-pycurl'
+                    },
                    'libcurl4-openssl-dev': {
                         'cmd': 'dpkg --get-selections | grep libcurl4-openssl-dev',
                         'errmsg': 'Unable to locate package libcurl4-openssl-dev'
@@ -355,10 +375,15 @@ config = {
                 }
             },
             'redhat': {
-                'yum': [                  
+                'yum': [
+                    'python-pycurl',
                     'libcurl-devel'
                 ],
-                'check': {                   
+                'check': {
+                   'python-pycurl': {
+                        'cmd': 'yum -q list installed python-pycurl',
+                        'errmsg': 'Unable to locate package python-pycurl'
+                    },
                    'libcurl-devel': {
                         'cmd': 'yum -q list installed libcurl-devel',
                         'errmsg': 'Unable to locate package libcurl-devel'

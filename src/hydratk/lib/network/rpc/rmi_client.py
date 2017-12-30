@@ -52,7 +52,7 @@ class RPCClient(object):
             self._bridge.start(options)
 
         except RuntimeError as ex:
-            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
 
     def close(self):
         """Method stops JVM  
@@ -96,7 +96,7 @@ class RPCClient(object):
 
         try:
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_rpc_init_proxy', url), self._mh.fromhere())
 
             ev = event.Event('rpc_before_init_proxy', url)
@@ -107,7 +107,7 @@ class RPCClient(object):
                 self._proxy = self._bridge.get_package(
                     'java').rmi.Naming.lookup(url)
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_rpc_proxy_initialized'), self._mh.fromhere())
             ev = event.Event('rpc_after_init_proxy')
             self._mh.fire_event(ev)
@@ -115,7 +115,7 @@ class RPCClient(object):
             return True
 
         except (RuntimeError, Exception) as ex:
-            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return False
 
     def call_method(self, name, *args):
@@ -137,11 +137,11 @@ class RPCClient(object):
         try:
 
             args = list(args)
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_rpc_call_method', name, args), self._mh.fromhere())
 
             if (self._proxy == None):
-                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
                     'htk_rpc_proxy_not_init'), self._mh.fromhere())
                 return None
 
@@ -153,7 +153,7 @@ class RPCClient(object):
             if (ev.will_run_default()):
                 output = getattr(self._proxy, name)(*args)
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_rpc_method_called', output), self._mh.fromhere())
             ev = event.Event('rpc_after_call_method')
             self._mh.fire_event(ev)
@@ -161,5 +161,5 @@ class RPCClient(object):
             return output
 
         except (RuntimeError, AttributeError) as ex:
-            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return None

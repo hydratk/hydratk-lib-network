@@ -61,7 +61,7 @@ class DBClient(object):
             self._client = self._bridge.get_class('DBClient', self._verbose)
 
         except RuntimeError as ex:
-            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
 
     def close(self):
         """Method stops JVM 
@@ -147,7 +147,7 @@ class DBClient(object):
 
             message = '{0}/{1}@{2}, driver:{3}, timeout:{4}'.format(
                 user, passw, conn_str, driver, timeout)
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_dbi_connecting', message), self._mh.fromhere())
 
             ev = event.Event(
@@ -170,18 +170,18 @@ class DBClient(object):
 
             if (result):
                 self._is_connected = True
-                self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                     'htk_dbi_connected'), self._mh.fromhere())
                 ev = event.Event('dbi_after_connect')
                 self._mh.fire_event(ev)
             else:
-                self._mh.demsg('htk_on_error', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_error', self._mh._trn.msg(
                     'htk_dbi_connecting_error'), self._mh.fromhere())
 
             return result
 
         except RuntimeError as ex:
-            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return False
 
     def disconnect(self):
@@ -197,27 +197,27 @@ class DBClient(object):
 
         try:
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_dbi_disconnecting'), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
                     'htk_dbi_not_connected'), self._mh.fromhere())
                 return False
 
             result = bool(self._client.disconnect())
             if (result):
                 self._is_connected = False
-                self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                     'htk_dbi_disconnected'), self._mh.fromhere())
             else:
-                self._mh.demsg('htk_on_error', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_error', self._mh._trn.msg(
                     'htk_dbi_disconnecting_error'), self._mh.fromhere())
 
             return result
 
         except RuntimeError as ex:
-            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return False
 
     def exec_query(self, query, bindings=[], fetch_one=False, autocommit=True):
@@ -243,11 +243,11 @@ class DBClient(object):
             message = query + \
                 ' binding: {0}'.format(bindings) if (
                     bindings != None) else query
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_dbi_executing_query', message), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
                     'htk_dbi_not_connected'), self._mh.fromhere())
                 return False, None
 
@@ -286,14 +286,14 @@ class DBClient(object):
                         self._client.commit()
 
                     result = True
-                    self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+                    self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                         'htk_dbi_query_executed'), self._mh.fromhere())
                     ev = event.Event('dbi_after_exec_query', True, rows)
                     self._mh.fire_event(ev)
 
                 else:
                     result = False
-                    self._mh.demsg('htk_on_error', self._mh._trn.msg(
+                    self._mh.dmsg('htk_on_error', self._mh._trn.msg(
                         'htk_dbi_query_error'), self._mh.fromhere())
 
             return result, rows
@@ -302,7 +302,7 @@ class DBClient(object):
             if ('SELECT ' not in query.upper()):
                 self._client.rollback()
 
-            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
             return False, None
 
     def commit(self):
@@ -319,14 +319,14 @@ class DBClient(object):
         try:
 
             if (not self._is_connected):
-                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
                     'htk_dbi_not_connected'), self._mh.fromhere())
                 return False
             else:
                 return self._client.commit()
 
         except RuntimeError as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -344,13 +344,13 @@ class DBClient(object):
         try:
 
             if (not self._is_connected):
-                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
                     'htk_dbi_not_connected'), self._mh.fromhere())
                 return False
             else:
                 return self._client.rollback()
 
         except RuntimeError as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
             return False

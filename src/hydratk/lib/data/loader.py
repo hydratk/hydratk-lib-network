@@ -80,7 +80,7 @@ def load_from_file(filename, header=0, delimiter=None, sheet=None):
         return records
 
     except (IndexError, BadZipfile, KeyError) as ex:
-        mh.demsg('htk_on_error', 'load error: {0}'.format(ex), mh.fromhere())
+        mh.dmsg('htk_on_error', 'load error: {0}'.format(ex), mh.fromhere())
         return None
 
 

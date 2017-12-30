@@ -106,7 +106,7 @@ class TermClient(object):
         try:
 
             message = '{0}:{1} timeout:{2}'.format(host, port, timeout)
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_term_connecting', message), self._mh.fromhere())
 
             ev = event.Event('term_before_connect', host, port, timeout)
@@ -123,7 +123,7 @@ class TermClient(object):
                 self._is_connected = True
                 out = self._read()
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_term_connected'), self._mh.fromhere())
             ev = event.Event('term_after_connect')
             self._mh.fire_event(ev)
@@ -131,7 +131,7 @@ class TermClient(object):
             return True, out
 
         except error as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             self._client.close()
             return False, [str(ex)]
@@ -150,18 +150,18 @@ class TermClient(object):
         try:
 
             if (not self._is_connected):
-                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
                     'htk_term_not_connected'), self._mh.fromhere())
                 return False
             else:
                 self._client.close()
                 self._is_connected = False
-                self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                     'htk_term_disconnected'), self._mh.fromhere())
                 return True
 
         except error as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -182,11 +182,11 @@ class TermClient(object):
 
         try:
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_term_executing_command', command), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
                     'htk_term_not_connected'), self._mh.fromhere())
                 return False, None
 
@@ -200,7 +200,7 @@ class TermClient(object):
                     command if (version_info[0] == 2) else command.encode('utf-8'))
                 out = self._read()
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_term_command_executed'), self._mh.fromhere())
             ev = event.Event('term_after_exec_command')
             self._mh.fire_event(ev)
@@ -208,7 +208,7 @@ class TermClient(object):
             return True, out
 
         except error as ex:
-            self._mh.demsg(
+            self._mh.dmsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False, [str(ex)]
 
