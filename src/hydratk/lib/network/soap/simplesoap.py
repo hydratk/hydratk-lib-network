@@ -20,46 +20,46 @@ except ImportError:
     from StringIO import StringIO as BytesIO
 
 curl_info_map = {
-    'effective_url': 'EFFECTIVE_URL',
-    'response_code': 'RESPONSE_CODE',
-    'http_connectcode': 'HTTP_CONNECTCODE',
-    'filetime': 'INFO_FILETIME',
-    'total_time': 'TOTAL_TIME',
-    'namelookup_time': 'NAMELOOKUP_TIME',
-    'connect_time': 'CONNECT_TIME',
-    'appconnect_time': 'APPCONNECT_TIME',
-    'pretransfer_time': 'PRETRANSFER_TIME',
-    'starttransfer_time': 'STARTTRANSFER_TIME',
-    'redirect_time': 'REDIRECT_TIME',
-    'redirect_count': 'REDIRECT_COUNT',
-    'redirect_url': 'REDIRECT_URL',
-    'size_upload': 'SIZE_UPLOAD',
-    'size_download': 'SIZE_DOWNLOAD',
-    'speed_download': 'SPEED_DOWNLOAD',
-    'speed_upload': 'SPEED_UPLOAD',
-    'header_size': 'HEADER_SIZE',
-    'request_size': 'REQUEST_SIZE',
-    'ssl_verify_result': 'SSL_VERIFY_RESULT',
-    'ssl_engines': 'SSL_ENGINES',
-    'content_length_download': 'CONTENT_LENGTH_DOWNLOAD',
-    'content_length_upload': 'CONTENT_LENGTH_UPLOAD',
-    'content_type': 'CONTENT_TYPE',
-    'private': 'PRIVATE',
-    'httpauth_avail': 'HTTPAUTH_AVAIL',
-    'proxyauth_avail': 'PROXYAUTH_AVAIL',
-    'os_errno': 'OS_ERRNO',
-    'num_connects': 'NUM_CONNECTS',
-    'primary_ip': 'PRIMARY_IP',
-    'primary_port': 'PRIMARY_PORT',
-    'local_ip': 'LOCAL_IP',
-    'local_port': 'LOCAL_PORT',
-    'lastsocket': 'LASTSOCKET',
-    'activesocket': 'ACTIVESOCKET',
-    'tls_session': 'TLS_SESSION',
+                       'effective_url'           : 'EFFECTIVE_URL',
+                       'response_code'           : 'RESPONSE_CODE',
+                       'http_connectcode'        : 'HTTP_CONNECTCODE',
+                       'filetime'                : 'INFO_FILETIME',
+                       'total_time'              : 'TOTAL_TIME',
+                       'namelookup_time'         : 'NAMELOOKUP_TIME',
+                       'connect_time'            : 'CONNECT_TIME',
+                       'appconnect_time'         : 'APPCONNECT_TIME',
+                       'pretransfer_time'        : 'PRETRANSFER_TIME',
+                       'starttransfer_time'      : 'STARTTRANSFER_TIME',
+                       'redirect_time'           : 'REDIRECT_TIME',
+                       'redirect_count'          : 'REDIRECT_COUNT',
+                       'redirect_url'            : 'REDIRECT_URL',
+                       'size_upload'             : 'SIZE_UPLOAD',
+                       'size_download'           : 'SIZE_DOWNLOAD',
+                       'speed_download'          : 'SPEED_DOWNLOAD',
+                       'speed_upload'            : 'SPEED_UPLOAD',
+                       'header_size'             : 'HEADER_SIZE',
+                       'request_size'            : 'REQUEST_SIZE',
+                       'ssl_verify_result'       : 'SSL_VERIFY_RESULT',
+                       'ssl_engines'             : 'SSL_ENGINES',
+                       'content_length_download' : 'CONTENT_LENGTH_DOWNLOAD',
+                       'content_length_upload'   : 'CONTENT_LENGTH_UPLOAD',
+                       'content_type'            : 'CONTENT_TYPE',
+                       'private'                 : 'PRIVATE',
+                       'httpauth_avail'          : 'HTTPAUTH_AVAIL',
+                       'proxyauth_avail'         : 'PROXYAUTH_AVAIL',
+                       'os_errno'                : 'OS_ERRNO',
+                       'num_connects'            : 'NUM_CONNECTS',
+                       'primary_ip'              : 'PRIMARY_IP',
+                       'primary_port'            : 'PRIMARY_PORT',
+                       'local_ip'                : 'LOCAL_IP',
+                       'local_port'              : 'LOCAL_PORT',
+                       'lastsocket'              : 'LASTSOCKET',
+                       'activesocket'            : 'ACTIVESOCKET',
+                       'tls_session'             : 'TLS_SESSION',
 }
 
 HTTP_AUTH_BASIC = pycurl.HTTPAUTH
-
+HTTP_AUTH_NTLM = pycurl.HTTPAUTH_NTLM
 
 class SoapResponse(object):
     """Class SoapResponse
@@ -129,8 +129,8 @@ class SoapResponse(object):
     def _apply_info(self):
         """Method stores response code
 
-        Args:        
-           none   
+        Args:
+           none
 
         Returns:
            void
@@ -140,7 +140,7 @@ class SoapResponse(object):
         self._resp_code = self._info['response_code']
 
     def __init__(self, curl_obj):
-        """Class constructor 
+        """Class constructor
 
         Called when object is initialized
 
@@ -161,8 +161,8 @@ class SoapRequest(object):
     _req_url = None
     _req_method = pycurl.POST
     _req_headers = [
-        "Content-type: text/xml; charset=utf-8"
-    ]
+                     "Content-type: text/xml; charset=utf-8"
+                   ]
 
     def __init__(self, request_url=None):
         """Class constructor
@@ -199,6 +199,10 @@ class SoapRequest(object):
         """ headers property setter """
 
         self._req_headers = header
+
+    def add_header(self, header):
+        if header not in (None, ''):
+            self._req_headers.append(header)
 
     @property
     def msg(self):
@@ -324,14 +328,13 @@ class SoapRequestMessage(XMLValidate):
             content = str(self._content)
             for bdata in args:
                 for var, value in bdata.items():
-                    bind_var = '{bind_lchr}{var}{bind_rchr}'.format(
-                        bind_lchr=self._bind_lchr, var=var, bind_rchr=self._bind_rchr)
+                    bind_var = '{bind_lchr}{var}{bind_rchr}'.format(bind_lchr=self._bind_lchr, var=var, bind_rchr=self._bind_rchr)
                     content = content.replace(str(bind_var), str(value))
             for var, value in kwargs.items():
-                bind_var = '{bind_lchr}{var}{bind_rchr}'.format(
-                    bind_lchr=self._bind_lchr, var=var, bind_rchr=self._bind_rchr)
+                bind_var = '{bind_lchr}{var}{bind_rchr}'.format(bind_lchr=self._bind_lchr, var=var, bind_rchr=self._bind_rchr)
                 content = content.replace(str(bind_var), str(value))
             self._content = content
+
 
     def xsd_validate(self):
         """Method validates request xml according to xsd
@@ -355,7 +358,6 @@ class SoapRequestMessage(XMLValidate):
 
         return (result, msg)
 
-
 class SoapClient():
     """Class SoapClient
     """
@@ -364,6 +366,11 @@ class SoapClient():
     _request = None
     _response = None
     _curl = None
+
+    @property
+    def curl(self):
+        """ Pycurl object getter """
+        return self._curl
 
     @property
     def request(self):
@@ -409,12 +416,10 @@ class SoapClient():
         """
 
         self._curl.setopt(self._curl.HTTPAUTH, auth_type)
-        if auth_type == HTTP_AUTH_BASIC:
-            self._curl.setopt(self._curl.USERPWD, "{username}:{password}".format(
-                username=username, password=password))
+        self._curl.setopt(self._curl.USERPWD, "{username}:{password}".format(username=username, password=password))
 
     def set_cert(self, cert, key=None):
-        """Method sets certificate 
+        """Method sets certificate
 
         Args:
            cert (str): path to cert file

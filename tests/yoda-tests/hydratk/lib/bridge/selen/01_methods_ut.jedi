@@ -1045,6 +1045,7 @@ Test-Scenario-10:
     from yodahelpers.hydratk.core.events import events, reg_ev_hook
     from time import sleep
     from os import path, remove
+    from sys import prefix
   
   Test-Case-1:
     Id: tc_01
@@ -1065,7 +1066,7 @@ Test-Scenario-10:
         url = 'http://127.0.0.1:8080/Autobot/'  
         c.open(url)
         sleep(3)
-        file = '/var/local/hydratk/test.png'
+        file = prefix+'/var/local/hydratk/test.png'
         res = c.save_screen(file)
       
       Validate: |         

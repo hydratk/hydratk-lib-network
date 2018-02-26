@@ -154,7 +154,7 @@ class FTPClient(object):
 
             message = '{0}/{1}@{2}:{3}{4} timeout:{5}'.format(
                 user, passw, host, port, path, timeout)
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ftp_connecting', message), self._mh.fromhere())
 
             ev = event.Event(
@@ -183,7 +183,7 @@ class FTPClient(object):
 
                 self._is_connected = True
 
-                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+                self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                     'htk_ftp_connected'), self._mh.fromhere())
                 if (path != None):
                     self.change_dir(path)
@@ -194,7 +194,7 @@ class FTPClient(object):
             return True
 
         except all_errors as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -212,18 +212,18 @@ class FTPClient(object):
         try:
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_ftp_not_connected'), self._mh.fromhere())
                 return False
             else:
                 self._client.quit()
                 self._is_connected = False
-                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+                self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                     'htk_ftp_disconnected'), self._mh.fromhere())
                 return True
 
         except all_errors as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -240,11 +240,11 @@ class FTPClient(object):
 
         try:
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ftp_list_dir', self._path), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_ftp_not_connected'), self._mh.fromhere())
                 return False
 
@@ -257,7 +257,7 @@ class FTPClient(object):
             return names
 
         except all_errors as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None
 
@@ -277,11 +277,11 @@ class FTPClient(object):
 
         try:
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ftp_change_dir', path), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_ftp_not_connected'), self._mh.fromhere())
                 return False
 
@@ -293,12 +293,12 @@ class FTPClient(object):
                 self._client.cwd(path)
                 self._path = self._client.pwd()
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ftp_cur_dir', self._path), self._mh.fromhere())
             return True
 
         except all_errors as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -320,11 +320,11 @@ class FTPClient(object):
 
         try:
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ftp_downloading_file', remote_path), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_ftp_not_connected'), self._mh.fromhere())
                 return False
 
@@ -335,7 +335,7 @@ class FTPClient(object):
                 local_path = ev.argv(1)
 
             if (local_path != None and not path.exists(local_path)):
-                self._mh.dmsg('htk_on_error', self._mh._trn.msg(
+                self._mh.demsg('htk_on_error', self._mh._trn.msg(
                     'htk_ftp_unknown_dir', local_path), self._mh.fromhere())
                 return False
 
@@ -347,7 +347,7 @@ class FTPClient(object):
                 with open(lpath, 'wb') as f:
                     self._client.retrbinary('RETR ' + remote_path, f.write)
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ftp_file_downloaded'), self._mh.fromhere())
             ev = event.Event('ftp_after_download_file')
             self._mh.fire_event(ev)
@@ -355,7 +355,7 @@ class FTPClient(object):
             return True
 
         except all_errors as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             if (path.exists(lpath)):
                 remove(lpath)
@@ -379,11 +379,11 @@ class FTPClient(object):
 
         try:
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ftp_uploading_file', local_path), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_ftp_not_connected'), self._mh.fromhere())
                 return False
 
@@ -393,7 +393,7 @@ class FTPClient(object):
                 remote_path = ev.argv(1)
 
             if (not(path.exists(local_path) or path.exists(path.relpath(local_path)))):
-                self._mh.dmsg('htk_on_error', self._mh._trn.msg(
+                self._mh.demsg('htk_on_error', self._mh._trn.msg(
                     'htk_ftp_unknown_file', local_path), self._mh.fromhere())
                 return False
 
@@ -405,7 +405,7 @@ class FTPClient(object):
                 with open(local_path, 'rb') as f:
                     self._client.storbinary('STOR ' + rpath, f)
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ftp_file_uploaded'), self._mh.fromhere())
             ev = event.Event('ftp_after_upload_file')
             self._mh.fire_event(ev)
@@ -413,7 +413,7 @@ class FTPClient(object):
             return True
 
         except all_errors as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -433,11 +433,11 @@ class FTPClient(object):
 
         try:
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ftp_deleting_file', path), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_ftp_not_connected'), self._mh.fromhere())
                 return False
 
@@ -448,12 +448,12 @@ class FTPClient(object):
             if (ev.will_run_default()):
                 self._client.delete(path)
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ftp_file_deleted'), self._mh.fromhere())
             return True
 
         except all_errors as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -473,11 +473,11 @@ class FTPClient(object):
 
         try:
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ftp_making_dir', path), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_ftp_not_connected'), self._mh.fromhere())
                 return False
 
@@ -488,12 +488,12 @@ class FTPClient(object):
             if (ev.will_run_default()):
                 self._client.mkd(path)
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ftp_dir_made'), self._mh.fromhere())
             return True
 
         except all_errors as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -513,11 +513,11 @@ class FTPClient(object):
 
         try:
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ftp_removing_dir', path), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_ftp_not_connected'), self._mh.fromhere())
                 return False
 
@@ -528,11 +528,11 @@ class FTPClient(object):
             if (ev.will_run_default()):
                 self._client.rmd(path)
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_ftp_dir_removed'), self._mh.fromhere())
             return True
 
         except all_errors as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False

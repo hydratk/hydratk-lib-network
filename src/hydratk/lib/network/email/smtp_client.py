@@ -136,7 +136,7 @@ class EmailClient(object):
 
             message = '{0}/{1}@{2}:{3} timeout:{4}'.format(
                 user, passw, host, port, timeout)
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_email_connecting', message), self._mh.fromhere())
 
             ev = event.Event(
@@ -165,7 +165,7 @@ class EmailClient(object):
 
                 self._is_connected = True
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_email_connected'), self._mh.fromhere())
             ev = event.Event('email_after_connect')
             self._mh.fire_event(ev)
@@ -173,7 +173,7 @@ class EmailClient(object):
             return True
 
         except (SMTPException, error) as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -191,18 +191,18 @@ class EmailClient(object):
         try:
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_email_not_connected'), self._mh.fromhere())
                 return False
             else:
                 self._client.quit()
                 self._is_connected = False
-                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+                self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                     'htk_email_disconnected'), self._mh.fromhere())
                 return True
 
         except (SMTPException, error) as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -231,11 +231,11 @@ class EmailClient(object):
 
             msg = 'From:{0}, To:{1}, CC:{2}, BCC:{3}, Subject:{4}'.format(
                 sender, recipients, cc, bcc, subject)
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_email_sending', msg), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_email_not_connected'), self._mh.fromhere())
                 return False
 
@@ -259,12 +259,12 @@ class EmailClient(object):
 
             ev = event.Event('email_after_send_email')
             self._mh.fire_event(ev)
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_email_sent'), self._mh.fromhere())
 
             return True
 
         except (SMTPException, error) as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False

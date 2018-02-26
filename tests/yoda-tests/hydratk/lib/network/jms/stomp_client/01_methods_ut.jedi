@@ -534,6 +534,7 @@ Test-Scenario-7:
     from hydratk.core.masterhead import MasterHead
     from hydratk.lib.network.jms.client import JMSClient
     from yodahelpers.hydratk.core.events import events, reg_ev_hook
+    from time import sleep
   
   Test-Case-1:
     Id: tc_01
@@ -582,7 +583,7 @@ Test-Scenario-7:
         headers = {'JMSCorrelationID': '1234', 'JMSType': 'test_msg'}
         for i in range(0, cnt):
             c.send(queue, msg, 'queue', headers)
-            
+           
         res = c.receive(queue, 10)       
                 
       Validate: |

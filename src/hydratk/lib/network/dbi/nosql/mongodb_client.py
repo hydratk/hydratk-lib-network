@@ -116,7 +116,7 @@ class DBClient(object):
 
             message = '{0}/{1}@{2}:{3}/{4} timeout:{5}'.format(
                 user, passw, host, port, db, timeout)
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_dbi_connecting', message), self._mh.fromhere())
 
             ev = event.Event(
@@ -144,7 +144,7 @@ class DBClient(object):
                     self._db_obj.authenticate(self._user, self._passw)
                 self._is_connected = True
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_dbi_connected'), self._mh.fromhere())
             ev = event.Event('dbi_after_connect')
             self._mh.fire_event(ev)
@@ -152,7 +152,7 @@ class DBClient(object):
             return True
 
         except PyMongoError as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -170,18 +170,18 @@ class DBClient(object):
         try:
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_dbi_not_connected'), self._mh.fromhere())
                 return False
             else:
                 self._client.close()
                 self._is_connected = False
-                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+                self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                     'htk_dbi_disconnected'), self._mh.fromhere())
                 return True
 
         except PyMongoError as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -214,16 +214,16 @@ class DBClient(object):
 
             message = 'command:{0}, collection:{1}, document:{2}, filter:{3}, single:{4}'.format(
                 command, collection, document, filter, single)
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_dbi_executing_command', message), self._mh.fromhere())
 
             if (command not in ['insert', 'find', 'aggregate', 'update', 'replace', 'delete', 'drop']):
-                self._mh.dmsg('htk_on_error', 'database error: unknown command {0}'.format(
+                self._mh.demsg('htk_on_error', 'database error: unknown command {0}'.format(
                     command), self._mh.fromhere())
                 return False, None
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_dbi_not_connected'), self._mh.fromhere())
                 return False, None
 
@@ -271,7 +271,7 @@ class DBClient(object):
                 elif (command == 'drop'):
                     col.drop()
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_dbi_command_executed'), self._mh.fromhere())
             ev = event.Event('dbi_after_exec_command', True, output)
             self._mh.fire_event(ev)
@@ -279,6 +279,6 @@ class DBClient(object):
             return True, output
 
         except PyMongoError as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'database error: {0}'.format(ex), self._mh.fromhere())
             return False, None

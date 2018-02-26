@@ -75,7 +75,7 @@ class JMSClient(object):
                 getLogger().setLevel(DEBUG)
 
         except ProtonException as ex:
-            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
 
     @property
     def client(self):
@@ -142,7 +142,7 @@ class JMSClient(object):
 
             msg = 'host:{0}, port:{1}, user:{2}, passw:{3}, timeout:{4}'.format(
                 host, port, user, passw, timeout)
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_jms_connecting', msg), self._mh.fromhere())
 
             ev = event.Event(
@@ -168,7 +168,7 @@ class JMSClient(object):
                                                                                       self._host, self._port), timeout=timeout)
                 self._is_connected = True
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_jms_connected'), self._mh.fromhere())
             ev = event.Event('jms_after_connect')
             self._mh.fire_event(ev)
@@ -176,7 +176,7 @@ class JMSClient(object):
             return True
 
         except ProtonException as ex:
-            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
             return False
 
     def disconnect(self):
@@ -192,22 +192,22 @@ class JMSClient(object):
 
         try:
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_jms_disconnecting'), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_jms_not_connected'), self._mh.fromhere())
                 return False
             else:
                 self._client.close()
                 self._is_connected = False
-                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+                self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                     'htk_jms_disconnected'), self._mh.fromhere())
                 return True
 
         except ProtonException as ex:
-            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
             return False
 
     def send(self, destination_name, message, destination_type='queue', headers={}):
@@ -235,11 +235,11 @@ class JMSClient(object):
 
             msg = 'destination_name:{0}, message:{1}, destination_type:{2}, headers:{3}'.format(
                 destination_name, message, destination_type, headers)
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_jms_sending_msg', msg), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_jms_not_connected'), self._mh.fromhere())
                 return False
 
@@ -263,7 +263,7 @@ class JMSClient(object):
                 sender.send(Message(body=message, properties=headers_new))
                 sender.close()
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_jms_msg_sent'), self._mh.fromhere())
             ev = event.Event('jms_after_send')
             self._mh.fire_event(ev)
@@ -271,7 +271,7 @@ class JMSClient(object):
             return True
 
         except ProtonException as ex:
-            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
             return False
 
     def receive(self, destination_name, cnt=1):
@@ -294,11 +294,11 @@ class JMSClient(object):
 
             msg = 'destination_name:{0}, count:{1}'.format(
                 destination_name, cnt)
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_jms_receiving_msg', msg), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_jms_not_connected'), self._mh.fromhere())
                 return None
 
@@ -336,7 +336,7 @@ class JMSClient(object):
 
                 receiver.close()
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_jms_msg_received', len(messages)), self._mh.fromhere())
             ev = event.Event('jms_after_receive')
             self._mh.fire_event(ev)
@@ -344,7 +344,7 @@ class JMSClient(object):
             return messages
 
         except ProtonException as ex:
-            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
             return None
 
     def browse(self, destination_name, cnt=100, jms_correlation_id=None, jms_type=None):
@@ -369,11 +369,11 @@ class JMSClient(object):
 
             msg = 'destination_name:{0}, count:{1}, jms_correlation_id:{2}, jms_type:{3}'.format(
                 destination_name, cnt, jms_correlation_id, jms_type)
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_jms_browsing', msg), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_jms_not_connected'), self._mh.fromhere())
                 return None
 
@@ -424,7 +424,7 @@ class JMSClient(object):
 
                     messages.append(message)
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_jms_msg_received', len(messages)), self._mh.fromhere())
             ev = event.Event('jms_after_browse')
             self._mh.fire_event(ev)
@@ -432,5 +432,5 @@ class JMSClient(object):
             return messages
 
         except ProtonException as ex:
-            self._mh.dmsg('htk_on_error', ex, self._mh.fromhere())
+            self._mh.demsg('htk_on_error', ex, self._mh.fromhere())
             return None

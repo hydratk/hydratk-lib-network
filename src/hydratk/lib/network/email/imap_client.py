@@ -131,7 +131,7 @@ class EmailClient(object):
 
             message = '{0}/{1}@{2}:{3} timeout:{4}'.format(
                 user, passw, host, port, timeout)
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_email_connecting', message), self._mh.fromhere())
 
             ev = event.Event(
@@ -164,7 +164,7 @@ class EmailClient(object):
 
                 self._is_connected = True
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_email_connected'), self._mh.fromhere())
             ev = event.Event('email_after_connect')
             self._mh.fire_event(ev)
@@ -172,7 +172,7 @@ class EmailClient(object):
             return True
 
         except (IMAP4.error, error) as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -190,18 +190,18 @@ class EmailClient(object):
         try:
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_email_not_connected'), self._mh.fromhere())
                 return False
             else:
                 self._client.shutdown()
                 self._is_connected = False
-                self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+                self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                     'htk_email_disconnected'), self._mh.fromhere())
                 return True
 
         except (IMAP4.error, error) as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
@@ -218,22 +218,22 @@ class EmailClient(object):
 
         try:
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_email_counting'), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_email_not_connected'), self._mh.fromhere())
                 return None
 
             count = int(self._client.select()[1][0])
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_email_count', count), self._mh.fromhere())
             return count
 
         except (IMAP4.error, error) as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None
 
@@ -250,11 +250,11 @@ class EmailClient(object):
 
         try:
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_email_listing'), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_email_not_connected'), self._mh.fromhere())
                 return None
 
@@ -267,12 +267,12 @@ class EmailClient(object):
                 for i in range(0, len(emails)):
                     emails[i] = emails[i].decode()
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_email_listed'), self._mh.fromhere())
             return emails
 
         except (IMAP4.error, error) as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None
 
@@ -293,11 +293,11 @@ class EmailClient(object):
 
         try:
 
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_email_receiving', msg_id), self._mh.fromhere())
 
             if (not self._is_connected):
-                self._mh.dmsg('htk_on_warning', self._mh._trn.msg(
+                self._mh.demsg('htk_on_warning', self._mh._trn.msg(
                     'htk_email_not_connected'), self._mh.fromhere())
                 return None
 
@@ -343,12 +343,12 @@ class EmailClient(object):
 
             ev = event.Event('email_after_receive_email')
             self._mh.fire_event(ev)
-            self._mh.dmsg('htk_on_debug_info', self._mh._trn.msg(
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
                 'htk_email_received'), self._mh.fromhere())
 
             return (sender, recipients, cc, subject, message)
 
         except (IMAP4.error, error) as ex:
-            self._mh.dmsg(
+            self._mh.demsg(
                 'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None

@@ -37,6 +37,7 @@ Test-Scenario-2:
   
   Pre-Req: |
     from hydratk.lib.network.dbi.client import DBClient
+    from sys import prefix
   
   Test-Case-1:
     Id: tc_01
@@ -50,7 +51,7 @@ Test-Scenario-2:
       
       Test: |
         c = DBClient('SQLITE')
-        c.connect('/var/local/hydratk/testenv/testenv.db3')
+        c.connect(prefix+'/var/local/hydratk/testenv/testenv.db3')
         res = c.client.__class__.__name__
       
       Validate: |        
@@ -97,6 +98,7 @@ Test-Scenario-3:
     from hydratk.core.masterhead import MasterHead
     from hydratk.lib.network.dbi.client import DBClient
     from yodahelpers.hydratk.core.events import events, reg_ev_hook
+    from sys import prefix
   
   Test-Case-1:
     Id: tc_01
@@ -114,7 +116,7 @@ Test-Scenario-3:
         reg_ev_hook(mh, evs[0])
         reg_ev_hook(mh, evs[1])
         c = DBClient('SQLITE')
-        db_file = '/var/local/hydratk/testenv/testenv.db3'
+        db_file = prefix+'/var/local/hydratk/testenv/testenv.db3'
         res = c.connect(db_file)       
       
       Validate: |          
@@ -143,6 +145,7 @@ Test-Scenario-4:
   
   Pre-Req: |
     from hydratk.lib.network.dbi.client import DBClient
+    from sys import prefix
   
   Test-Case-1:
     Id: tc_01
@@ -156,7 +159,7 @@ Test-Scenario-4:
       
       Test: |
         c = DBClient('SQLITE')
-        db_file = '/var/local/hydratk/testenv/testenv.db3'
+        db_file = prefix+'/var/local/hydratk/testenv/testenv.db3'
         c.connect(db_file)
         res = c.disconnect()       
       
@@ -194,6 +197,7 @@ Test-Scenario-5:
     from hydratk.core.masterhead import MasterHead
     from hydratk.lib.network.dbi.client import DBClient
     from yodahelpers.hydratk.core.events import events, reg_ev_hook
+    from sys import prefix
   
   Test-Case-1:
     Id: tc_01
@@ -211,7 +215,7 @@ Test-Scenario-5:
         reg_ev_hook(mh, evs[0])
         reg_ev_hook(mh, evs[1])      
         c = DBClient('SQLITE')
-        db_file = '/var/local/hydratk/testenv/testenv.db3'
+        db_file = prefix+'/var/local/hydratk/testenv/testenv.db3'
         c.connect(db_file) 
         query = 'SELECT * FROM customer a , payer b WHERE a.id = b.customer'
         res, rows = c.exec_query(query, fetch_one=True)        
@@ -360,7 +364,7 @@ Test-Scenario-5:
       
       Test: |    
         c = DBClient('SQLITE')
-        db_file = '/var/local/hydratk/testenv/testenv.db3'
+        db_file = prefix+'/var/local/hydratk/testenv/testenv.db3'
         c.connect(db_file) 
         res, rows = c.exec_query('SELECT * FROM xxx')         
         
@@ -427,6 +431,7 @@ Test-Scenario-6:
   
   Pre-Req: |
     from hydratk.lib.network.dbi.client import DBClient
+    from sys import prefix
   
   Test-Case-1:
     Id: tc_01
@@ -440,7 +445,7 @@ Test-Scenario-6:
       
       Test: |    
         c = DBClient('SQLITE')
-        db_file = '/var/local/hydratk/testenv/testenv.db3'
+        db_file = prefix+'/var/local/hydratk/testenv/testenv.db3'
         c.connect(db_file) 
         c.exec_query('INSERT INTO customer (name, status, segment) VALUES (?, ?, ?)', ['test test', 1, 2], autocommit=False)
         res = c.commit()
@@ -483,6 +488,7 @@ Test-Scenario-7:
   
   Pre-Req: |
     from hydratk.lib.network.dbi.client import DBClient
+    from sys import prefix
   
   Test-Case-1:
     Id: tc_01
@@ -496,7 +502,7 @@ Test-Scenario-7:
       
       Test: |    
         c = DBClient('SQLITE')
-        db_file = '/var/local/hydratk/testenv/testenv.db3'
+        db_file = prefix+'/var/local/hydratk/testenv/testenv.db3'
         c.connect(db_file) 
         c.exec_query('INSERT INTO customer (name, status, segment) VALUES (?, ?, ?)', ['test test', 1, 2], autocommit=False)
         res = c.rollback()

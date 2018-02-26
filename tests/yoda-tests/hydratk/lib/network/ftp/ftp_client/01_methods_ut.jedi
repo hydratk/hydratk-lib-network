@@ -760,6 +760,7 @@ Test-Scenario-8:
     from hydratk.lib.network.ftp.client import FTPClient
     from yodahelpers.hydratk.core.events import events, reg_ev_hook
     from os import path, remove
+    from sys import prefix
   
   Test-Case-1:
     Id: tc_01
@@ -777,7 +778,7 @@ Test-Scenario-8:
         reg_ev_hook(mh, evs[0])
         reg_ev_hook(mh, evs[1])
         
-        lpath = '/var/local/hydratk/yoda/'
+        lpath = prefix+'/var/local/hydratk/yoda/'
         file = 'test.txt'
         with open(lpath+file, 'w') as f:
             f.write('test')
@@ -836,7 +837,7 @@ Test-Scenario-8:
       Desc: Invalid remote path
       
       Test: |
-        lpath = '/var/local/hydratk/yoda/'
+        lpath = prefix+'/var/local/hydratk/yoda/'
         file = 'test.txt'
         with open(lpath+file, 'w') as f:
             f.write('test')  
@@ -874,6 +875,7 @@ Test-Scenario-9:
     from hydratk.lib.network.ftp.client import FTPClient
     from yodahelpers.hydratk.core.events import events, reg_ev_hook
     from os import path
+    from sys import prefix
   
   Test-Case-1:
     Id: tc_01
@@ -890,7 +892,7 @@ Test-Scenario-9:
         evs = 'ftp_before_delete_file'
         reg_ev_hook(mh, evs)
         
-        rpath = '/var/local/hydratk/yoda/test.txt'
+        rpath = prefix+'/var/local/hydratk/yoda/test.txt'
         with open(rpath, 'w') as f:
             f.write('test')
         

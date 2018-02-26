@@ -159,9 +159,6 @@ After installation do following actions:
      
      # insert record to table
      client.exec_query('INSERT INTO LOV_STATUS (id, title) VALUES (4, \'pokus\')')
-                     
-     # returns output param values dictionary                     
-     params = client.call_proc('crm.customer_pck.p_read', param_names, input_values, output_types, 'proc')
      
      # disconnect from database
      # returns bool

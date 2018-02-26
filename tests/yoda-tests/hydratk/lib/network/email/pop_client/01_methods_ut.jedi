@@ -560,8 +560,8 @@ Test-Scenario-7:
       
       Validate: |                   
         this.test_result = str(res)
-        exp = ['From: lynushydra@seznam.cz', 'To: hydra@hydratk.org', 'Subject: test']
-        assert (exp[0] in res[4] and exp[1] in res[4] and exp[2] in res[4]), 'receive_email contains {0}'.format(exp)
+        exp = ['lynushydra@seznam.cz', 'hydra@hydratk.org', 'test']
+        assert (exp[0] in res[0] and exp[1] in res[1] and exp[2] in res[3]), 'receive_email contains {0}'.format(exp)
         res = [events[0]._id, events[1]._id]
         this.test_result = str(res)
         assert (res == evs), 'receive_email fires {0}'.format(evs)        
@@ -584,7 +584,7 @@ Test-Scenario-7:
       
       Validate: |                   
         this.test_result = str(res)
-        assert (exp[0] in res[4] and exp[1] in res[4] and exp[2] in res[4]), 'receive_email contains {0}'.format(exp)
+        assert (exp[0] in res[0] and exp[1] in res[1] and exp[2] in res[3]), 'receive_email contains {0}'.format(exp)
         c.disconnect() 
         
     Test-Condition-3: 
@@ -601,8 +601,8 @@ Test-Scenario-7:
       
       Validate: |                   
         this.test_result = str(res)
-        exp = ['From: lynushydra@seznam.cz', 'Subject: test']
-        assert (exp[0] in res[4] and exp[1] in res[4]), 'receive_email contains {0}'.format(exp)
+        exp = ['lynushydra@seznam.cz', 'test']
+        assert (exp[0] in res[0] and exp[1] in res[3]), 'receive_email contains {0}'.format(exp)
         c.disconnect()     
         
   Test-Case-2:

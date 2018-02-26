@@ -9,6 +9,7 @@ Test-Scenario-1:
   Pre-Req: |
     from hydratk.lib.data.xml import XMLValidate
     from lxml.etree import XMLSyntaxError
+    from sys import prefix
   
   Test-Case-1:
     Id: tc_01
@@ -21,7 +22,7 @@ Test-Scenario-1:
       Desc: Valid XSD
       
       Test: |
-        path = '/var/local/hydratk/testenv/crm.xsd'
+        path = prefix+'/var/local/hydratk/testenv/crm.xsd'
         with open(path, 'r') as f:
             doc = f.read()
             
@@ -105,6 +106,7 @@ Test-Scenario-3:
   Pre-Req: |
     from hydratk.lib.data.xml import XMLValidate
     from lxml.etree import DocumentInvalid, XMLSyntaxError
+    from sys import prefix
       
   Test-Case-1:
     Id: tc_01
@@ -119,7 +121,7 @@ Test-Scenario-3:
       Test: |
         try:
             c = XMLValidate()
-            path = '/var/local/hydratk/testenv/crm.xsd'
+            path = prefix+'/var/local/hydratk/testenv/crm.xsd'
             c.load_xsd_file(path)
             msg = '<htk:read_customer xmlns:htk=\"http://hydratk.org/\"><id>1</id></htk:read_customer>'
             c.xsd_validate(msg)
@@ -192,10 +194,10 @@ Test-Scenario-4:
       Test: |
         try:                    
             c = XMLValidate()
-            path = '/var/local/hydratk/testenv/crm.xsd'
+            path = prefix+'/var/local/hydratk/testenv/crm.xsd'
             c.load_xsd_file(path)
             
-            path = '/var/local/hydratk/test.xml'
+            path = prefix+'/var/local/hydratk/test.xml'
             with open(path, 'w') as f:
                 msg = '<htk:read_customer xmlns:htk=\"http://hydratk.org/\"><id>1</id></htk:read_customer>'
                 f.write(msg)

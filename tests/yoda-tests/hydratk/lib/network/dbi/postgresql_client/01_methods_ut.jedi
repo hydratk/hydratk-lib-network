@@ -674,7 +674,7 @@ Test-Scenario-8:
       Validate: |
         this.test_result = str(res)
         exp = {'name': 'Charlie Bowman', 'status': 3, 'segment': 2, 'birth_no': '700101/0001',
-               'reg_no': '1234', 'tax_no': 'CZ1234', 'err': 'OK'}
+               'reg_no': '1234', 'tax_no': 'CZ1234', 'err': None}
         assert (res == exp), 'output = {0}'.format(exp)
         res = [events[0]._id, events[1]._id]
         this.test_result = str(res)
@@ -699,7 +699,7 @@ Test-Scenario-8:
                 
       Validate: |
         this.test_result = str(res)
-        exp = {'err': 'OK'}
+        exp = {'err': None}
         assert (res == exp), 'output = {0}'.format(exp)  
         res, rows = c.exec_query('SELECT id FROM customer WHERE name = ?', ['test test'], True) 
         this.test_result = str(rows)

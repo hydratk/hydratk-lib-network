@@ -9,6 +9,7 @@ Test-Scenario-1:
   Pre-Req: |
     from hydratk.lib.data.loader import load_from_file
     from os import remove
+    from sys import prefix
   
   Test-Case-1:
     Id: tc_01
@@ -21,7 +22,7 @@ Test-Scenario-1:
       Desc: CSV file
       
       Test: |
-        path = '/var/local/hydratk/yoda/helpers/yodahelpers/hydratk/lib/data/data.csv'
+        path = prefix+'/var/local/hydratk/yoda/helpers/yodahelpers/hydratk/lib/data/data.csv'
         res = load_from_file(path)
       
       Validate: |
@@ -37,7 +38,7 @@ Test-Scenario-1:
       Desc: TSV file
       
       Test: |
-        path = '/var/local/hydratk/yoda/helpers/yodahelpers/hydratk/lib/data/data.tsv'
+        path = prefix+'/var/local/hydratk/yoda/helpers/yodahelpers/hydratk/lib/data/data.tsv'
         res = load_from_file(path)
       
       Validate: |
@@ -53,7 +54,7 @@ Test-Scenario-1:
       Desc: Data header
       
       Test: |  
-        path = '/var/local/hydratk/yoda/helpers/yodahelpers/hydratk/lib/data/data.csv'
+        path = prefix+'/var/local/hydratk/yoda/helpers/yodahelpers/hydratk/lib/data/data.csv'
         res = load_from_file(path, header=0)    
         
       Validate: |
@@ -98,7 +99,7 @@ Test-Scenario-1:
       Desc: XLSX file
       
       Test: |
-        path = '/var/local/hydratk/yoda/helpers/yodahelpers/hydratk/lib/data/data.xlsx'
+        path = prefix+'/var/local/hydratk/yoda/helpers/yodahelpers/hydratk/lib/data/data.xlsx'
         res = load_from_file(path)
       
       Validate: |
@@ -129,7 +130,7 @@ Test-Scenario-1:
       Desc: ODS file
       
       Test: |
-        path = '/var/local/hydratk/yoda/helpers/yodahelpers/hydratk/lib/data/data.ods'
+        path = prefix+'/var/local/hydratk/yoda/helpers/yodahelpers/hydratk/lib/data/data.ods'
         res = load_from_file(path)
       
       Validate: |
@@ -160,7 +161,7 @@ Test-Scenario-1:
       Desc: Data header
       
       Test: |  
-        path = '/var/local/hydratk/yoda/helpers/yodahelpers/hydratk/lib/data/data.xlsx'
+        path = prefix+'/var/local/hydratk/yoda/helpers/yodahelpers/hydratk/lib/data/data.xlsx'
         res = load_from_file(path, header=0)    
         
       Validate: |
@@ -209,7 +210,7 @@ Test-Scenario-1:
       Desc: Invalid extension   
       
       Test: |
-        path = '/var/local/hydratk/test.txt'
+        path = prefix+'/var/local/hydratk/test.txt'
         with open(path, 'w') as f:
             f.write('test')
         
@@ -230,7 +231,7 @@ Test-Scenario-1:
       Desc: Empty file   
       
       Test: |
-        path = '/var/local/hydratk/test.csv'
+        path = prefix+'/var/local/hydratk/test.csv'
         with open(path, 'w') as f:
             f.write('') 
             
@@ -247,7 +248,7 @@ Test-Scenario-1:
       Desc: Invalid excel file   
       
       Test: |
-        path = '/var/local/hydratk/test.xlsx'
+        path = prefix+'/var/local/hydratk/test.xlsx'
         with open(path, 'w') as f:
             f.write('') 
             
@@ -264,7 +265,7 @@ Test-Scenario-1:
       Desc: Invalid sheet
       
       Test: |
-        path = '/var/local/hydratk/yoda/helpers/yodahelpers/hydratk/lib/data/data.xlsx'
+        path = prefix+'/var/local/hydratk/yoda/helpers/yodahelpers/hydratk/lib/data/data.xlsx'
         res = load_from_file(path, sheet='xx')
       
       Validate: |                           
@@ -281,6 +282,7 @@ Test-Scenario-2:
   
   Pre-Req: |
     from hydratk.lib.data.loader import load_from_db
+    from sys import prefix
   
   Test-Case-1:
     Id: tc_01
@@ -293,7 +295,7 @@ Test-Scenario-2:
       Desc: Load data
       
       Test: |
-        path = '/var/local/hydratk/testenv/testenv.db3'
+        path = prefix+'/var/local/hydratk/testenv/testenv.db3'
         query = 'SELECT * FROM lov_status'
         res = load_from_db('SQLITE', query, db_file=path)
       
