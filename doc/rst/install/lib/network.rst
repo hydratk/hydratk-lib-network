@@ -118,7 +118,7 @@ Module cassandra-driver installation takes longer time (not so fast as other mod
      Installation for PyPy has some differences.
      Module cx-oracle-on-ctypes is installed instead of cx_Oracle.
      Module psycopg2cffi is installed instead of psycopg2.
-     Modules JPype1, pymssql, python-ldap are not supported and installed.
+     Modules JPype1, pymssql are not supported and installed.
      
   .. note ::
    
@@ -390,11 +390,11 @@ Check hydratk-lib-network module is installed.
      hydratk-lib-network (0.2.1)    
      
 Upgrade
-=======
+^^^^^^^
 
 Use same procedure as for installation. Use command option --upgrade for pip, easy_install, --force for setup.py.
 
 Uninstall
-=========    
+^^^^^^^^^   
 
 Run command htkuninstall. Use option -y if you want to uninstall also dependent Python modules (for advanced user).            
