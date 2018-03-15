@@ -224,6 +224,8 @@ class RESTClient(object):
                 self._url = url
                 self._proxies = proxies
                 self._cert = cert
+                self._req_header = headers
+                self._req_body = body
                 verify = True if (cert != None and verify_cert) else False
 
                 method = method.lower() if (
