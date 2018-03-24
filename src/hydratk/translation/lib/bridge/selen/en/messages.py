@@ -21,6 +21,7 @@ HIGHLIGHT_US = chr(27) + chr(91) + "4m"
 HIGHLIGHT_END = chr(27) + chr(91) + "0m"
 
 msg = {
+    'htk_selen_unknown_browser': ["Unknown browser: {0}"],
     'htk_selen_opening': ["Opening browser on page with URL: '{0}'"],
     'htk_selen_opened': ["Page opened"],
     'htk_selen_closed': ["Browser closed"],

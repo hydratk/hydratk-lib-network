@@ -35,12 +35,13 @@ def JMSClient(protocol='JMS', *args, **kwargs):
 
     """
 
+    mh = MasterHead.get_head()
     protocol = protocol.upper()
+
     if (protocol in protocols):
-        mh = MasterHead.get_head()
         mod = import_module(
             'hydratk.lib.network.jms.{0}'.format(protocols[protocol]))
         mh.find_module('hydratk.lib.network.jms.client', None)
         return mod.JMSClient(*args, **kwargs)
     else:
-        raise NotImplementedError('Unknown protocol:{0}'.format(protocol))
+        raise NotImplementedError(mh._trn.msg('htk_jms_unknown_protocol', protocol))

@@ -7,10 +7,12 @@
 .. moduleauthor:: Petr Czaderna <pc@hydratk.org>
 
 """
+
 from lxml import etree
 from hydratk.lib.system import fs
 import os
 from hydratk.lib.exceptions.inputerror import InputError
+from hydratk.core.masterhead import MasterHead
 
 
 class XMLValidate(object):
@@ -33,12 +35,13 @@ class XMLValidate(object):
 
         """
 
+        mh = MasterHead.get_head()
         if os.path.exists(xml_file) and os.path.isfile(xml_file):
             content = fs.file_get_contents(xml_file)
             self.xsd_validate(content)
         else:
             raise InputError(
-                0, [], "File doesn't exists: {0}".format(xml_file))
+                0, [], mh._trn.msg('htk_loader_file_not_found', xml_file))
 
     def xsd_validate(self, xml_str):
         """Method validates XML string according to XSD

@@ -67,11 +67,9 @@ class Client(object):
             self._lay3_prot = lay3_prot.upper()
             self._lay4_prot = lay4_prot.upper()
             if (self._lay3_prot not in self._protocols):
-                raise NotImplementedError(
-                    'Unknown protocol:{0}'.format(self._lay3_prot))
+                raise NotImplementedError(self._mh._trn.msg('htk_inet_unknown_protocol', self._lay3_prot))
             elif (self._lay3_prot not in self._protocols):
-                raise NotImplementedError(
-                    'Unknown protocol:{0}'.format(self._lay4_prot))
+                raise NotImplementedError(self._mh._trn.msg('htk_inet_unknown_protocol', self._lay4_prot))
             else:
                 self._client = socket(
                     self._protocols[self._lay3_prot], self._protocols[self._lay4_prot])

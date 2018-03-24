@@ -65,7 +65,7 @@ def Packet(protocol, **kwargs):
 
     except KeyError as ex:
 
-        raise NotImplementedError('Unknown protocol: {0}'.format(protocol))
+        raise NotImplementedError(mh._trn.msg('htk_inet_unknown_protocol', protocol))
 
 
 def compose_packet(packets, payload=None):
@@ -267,7 +267,7 @@ def ping(destination, protocol='ICMP', port=None, verbose=False):
             elif (protocol == 'TCP'):
                 packets.append(Packet(protocol, dport=port, flags='S'))
             else:
-                raise ValueError('Unknown protocol: {0}'.format(protocol))
+                raise ValueError(mh._trn.msg('htk_inet_unknown_protocol', protocol))
 
             packet = compose_packet(packets)
             answers = send_recv_packet(packet, verbose=verbose)[0]
@@ -336,7 +336,7 @@ def traceroute(destination, protocol='ICMP', port=None, max_hops=30, verbose=Fal
             elif (protocol == 'TCP'):
                 packets.append(Packet(protocol, dport=port, flags='S'))
             else:
-                raise ValueError('Unknown protocol: {0}'.format(protocol))
+                raise ValueError(mh._trn.msg('htk_inet_unknown_protocol', protocol))
 
             packet = compose_packet(packets)
             answers = send_recv_packet(packet, verbose=verbose)[0]

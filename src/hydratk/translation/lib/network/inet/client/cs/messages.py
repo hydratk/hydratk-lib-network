@@ -21,6 +21,7 @@ HIGHLIGHT_US = chr(27) + chr(91) + "4m"
 HIGHLIGHT_END = chr(27) + chr(91) + "0m"
 
 msg = {
+    'htk_inet_unknown_protocol': ["Neznámý protokol: '{0}'"],
     'htk_inet_unknown_method': ["Neznámá metoda pro protokol: '{0}'"],
     'htk_inet_connecting': ["Připojuji se na server: '{0}'"],
     'htk_inet_connected': ["Spojení se serverem bylo úspěšné"],

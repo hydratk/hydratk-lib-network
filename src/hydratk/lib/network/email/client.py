@@ -34,12 +34,13 @@ def EmailClient(protocol, *args, **kwargs):
 
     """
 
+    mh = MasterHead.get_head()
     protocol = protocol.upper()
+
     if (protocol in protocols):
-        mh = MasterHead.get_head()
         mod = import_module(
             'hydratk.lib.network.email.{0}'.format(protocols[protocol]))
         mh.find_module('hydratk.lib.network.email.client', None)
         return mod.EmailClient(*args, **kwargs)
     else:
-        raise NotImplementedError('Unknown protocol:{0}'.format(protocol))
+        raise NotImplementedError(mh._trn.msg('htk_email_unknown_protocol', protocol))

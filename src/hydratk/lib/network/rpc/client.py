@@ -22,7 +22,7 @@ def RPCClient(provider, *args):
     """RPC client factory method
 
     Args:            
-        provider (str): RPC provider, RMI
+        provider (str): RPC provider, RMI|XMLRPC|JSONRPC
         args (args): arguments 
         kwargs (kwargs): key value arguments
 
@@ -34,12 +34,13 @@ def RPCClient(provider, *args):
 
     """
 
+    mh = MasterHead.get_head()
     provider = provider.upper()
+
     if (provider in providers):
-        mh = MasterHead.get_head()
         mod = import_module(
             'hydratk.lib.network.rpc.{0}'.format(providers[provider]))
         mh.find_module('hydratk.lib.network.rpc.client', None)
         return mod.RPCClient(*args)
     else:
-        raise NotImplementedError('Unknown provider:{0}'.format(provider))
+        raise NotImplementedError(mh._trn.msg('htk_rpc_unknown_provider', provider))

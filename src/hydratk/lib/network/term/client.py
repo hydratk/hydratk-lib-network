@@ -33,12 +33,13 @@ def TermClient(protocol='SSH', *args, **kwargs):
 
     """
 
+    mh = MasterHead.get_head()
     protocol = protocol.upper()
+
     if (protocol in protocols):
-        mh = MasterHead.get_head()
         mod = import_module(
             'hydratk.lib.network.term.{0}'.format(protocols[protocol]))
         mh.find_module('hydratk.lib.network.term.client', None)
         return mod.TermClient(*args, **kwargs)
     else:
-        raise NotImplementedError('Unknown protocol:{0}'.format(protocol))
+        raise NotImplementedError(mh._trn.msg('htk_term_unknown_protocol', protocol))

@@ -91,7 +91,7 @@ class SeleniumBridge(object):
             self._client = client
 
         else:
-            raise NotImplementedError('Unknown browser:{0}'.format(browser))
+            raise NotImplementedError(self._mh._trn.msg('htk_selen_unknown_browser', self._browser))
 
     @property
     def client(self):

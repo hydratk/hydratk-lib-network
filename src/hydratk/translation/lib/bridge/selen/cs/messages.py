@@ -21,6 +21,7 @@ HIGHLIGHT_US = chr(27) + chr(91) + "4m"
 HIGHLIGHT_END = chr(27) + chr(91) + "0m"
 
 msg = {
+    'htk_selen_unknown_browser': ["Neznámý prohlížeč: {0}"],
     'htk_selen_opening': ["Otevírám prohlížeč na stránce s URL: '{0}'"],
     'htk_selen_opened': ["Stránka otevřena"],
     'htk_selen_closed': ["Prohlížeč uzavřen"],

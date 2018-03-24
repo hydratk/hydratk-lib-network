@@ -34,12 +34,13 @@ def FTPClient(protocol='FTP', *args, **kwargs):
 
     """
 
+    mh = MasterHead.get_head()
     protocol = protocol.upper()
+
     if (protocol in protocols):
-        mh = MasterHead.get_head()
         mod = import_module(
             'hydratk.lib.network.ftp.{0}'.format(protocols[protocol]))
         mh.find_module('hydratk.lib.network.ftp.client', None)
         return mod.FTPClient(*args, **kwargs)
     else:
-        raise NotImplementedError('Unknown protocol:{0}'.format(protocol))
+        raise NotImplementedError(mh._trn.msg('htk_ftp_unknown_protocol', protocol))

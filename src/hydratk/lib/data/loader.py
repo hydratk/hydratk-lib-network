@@ -35,12 +35,12 @@ def load_from_file(filename, header=0, delimiter=None, sheet=None):
     """
 
     from os import path
+
+    mh = MasterHead.get_head()
     if (not path.exists(filename)):
-        raise ValueError('File {0} not found'.format(filename))
+        raise ValueError(mh._trn.msg('htk_loader_file_not_found', filename))
 
     try:
-
-        mh = MasterHead.get_head()
 
         extension = filename.split('.')[-1]
         if (extension in ['csv', 'tsv']):
@@ -75,7 +75,7 @@ def load_from_file(filename, header=0, delimiter=None, sheet=None):
                 records = sheet.to_array()
 
         else:
-            raise ValueError('Unknown extension: {0}'.format(extension))
+            raise ValueError(mh._trn.msg('htk_loader_unknown_extension', extension))
 
         return records
 

@@ -21,6 +21,7 @@ HIGHLIGHT_US = chr(27) + chr(91) + "4m"
 HIGHLIGHT_END = chr(27) + chr(91) + "0m"
 
 msg = {
+    'htk_jms_unknown_protocol': ["Neznámý protokol: '{0}'"],
     'htk_jms_connecting': ["Připojuji se na JMS server s parametry: '{0}'"],
     'htk_jms_connected': ["Spojení s JMS serverem bylo úspěšné"],
     'htk_jms_connecting_error': ["Nastala chyba při spojení s JMS serverem"],

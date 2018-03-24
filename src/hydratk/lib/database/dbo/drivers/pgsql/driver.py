@@ -15,14 +15,15 @@ except ImportError:
     import psycopg2cffi as psycopg2
     from psycopg2cffi.extras import RealDictCursor
 
-import os
 from hydratk.lib.database.dbo import dbodriver
+from hydratk.core.masterhead import MasterHead
 
 
 class DBODriver(dbodriver.DBODriver):
     """Class DBODriver
     """
 
+    _mh = MasterHead.get_head()
     _host = None
     _port = 5432
     _dbname = 'postgres'
@@ -52,7 +53,6 @@ class DBODriver(dbodriver.DBODriver):
         dsn_opt = dsn.split(':')[1]
         dsn_opt_tokens = dsn_opt.split(';')
         for dsn_opt_token in dsn_opt_tokens:
-            # print(dsn_opt_token)
             opt = dsn_opt_token.split('=')
 
             if opt[0] == 'host':
@@ -114,7 +114,7 @@ class DBODriver(dbodriver.DBODriver):
         if type(self._dbcon).__name__.lower() == 'connection':
             self._dbcon.close()
         else:
-            raise dbodriver.DBODriverException('Not connected')
+            raise dbodriver.DBODriverException(self._mh._trn.msg('htk_lib_db_not_connected'))
 
     def commit(self):
         """Method commits transaction
@@ -133,7 +133,7 @@ class DBODriver(dbodriver.DBODriver):
         if type(self._dbcon).__name__.lower() == 'connection':
             self._dbcon.commit()
         else:
-            raise dbodriver.DBODriverException('Not connected')
+            raise dbodriver.DBODriverException(self._mh._trn.msg('htk_lib_db_not_connected'))
 
     def error_code(self):
         pass
@@ -194,7 +194,7 @@ class DBODriver(dbodriver.DBODriver):
         if type(self._dbcon).__name__.lower() == 'connection':
             self._dbcon.rollback()
         else:
-            raise dbodriver.DBODriverException('Not connected')
+            raise dbodriver.DBODriverException(self._mh._trn.msg('htk_lib_db_not_connected'))
 
     def set_attribute(self):
         pass
@@ -249,12 +249,6 @@ class DBODriver(dbodriver.DBODriver):
             result = True if (recs[0]['found'] == 1) else False
         return result
 
-    def database_exists(self):
-        pass
-
-    def remove_database(self):
-        pass
-
     def erase_database(self):
         """Method drops database
 
@@ -298,4 +292,4 @@ class DBODriver(dbodriver.DBODriver):
             else:
                 self._cursor = self._dbcon.cursor()
         else:
-            raise TypeError('Boolean value expected')
+            raise TypeError(self._mh._trn.msg('htk_invalid_data', 'state', 'bool'))

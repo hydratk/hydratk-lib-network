@@ -21,6 +21,7 @@ HIGHLIGHT_US = chr(27) + chr(91) + "4m"
 HIGHLIGHT_END = chr(27) + chr(91) + "0m"
 
 msg = {
+    'htk_dbi_unknown_engine': ["Neznámý engine: {0}"],
     'htk_dbi_unknown_type': ["Neznámý typ procedury: '{0}'"],
     'htk_dbi_connecting': ["Připojuji se na server: '{0}'"],
     'htk_dbi_connected': ["Spojení se serverem bylo úspěšné"],

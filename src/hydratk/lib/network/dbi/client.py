@@ -41,12 +41,13 @@ def DBClient(engine='SQLITE', *args, **kwargs):
 
     """
 
+    mh = MasterHead.get_head()
     engine = engine.upper()
+
     if (engine in engines):
-        mh = MasterHead.get_head()
         mod = import_module(
             'hydratk.lib.network.dbi.{0}'.format(engines[engine]))
         mh.find_module('hydratk.lib.network.dbi.client', None)
         return mod.DBClient(*args, **kwargs)
     else:
-        raise NotImplementedError('Unknown engine:{0}'.format(engine))
+        raise NotImplementedError(mh._trn.msg('htk_dbi_unknown_engine', engine))

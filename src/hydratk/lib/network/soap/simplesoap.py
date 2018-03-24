@@ -11,9 +11,9 @@ import pycurl
 import pytz
 import datetime
 
-
 from hydratk.lib.data.xml import XMLValidate
 from hydratk.lib.system import fs
+
 try:
     from io import BytesIO
 except ImportError:
