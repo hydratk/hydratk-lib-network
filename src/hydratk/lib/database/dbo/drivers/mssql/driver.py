@@ -247,6 +247,15 @@ class DBODriver(dbodriver.DBODriver):
             result = True if (recs[0]['found'] == 1) else False
         return result
 
+    def database_exists(self):
+        pass
+
+    def remove_database(self):
+        pass
+
+    def erase_database(self):
+        pass
+
     def result_as_dict(self, state):
         """Method enables query result in dictionary form
 

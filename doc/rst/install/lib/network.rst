@@ -92,7 +92,6 @@ These modules will be installed automatically, if not installed yet.
 
 Modules cx_Oracle, lxml, MySQL-python, paramiko, pymssql, psycopg2, pycurl, python-ldap, selenium require several 
 libraries which will be installed via Linux package managers, if not installed yet.
-Module cassandra-driver installation takes longer time (not so fast as other modules).
 
   .. note ::
      

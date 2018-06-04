@@ -63,8 +63,7 @@ def version_update(cfg, *args):
     else:
         cfg['modules'].append({'module': 'jsonrpclib-pelix', 'version': '>=0.2.8', 'profile': 'basic'})
         cfg['modules'].append({'module': 'mysqlclient', 'version': '>=1.3.7', 'profile': 'db'})
-        if (python_implementation() != 'PyPy'):
-            cfg['modules'].append({'module': 'pyldap', 'version': '>=2.4.25', 'profile': 'db'})
+        cfg['modules'].append({'module': 'pyldap', 'version': '>=2.4.25', 'profile': 'db'})
         cfg['modules'].append({'module': 'scapy-python3', 'version': '>=0.18', 'profile': 'basic'})
         cfg['modules'].append({'module': 'simplejson', 'version': '>=3.8.2', 'profile': 'basic'})
         cfg['modules'].append({'module': 'stompest', 'version': '>=2.2.5', 'profile': 'jms'})
