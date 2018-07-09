@@ -366,9 +366,7 @@ See installation example for Linux based on Debian distribution, Python 2.7.
      *** Running task: compile_java_classes ***
 
      Compiling DBClient.java
-     Compiling JMSClient.java
-     
-     *** Running task: fix_pycurl ***         
+     Compiling JMSClient.java             
      
 Application installs following (paths depend on your OS configuration)
 

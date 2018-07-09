@@ -120,18 +120,6 @@ def compile_java_classes(cfg, *args):
             if (call(command, cwd=dir, shell=True) != 0):
                 print('Failed to compile {0}'.format(file))
 
-def fix_pycurl(cfg, *args):
-
-    try:
-        import pycurl
-    except ImportError:
-        print('Trying to recompile pycurl')
-        command = 'pip install --no-cache-dir --compile --ignore-installed --install-option="--with-nss" pycurl>=7.19.5.1'
-        if (call(command, shell=True) != 0):
-            command = 'pip install --no-cache-dir --compile --ignore-installed --install-option="--with-openssl" pycurl>=7.19.5.1'
-            if (call(command, shell=True) != 0):
-                print('Failed to recompile pycurl')
-
 config = {
     'pre_tasks': [
         version_update,
@@ -141,8 +129,7 @@ config = {
 
     'post_tasks': [
         task.copy_files,
-        compile_java_classes,
-        fix_pycurl
+        compile_java_classes
     ],
 
     'modules': [
