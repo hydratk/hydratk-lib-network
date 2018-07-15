@@ -167,11 +167,11 @@ config = {
                 ],
                 'check': {
                     'libaio1': {
-                        'cmd': '/sbin/ldconfig -p | grep libaio || locate libaio',
+                        'cmd': '/sbin/ldconfig -p | grep libaio || locate -b libaio | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate shared library libaio'
                     },
                     'libaio-dev': {
-                        'cmd': 'dpkg --get-selections | grep libaio-dev',
+                        'cmd': 'dpkg --get-selections | grep libaio-dev || locate -b libaio-dev | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libaio-dev'
                     }
                 }
@@ -182,7 +182,7 @@ config = {
                 ],
                 'check': {
                     'libaio': {
-                        'cmd': '/sbin/ldconfig -p | grep libaio || locate libaio',
+                        'cmd': '/sbin/ldconfig -p | grep libaio || locate -b libaio | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate shared library libaio'
                     }
                 }
@@ -193,7 +193,7 @@ config = {
                 ],
                 'check': {
                     'libaio': {
-                        'cmd': '/sbin/ldconfig -p | grep libaio || locate libaio',
+                        'cmd': '/sbin/ldconfig -p | grep libaio || locate -b libaio | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate shared library libaio'
                     }
                 }
@@ -204,7 +204,7 @@ config = {
                 ],
                 'check': {
                     'libaio1': {
-                        'cmd': '/sbin/ldconfig -p | grep libaio || locate libaio1',
+                        'cmd': '/sbin/ldconfig -p | grep libaio || locate -b libaio | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate shared library libaio1'
                     }
                 }
@@ -219,15 +219,15 @@ config = {
                 ],
                 'check': {
                     'python-lxml': {
-                        'cmd': 'dpkg --get-selections | grep python-lxml',
+                        'cmd': 'dpkg --get-selections | grep python-lxml || locate -b lxml | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package python-lxml'
                     },
                     'libxml2-dev': {
-                        'cmd': 'dpkg --get-selections | grep libxml2-dev',
+                        'cmd': 'dpkg --get-selections | grep libxml2-dev || locate -b libxml2 | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libxml2-dev'
                     },
                     'libxslt1-dev': {
-                        'cmd': 'dpkg --get-selections | grep libxslt1-dev',
+                        'cmd': 'dpkg --get-selections | grep libxslt1-dev || locate -b libxslt | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libxslt1-dev'
                     }                          
                 }
@@ -240,15 +240,15 @@ config = {
                 ],
                 'check': {
                     'python-lxml': {
-                        'cmd': 'yum list installed | grep python-lxml',
+                        'cmd': 'yum list installed | grep python-lxml || locate -b lxml | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package python-lxml'
                     },
                     'libxml2-devel': {
-                        'cmd': 'yum list installed | grep libxml2-devel',
+                        'cmd': 'yum list installed | grep libxml2-devel || locate -b libxml2 | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libxml2-devel'
                     },
                     'libxslt-devel': {
-                        'cmd': 'yum list installed | grep libxslt-devel',
+                        'cmd': 'yum list installed | grep libxslt-devel || locate -b libxslt | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate shared library libxslt-devel'
                     }
                 }
@@ -261,15 +261,15 @@ config = {
                 ],
                 'check': {
                     'python-lxml': {
-                        'cmd': 'dnf list installed | grep python-lxml',
+                        'cmd': 'dnf list installed | grep python-lxml || locate -b lxml | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package python-lxml'
                     },
                     'libxml2-devel': {
-                        'cmd': 'dnf list installed | grep libxml2-devel',
+                        'cmd': 'dnf list installed | grep libxml2-devel || locate -b libxml2 | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libxml2-devel'
                     },
                     'libxslt-devel': {
-                        'cmd': 'dnf list installed | grep libxslt-devel',
+                        'cmd': 'dnf list installed | grep libxslt-devel || locate -b libxslt | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate shared library libxslt-devel'
                     }
                 }
@@ -282,15 +282,15 @@ config = {
                 ],
                 'check': {
                     'python-lxml': {
-                        'cmd': 'rpm -qa | grep python-lxml',
+                        'cmd': 'rpm -qa | grep python-lxml || locate -b lxml | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package python-lxml'
                     },
                     'libxml2-devel': {
-                        'cmd': 'rpm -qa | grep libxml2-devel',
+                        'cmd': 'rpm -qa | grep libxml2-devel || locate -b libxml2 | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libxml2-devel'
                     },
                     'libxslt-devel': {
-                        'cmd': 'rpm -qa | grep libxslt-devel',
+                        'cmd': 'rpm -qa | grep libxslt-devel || locate -b libxslt | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate shared library libxslt-devel'
                     }
                 }
@@ -301,11 +301,11 @@ config = {
                 ],
                 'check': {
                     'py27-lxml': {
-                        'cmd': 'pkg info | grep py27-lxml',
+                        'cmd': 'pkg info | grep py27-lxml || locate lxml | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package py27-lxml'
                     },
                     'py36-lxml': {
-                        'cmd': 'pkg info | grep py36-lxml',
+                        'cmd': 'pkg info | grep py36-lxml || locate lxml | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package py36-lxml'
                     }
                 }
@@ -318,7 +318,7 @@ config = {
                 ],
                 'check': {
                     'libmysqlclient-dev': {
-                        'cmd': 'dpkg --get-selections | grep libmysqlclient-dev',
+                        'cmd': 'dpkg --get-selections | grep libmysqlclient-dev || locate -b libmysqlclient | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libmysqlclient-dev'
                     }
                 }
@@ -329,7 +329,7 @@ config = {
                 ],
                 'check': {
                     'mysql-devel': {
-                        'cmd': 'yum list installed | grep mariadb-devel',
+                        'cmd': 'yum list installed | grep mariadb-devel || locate -b libmysqlclient | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package mariadb-devel'
                     }
                 }
@@ -340,7 +340,7 @@ config = {
                 ],
                 'check': {
                     'mysql-devel': {
-                        'cmd': 'dnf list installed | grep mariadb-devel',
+                        'cmd': 'dnf list installed | grep mariadb-devel || locate -b libmysqlclient | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package mariadb-devel'
                     }
                 }
@@ -351,7 +351,7 @@ config = {
                 ],
                 'check': {
                     'libmysqlclient-devel': {
-                        'cmd': 'rpm -qa | grep libmysqlclient-devel',
+                        'cmd': 'rpm -qa | grep libmysqlclient-devel || locate -b libmysqlclient | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libmysqlclient-devel'
                     }
                 }
@@ -362,7 +362,7 @@ config = {
                 ],
                 'check': {
                     'mysqlclient': {
-                        'cmd': 'ls -d /var/db/pkg/*/* | grep mysqlclient',
+                        'cmd': 'ls -d /var/db/pkg/*/* | grep mysqlclient || locate -b libmysqlclient | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package mysqlclient'
                     }
                 }
@@ -373,7 +373,7 @@ config = {
                 ],
                 'check': {
                     'mysql-python': {
-                        'cmd': 'pacman -Q mysql-python',
+                        'cmd': 'pacman -Q mysql-python || locate -b libmysqlclient | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package mysql-python'
                     }
                 }
@@ -384,11 +384,11 @@ config = {
                 ],
                 'check': {
                     'py27-MySQLdb': {
-                        'cmd': 'pkg info | grep py27-MySQLdb',
+                        'cmd': 'pkg info | grep py27-MySQLdb || locate libmysqlclient | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package py27-MySQLdb'
                     },
                     'py36-mysqlclient': {
-                        'cmd': 'pkg info | grep py36-mysqlclient',
+                        'cmd': 'pkg info | grep py36-mysqlclient || locate libmysqlclient | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package py36-mysqlclient'
                     }                        
                 }
@@ -402,11 +402,11 @@ config = {
                 ],
                 'check': {
                    'libffi-dev': {
-                        'cmd': 'dpkg --get-selections | grep libffi-dev',
+                        'cmd': 'dpkg --get-selections | grep libffi-dev || locate -b libffi | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libffi-dev'
                     },
                    'libssl-dev': {
-                        'cmd': 'dpkg --get-selections | grep libssl-dev',
+                        'cmd': 'dpkg --get-selections | grep libssl-dev || locate -b libssl | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libssl-dev'
                     }
                 }
@@ -418,11 +418,11 @@ config = {
                 ],
                 'check': {
                    'libffi-devel': {
-                        'cmd': 'yum list installed | grep libffi-devel',
+                        'cmd': 'yum list installed | grep libffi-devel || locate -b libffi | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libffi-devel'
                     },
                    'openssl-devel': {
-                        'cmd': 'yum list installed | grep openssl-devel',
+                        'cmd': 'yum list installed | grep openssl-devel || locate -b libssl | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package openssl-devel'
                     }
                 }
@@ -434,11 +434,11 @@ config = {
                 ],
                 'check': {
                    'libffi-devel': {
-                        'cmd': 'dnf list installed | grep libffi-devel',
+                        'cmd': 'dnf list installed | grep libffi-devel || locate -b libffi | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libffi-devel'
                     },
                    'openssl-devel': {
-                        'cmd': 'dnf list installed | grep openssl-devel',
+                        'cmd': 'dnf list installed | grep openssl-devel || locate -b libssl | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package openssl-devel'
                     }
                 }
@@ -449,7 +449,7 @@ config = {
                 ],
                 'check': {
                    'libffi-devel': {
-                        'cmd': 'rpm -qa | grep libffi-devel',
+                        'cmd': 'rpm -qa | grep libffi-devel || locate -b libffi | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libffi-devel'
                     }
                 }
@@ -462,7 +462,7 @@ config = {
                 ],
                 'check': {
                    'libpq-dev': {
-                        'cmd': 'dpkg --get-selections | grep libpq-dev',
+                        'cmd': 'dpkg --get-selections | grep libpq-dev || locate -b libpq | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libpq-dev'
                     }
                 }
@@ -473,7 +473,7 @@ config = {
                 ],
                 'check': {
                    'postgresql-devel': {
-                        'cmd': 'yum list installed | grep postgresql-devel',
+                        'cmd': 'yum list installed | grep postgresql-devel || locate -b libpq | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package postgresql-devel'
                     }
                 }
@@ -484,7 +484,7 @@ config = {
                 ],
                 'check': {
                    'postgresql-devel': {
-                        'cmd': 'dnf list installed | grep postgresql-devel',
+                        'cmd': 'dnf list installed | grep postgresql-devel || locate libpq | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package postgresql-devel'
                     }
                 }
@@ -495,7 +495,7 @@ config = {
                 ],
                 'check': {
                    'postgresql-devel': {
-                        'cmd': 'rpm -qa | grep postgresql-devel',
+                        'cmd': 'rpm -qa | grep postgresql-devel || locate libpq | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package postgresql-devel'
                     }
                 }
@@ -506,11 +506,11 @@ config = {
                 ],
                 'check': {
                    'py27-psycopg2': {
-                        'cmd': 'pkg info | grep py27-psycopg2',
+                        'cmd': 'pkg info | grep py27-psycopg2 || locate libpq | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package py27-psycopg2'
                     },
                    'py36-psycopg2': {
-                        'cmd': 'pkg info | grep py36-psycopg2',
+                        'cmd': 'pkg info | grep py36-psycopg2 || locate libpq | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package py36-psycopg2'
                     }
                 }
@@ -523,7 +523,7 @@ config = {
                 ],
                 'check': {
                    'libcurl4-openssl-dev': {
-                        'cmd': 'dpkg --get-selections | grep libcurl4-openssl-dev',
+                        'cmd': 'dpkg --get-selections | grep libcurl4-openssl-dev || locate -b libcurl | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libcurl4-openssl-dev'
                     }
                 }
@@ -534,7 +534,7 @@ config = {
                 ],
                 'check': {
                    'libcurl-devel': {
-                        'cmd': 'yum list installed | grep libcurl-devel',
+                        'cmd': 'yum list installed | grep libcurl-devel || locate -b libcurl | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libcurl-devel'
                     }
                 }
@@ -545,7 +545,7 @@ config = {
                 ],
                 'check': {
                    'libcurl-devel': {
-                        'cmd': 'dnf list installed | grep libcurl-devel',
+                        'cmd': 'dnf list installed | grep libcurl-devel || locate -b libcurl | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libcurl-devel'
                     }
                 }
@@ -556,7 +556,7 @@ config = {
                 ],
                 'check': {
                    'libcurl-devel': {
-                        'cmd': 'rpm -qa | grep libcurl-devel',
+                        'cmd': 'rpm -qa | grep libcurl-devel || locate -b libcurl | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libcurl-devel'
                     }
                 }
@@ -567,7 +567,7 @@ config = {
                 ],
                 'check': {
                    'pycurl': {
-                        'cmd': 'ls -d /var/db/pkg/*/* | grep pycurl',
+                        'cmd': 'ls -d /var/db/pkg/*/* | grep pycurl || locate -b pycurl | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package pycurl'
                     }
                 }
@@ -578,7 +578,7 @@ config = {
                 ],
                 'check': {
                    'curl': {
-                        'cmd': 'pkg info | grep curl',
+                        'cmd': 'pkg info | grep curl || locate libcurl | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package curl'
                     }
                 }
@@ -591,7 +591,7 @@ config = {
                 ],
                 'check': {
                    'freetds-dev': {
-                        'cmd': 'dpkg --get-selections | grep freetds-dev',
+                        'cmd': 'dpkg --get-selections | grep freetds-dev || locate -b freetds-dev | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package freetds-dev'
                     }
                 }
@@ -603,11 +603,11 @@ config = {
                 ],
                 'check': {
                    'freetds': {
-                        'cmd': 'yum list installed | grep freetds',
+                        'cmd': 'yum list installed | grep freetds || locate -b freetds | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package freetds'
                     },
                    'freetds-devel': {
-                        'cmd': 'yum list installed | grep freetds-devel',
+                        'cmd': 'yum list installed | grep freetds-devel || locate -b freetds-devel | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package freetds-devel'
                     }
                 }
@@ -619,11 +619,11 @@ config = {
                 ],
                 'check': {
                    'freetds': {
-                        'cmd': 'dnf list installed | grep freetds',
+                        'cmd': 'dnf list installed | grep freetds || locate -b freetds | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package freetds'
                     },
                    'freetds-devel': {
-                        'cmd': 'dnf list installed | grep freetds-devel',
+                        'cmd': 'dnf list installed | grep freetds-devel || locate -b freetds-devel | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package freetds-devel'
                     }
                 }
@@ -635,11 +635,11 @@ config = {
                 ],
                 'check': {
                    'freetds': {
-                        'cmd': 'rpm -qa | grep freetds',
+                        'cmd': 'rpm -qa | grep freetds || locate -b freetds | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package freetds'
                     },
                    'freetds-devel': {
-                        'cmd': 'rpm -qa | grep freetds-devel',
+                        'cmd': 'rpm -qa | grep freetds-devel || locate -b freetds | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package freetds-devel'
                     }
                 }
@@ -654,15 +654,15 @@ config = {
                 ],
                 'check': {
                    'libldap2-dev': {
-                        'cmd': 'dpkg --get-selections | grep libldap2-dev',
+                        'cmd': 'dpkg --get-selections | grep libldap2-dev || locate -b libldap | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libldap2-dev'
                     },
                    'libsasl2-dev': {
-                        'cmd': 'dpkg --get-selections | grep libsasl2-dev',
+                        'cmd': 'dpkg --get-selections | grep libsasl2-dev || locate -b libsasl2 | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libsasl2-dev'
                     },
                    'libssl-dev': {
-                        'cmd': 'dpkg --get-selections | grep libssl-dev',
+                        'cmd': 'dpkg --get-selections | grep libssl-dev || locate -b libssl | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libssl-dev'
                     }
                 }
@@ -673,7 +673,7 @@ config = {
                 ],
                 'check': {
                    'openldap-devel': {
-                        'cmd': 'yum list installed | grep openldap-devel',
+                        'cmd': 'yum list installed | grep openldap-devel || locate -b libldap | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package openldap-devel'
                     }
                 }
@@ -684,7 +684,7 @@ config = {
                 ],
                 'check': {
                    'openldap-devel': {
-                        'cmd': 'dnf list installed | grep openldap-devel',
+                        'cmd': 'dnf list installed | grep openldap-devel || locate -b libldap | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package openldap-devel'
                     }
                 }
@@ -695,7 +695,7 @@ config = {
                 ],
                 'check': {
                    'openldap2-devel': {
-                        'cmd': 'rpm -qa | grep openldap2-devel',
+                        'cmd': 'rpm -qa | grep openldap2-devel || locate -b libldap | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package openldap2-devel'
                     }
                 }
@@ -707,11 +707,11 @@ config = {
                 ],
                 'check': {
                    'openldap': {
-                        'cmd': 'ls -d /var/db/pkg/*/* | grep openldap',
+                        'cmd': 'ls -d /var/db/pkg/*/* | grep openldap || locate -b libldap | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package openldap'
                     },
                    'cyrus-sasl': {
-                        'cmd': 'ls -d /var/db/pkg/*/* | grep cyrus-sasl',
+                        'cmd': 'ls -d /var/db/pkg/*/* | grep cyrus-sasl || locate -b cyrus-sasl | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package cyrus-sasl'
                     }
                 }
@@ -722,7 +722,7 @@ config = {
                 ],
                 'check': {
                    'openldap-sasl-client': {
-                        'cmd': 'pkg info | grep openldap-sasl-client',
+                        'cmd': 'pkg info | grep openldap-sasl-client || locate libsasl2 | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package openldap-sasl-client'
                     }
                 }
@@ -735,7 +735,7 @@ config = {
                 ],
                 'check': {
                    'libfontconfig': {
-                        'cmd': 'dpkg --get-selections | grep libfontconfig',
+                        'cmd': 'dpkg --get-selections | grep libfontconfig || locate -b libfontconfig | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package libfontconfig'
                     }
                 }
@@ -746,7 +746,7 @@ config = {
                 ],
                 'check': {
                    'fontconfig': {
-                        'cmd': 'yum list installed | grep fontconfig',
+                        'cmd': 'yum list installed | grep fontconfig || locate -b libfontconfig | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package fontconfig'
                     }
                 }
@@ -757,7 +757,7 @@ config = {
                 ],
                 'check': {
                    'fontconfig': {
-                        'cmd': 'dnf list installed | grep fontconfig',
+                        'cmd': 'dnf list installed | grep fontconfig || locate -b libfontconfig | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package fontconfig'
                     }
                 }
@@ -768,7 +768,7 @@ config = {
                 ],
                 'check': {
                    'fontconfig': {
-                        'cmd': 'rpm -qa | grep fontconfig',
+                        'cmd': 'rpm -qa | grep fontconfig || locate -b libfontconfig | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate package fontconfig'
                     }
                 }
