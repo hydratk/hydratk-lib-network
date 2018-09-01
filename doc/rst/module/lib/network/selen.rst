@@ -15,18 +15,12 @@ selenium requires non-Python libraries which are automatically installed by setu
 Unit tests available at hydratk/lib/bridge/selen/01_methods_ut.jedi, 02_methods_ut.jedi
 
 selen uses running browser to execute tests on web page. Browsers are not bundled with hydratk and must be installed separately.
-The recommended browser is `PhantomJS <http://phantomjs.org/>`_ because it is headless (it doesn't require OS with GUI).
+Only browsers with headless mode are supported (PhantomJS project was cancelled).
 
 Supported browsers:
 
-* PhantomJS
-* Android
-* BlackBerry
 * Firefox
 * Chrome
-* Ie
-* Opera
-* Safari
 
 **Attributes** :
 
@@ -51,13 +45,19 @@ Supported browsers:
 
 * __init__
 
-Constructor sets _client to requested browser (PHANTOMJS by default) object instance. If browser is not supported NotImplementedError is raised.
+Constructor sets _client to requested browser object instance. If browser is not supported NotImplementedError is raised.
+Common parameters are browser, headless (default False), save_video (default False), filename, duration (used for video file).
+
+Each browser has specific parameters, see Selenium and browser documentation for more details.
+Firefox specific parameters are: firefox_profile, firefox_binary, timeout, capabilities, proxy, executable_path, options, log_path,
+firefox_options, service_args, desired_capabilities
+Chrome specific parameters are: executable_path, port, options, service_args, desired_capabilities, service_log_path, chrome_options
 
   .. code-block:: python
   
      from hydratk.lib.bridge.selen import SeleniumBridge
      
-     c = SeleniumBridge('PHANTOMJS')
+     c = SeleniumBridge('Firefox')
      
 * open
 
@@ -217,3 +217,21 @@ Method emulates browser button refresh using selenium method refresh, it returns
 * get_screen
 
 Methods gets screenshot content in png (default) or base64 format.
+
+**Class EventListener**
+
+Used to created movie (animated gif) using external module imageio from screenshots taken after requested events.
+
+* __init__ 
+
+Constructor, class inherited from AbstractEventListener.
+
+* _get_screen
+
+Method stores PNG screenshot to memory. Method is called by event handlers: after_change_value, after_click, after_execute_script,
+after_naviaget_back, after_navigate_forward, after_navigate_to, before_close, before_quit. 
+
+* _save_video
+
+Methods saves video file. First it fires event selen_before_save_video where parameters (_filename, _duration) can be rewritten.
+It creates video file from screenshots and fires event selen_after_save_video. Method is called by event handler after_quit.

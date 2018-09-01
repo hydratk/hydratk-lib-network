@@ -33,5 +33,7 @@ msg = {
     'htk_selen_executing_script': ["Spouštím skript: {0}"],
     'htk_selen_script_executed': ["Skript spuštěn"],
     'htk_selen_saving_screen': ["Ukládám obrázek do '{0}'"],
-    'htk_selen_screen_saved': ["Obrázek uložen"]
+    'htk_selen_screen_saved': ["Obrázek uložen"],
+    'htk_selen_saving_video': ["Ukládám video do souboru: '{0}', duration: '{1}'"],
+    'htk_selen_video_saved': ["Video uloženo"]
 }

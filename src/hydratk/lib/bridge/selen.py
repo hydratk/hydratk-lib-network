@@ -22,28 +22,27 @@ selen_before_script
 selen_after_script
 selen_before_save_screen
 selen_after_save_screen
+selen_before_save_video
+selen_after_save_video
 
 """
 
 from hydratk.core.masterhead import MasterHead
 from hydratk.core import event
+from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support.ui import WebDriverWait, Select
+from selenium.webdriver.support.events import EventFiringWebDriver
+from selenium.webdriver.support.events import AbstractEventListener
 from selenium.webdriver.common.utils import is_url_connectable
 from selenium.webdriver.remote.webelement import WebElement
-from importlib import import_module
-from os import path
+from os import devnull
+from datetime import datetime
 
-browsers = {
-    'ANDROID': 'Android',
-    'BLACKBERRY': 'BlackBerry',
-    'FIREFOX': 'Firefox',
-    'CHROME': 'Chrome',
-    'IE': 'Ie',
-    'OPERA': 'Opera',
-    'PHANTOMJS': 'PhantomJS',
-    'SAFARI': 'Safari'
-}
+browsers = [
+    'FIREFOX',
+    'CHROME'
+]
 
 
 class SeleniumBridge(object):
@@ -56,14 +55,18 @@ class SeleniumBridge(object):
     _url = None
     _confirm_alert = True
 
-    def __init__(self, browser='PhantomJS', **kwargs):
+    def __init__(self, browser, headless=False, save_video=False, filename=None, duration=0.5, **kwargs):
         """Class constructor
 
         Called when the object is initialized   
 
         Args:            
-           browser (str): browser name, default PhantomJS
-           kwargs (dict): keyword arguments
+           browser (str): browser name
+           headless (bool): headless mode
+           save_video (bool): save video from browser
+           filename (str): video filename
+           duration (float): frame duration in seconds
+           kwargs (dict): keyword arguments, browser specific
 
         Raises:
            error: NotImplementedError
@@ -76,19 +79,55 @@ class SeleniumBridge(object):
         self._browser = browser.upper()
         if (self._browser in browsers):
 
-            mod = import_module('selenium.webdriver')
-            if (self._browser == 'PHANTOMJS'):
-                if 'profile' in kwargs and kwargs['profile'] != None:
-                    client = mod.__dict__[browsers[self._browser]](profile=kwargs['profile'], service_args=['--ignore-ssl-errors=true', '--ssl-protocol=any'],
-                                                                   service_log_path=path.devnull)
-                else:
-                    client = mod.__dict__[browsers[self._browser]](service_args=['--ignore-ssl-errors=true', '--ssl-protocol=any'],
-                                                                   service_log_path=path.devnull)
-                client.set_window_size(1024, 768)
-            else:
-                client = mod.__dict__[browsers[self._browser]](**kwargs)
+            client = None
+            if (self._browser == 'FIREFOX'):
+                firefox_profile = kwargs['firefox_profile'] if ('firefox_profile' in kwargs) else None
+                firefox_binary = kwargs['firefox_binary'] if ('firefox_binary' in kwargs) else None
+                timeout = kwargs['timeout'] if ('timeout' in kwargs) else 30
+                capabilities = kwargs['capabilities'] if ('capabilities' in kwargs) else webdriver.common.desired_capabilities.DesiredCapabilities.FIREFOX.copy()
+                if ('capabilities' not in kwargs):
+                    capabilities['acceptInsecureCerts'] = True
 
-            self._client = client
+                proxy = kwargs['proxy'] if ('proxy' in kwargs) else None
+                executable_path = kwargs['executable_path'] if ('executable_path' in kwargs) else 'geckodriver'
+                options = kwargs['options'] if ('options' in kwargs) else None
+                log_path = kwargs['log_path'] if ('log_path' in kwargs) else devnull
+
+                firefox_options = kwargs['firefox_options'] if ('firefox_options' in kwargs) else webdriver.FirefoxOptions()
+                if (headless):
+                    firefox_options.add_argument('--headless')
+
+                service_args = kwargs['service_args'] if ('service_args' in kwargs) else None
+                desired_capabilities = kwargs['desired_capabilities'] if ('desired_capabilities' in kwargs) else None
+
+                client = webdriver.firefox.webdriver.WebDriver(firefox_profile, firefox_binary, timeout, capabilities, proxy, executable_path,
+                                                               options, log_path, firefox_options, service_args, desired_capabilities)
+
+            elif (self._browser == 'CHROME'):
+                executable_path = kwargs['executable_path'] if ('executable_path' in kwargs) else 'chromedriver'
+                port = kwargs['port'] if ('port' in kwargs) else 0
+                options = kwargs['options'] if ('options' in kwargs) else None
+                service_args = kwargs['service_args'] if ('service_args' in kwargs) else None
+                desired_capabilities = kwargs['desired_capabilities'] if ('desired_capabilities' in kwargs) else None
+                service_log_path = kwargs['log_path'] if ('log_path' in kwargs) else devnull
+                chrome_options = kwargs['chrome_options'] if ('chrome_options' in kwargs) else webdriver.ChromeOptions()
+                if ('chrome-options' not in kwargs):
+                    chrome_options.add_argument('--no-sandbox')
+                    chrome_options.add_argument('--disable-dev-shm-usage')
+                    chrome_options.add_argument('start-maximized')
+                    chrome_options.add_argument('disable-infobars')
+                    chrome_options.add_argument('--ignore-certificate-errors')
+                if (headless):
+                    chrome_options.add_argument('--headless')
+
+                client = webdriver.chrome.webdriver.WebDriver(executable_path, port, options, service_args, desired_capabilities,
+                                                              service_log_path, chrome_options)
+
+            if (save_video):
+                filename = filename if (filename != None) else 'movie_{0}.gif'.format(datetime.now().strftime('%Y%m%d%H%M%S'))
+                self._client = EventFiringWebDriver(client, EventListener(filename, duration))
+            else:
+                self._client = client
 
         else:
             raise NotImplementedError(self._mh._trn.msg('htk_selen_unknown_browser', self._browser))
@@ -141,8 +180,7 @@ class SeleniumBridge(object):
 
         try:
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
-                'htk_selen_opening', url), self._mh.fromhere())
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg('htk_selen_opening', url), self._mh.fromhere())
             ev = event.Event('selen_before_open', url, timeout)
             if (self._mh.fire_event(ev) > 0):
                 url = ev.argv(0)
@@ -154,16 +192,14 @@ class SeleniumBridge(object):
                 self._client.set_page_load_timeout(timeout)
                 self._client.get(url)
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
-                'htk_selen_opened'), self._mh.fromhere())
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg('htk_selen_opened'), self._mh.fromhere())
             ev = event.Event('selen_after_open')
             self._mh.fire_event(ev)
 
             return True
 
         except WebDriverException as ex:
-            self._mh.demsg(
-                'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
+            self._mh.demsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
     def close(self):
@@ -180,13 +216,11 @@ class SeleniumBridge(object):
         try:
 
             self._client.quit()
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
-                'htk_selen_closed'), self._mh.fromhere())
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg('htk_selen_closed'), self._mh.fromhere())
             return True
 
         except WebDriverException as ex:
-            self._mh.demsg(
-                'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
+            self._mh.demsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
     def wait_for_element(self, ident, method='id', timeout=5):
@@ -208,8 +242,7 @@ class SeleniumBridge(object):
 
         try:
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
-                'htk_selen_waiting', ident, timeout), self._mh.fromhere())
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg('htk_selen_waiting', ident, timeout), self._mh.fromhere())
             ev = event.Event('selen_before_wait', ident, method, timeout)
             if (self._mh.fire_event(ev) > 0):
                 ident = ev.argv(0)
@@ -224,16 +257,14 @@ class SeleniumBridge(object):
                     WebDriverWait(self._client, timeout).until(
                         lambda cond: self._client.find_element_by_xpath(ident))
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
-                'htk_selen_wait_finished'), self._mh.fromhere())
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg('htk_selen_wait_finished'), self._mh.fromhere())
             ev = event.Event('selen_after_wait')
             self._mh.fire_event(ev)
 
             return True
 
         except WebDriverException as ex:
-            self._mh.demsg(
-                'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
+            self._mh.demsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
     def get_element(self, ident, method='id', single=True):
@@ -254,8 +285,7 @@ class SeleniumBridge(object):
 
         try:
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
-                'htk_selen_get', ident, method, single), self._mh.fromhere())
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg('htk_selen_get', ident, method, single), self._mh.fromhere())
             ev = event.Event('selen_before_get_elem', ident, method, single)
             if (self._mh.fire_event(ev) > 0):
                 ident = ev.argv(0)
@@ -311,8 +341,7 @@ class SeleniumBridge(object):
             return elements
 
         except WebDriverException as ex:
-            self._mh.demsg(
-                'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
+            self._mh.demsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None
 
     def read_element(self, ident, method='id', attr=None, attr_val=None, el_type=None):
@@ -335,13 +364,10 @@ class SeleniumBridge(object):
 
         try:
 
-            message = 'ident:{0}, method:{1}, attr:{2}, attr_val:{3}, el_type:{4}'.format(
-                ident, method, attr, attr_val, el_type)
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
-                'htk_selen_read', message), self._mh.fromhere())
+            message = 'ident:{0}, method:{1}, attr:{2}, attr_val:{3}, el_type:{4}'.format(ident, method, attr, attr_val, el_type)
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg('htk_selen_read', message), self._mh.fromhere())
 
-            ev = event.Event(
-                'selen_before_read_elem', ident, method, attr, attr_val, el_type)
+            ev = event.Event('selen_before_read_elem', ident, method, attr, attr_val, el_type)
             if (self._mh.fire_event(ev) > 0):
                 ident = ev.argv(0)
                 method = ev.argv(1)
@@ -363,6 +389,9 @@ class SeleniumBridge(object):
 
                 else:
                     element = self.get_element(ident, method)
+
+                if (element == None):
+                    return None
 
                 elem_type = element.get_attribute('type') if (el_type == None) else el_type
                 if (elem_type in ['checkbox', 'radio']):
@@ -470,9 +499,7 @@ class SeleniumBridge(object):
 
         try:
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
-                'htk_selen_executing_script', script), self._mh.fromhere())
-
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg('htk_selen_executing_script', script), self._mh.fromhere())
             ev = event.Event('selen_before_script', script)
             if (self._mh.fire_event(ev) > 0):
                 script = ev.argv(0)
@@ -480,16 +507,14 @@ class SeleniumBridge(object):
             if (ev.will_run_default()):
                 output = self._client.execute_script(script, *args)
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
-                'htk_selen_script_executed'), self._mh.fromhere())
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg('htk_selen_script_executed'), self._mh.fromhere())
             ev = event.Event('selen_after_script')
             self._mh.fire_event(ev)
 
             return output
 
         except WebDriverException as ex:
-            self._mh.demsg(
-                'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
+            self._mh.demsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return None
 
     def save_screen(self, outfile='screen.png'):
@@ -509,9 +534,7 @@ class SeleniumBridge(object):
 
         try:
 
-            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
-                'htk_selen_saving_screen', outfile), self._mh.fromhere())
-
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg('htk_selen_saving_screen', outfile), self._mh.fromhere())
             ev = event.Event('selen_before_save_screen', outfile)
             if (self._mh.fire_event(ev) > 0):
                 outfile = ev.argv(0)
@@ -520,8 +543,7 @@ class SeleniumBridge(object):
                 res = self._client.save_screenshot(outfile)
 
             if (res):
-                self._mh.demsg('htk_on_debug_info', self._mh._trn.msg(
-                    'htk_selen_screen_saved'), self._mh.fromhere())
+                self._mh.demsg('htk_on_debug_info', self._mh._trn.msg('htk_selen_screen_saved'), self._mh.fromhere())
                 ev = event.Event('selen_after_save_screen')
                 self._mh.fire_event(ev)
                 return True
@@ -529,8 +551,7 @@ class SeleniumBridge(object):
                 raise WebDriverException('Invalid path: {0}'.format(outfile))
 
         except WebDriverException as ex:
-            self._mh.demsg(
-                'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
+            self._mh.demsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
     def check_alert(self, confirm=None):
@@ -558,8 +579,7 @@ class SeleniumBridge(object):
             return True, value
 
         except WebDriverException as ex:
-            self._mh.demsg(
-                'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
+            self._mh.demsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False, None
 
     def get_current_url(self):
@@ -578,8 +598,7 @@ class SeleniumBridge(object):
             return self._client.current_url
 
         except WebDriverException as ex:
-            self._mh.demsg(
-                'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
+            self._mh.demsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
     def get_title(self):
@@ -598,8 +617,7 @@ class SeleniumBridge(object):
             return self._client.title
 
         except WebDriverException as ex:
-            self._mh.demsg(
-                'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
+            self._mh.demsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
     def go_back(self):
@@ -619,8 +637,7 @@ class SeleniumBridge(object):
             return True
 
         except WebDriverException as ex:
-            self._mh.demsg(
-                'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
+            self._mh.demsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
     def refresh(self):
@@ -640,8 +657,7 @@ class SeleniumBridge(object):
             return True
 
         except WebDriverException as ex:
-            self._mh.demsg(
-                'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
+            self._mh.demsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
 
     def get_screen(self, output='png'):
@@ -666,6 +682,114 @@ class SeleniumBridge(object):
             return screen
 
         except WebDriverException as ex:
-            self._mh.demsg(
-                'htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
+            self._mh.demsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
             return False
+
+class EventListener(AbstractEventListener):
+    """Class EventListener
+    """
+    
+    _mh = None
+    _screens = []
+    _filename = None
+    _duration = 0.0
+
+    def __init__(self, filename, duration):
+        """Class constructor
+
+        Called when the object is initialized
+
+        Args:
+           filename (str): video filename
+           duration (float): frame duration in seconds
+
+        """
+
+        AbstractEventListener.__init__(self)
+
+        self._mh = MasterHead.get_head()
+        self._screens = []
+        self._filename = filename
+        self._duration = duration
+
+    def _get_screen(self, driver):
+        """Method gets screenshot
+
+        Args:
+           driver (obj): driver reference
+
+        Returns:
+           void
+
+        """
+
+        self._screens.append(driver.get_screenshot_as_png())
+        
+    def _save_video(self):
+        """Method saves video from screenshots
+
+        Args:
+           none
+
+        Returns:
+           void
+
+        """
+        
+        try:
+
+            from imageio import imread, get_writer
+
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg('htk_selen_saving_video', self._filename, self._duration), self._mh.fromhere())
+            ev = event.Event('selen_before_save_video', self._filename, self._duration)
+            if (self._mh.fire_event(ev) > 0):
+                self._filename = ev.argv(0)
+                self._duration = ev.argv(1)
+
+            if (ev.will_run_default()):
+                with get_writer(self._filename, duration=self._duration) as w:
+                    for screen in self._screens:
+                        w.append_data(imread(screen))
+
+            self._mh.demsg('htk_on_debug_info', self._mh._trn.msg('htk_selen_video_saved'), self._mh.fromhere())
+            ev = event.Event('selen_after_save_video')
+            self._mh.fire_event(ev)
+
+        except Exception as ex:
+            self._mh.demsg('htk_on_error', 'error: {0}'.format(ex), self._mh.fromhere())
+
+    def after_change_value(self, element, driver):
+        
+        self._get_screen(driver)
+
+    def after_click(self, element, driver):
+
+        self._get_screen(driver)
+
+    def after_execute_script(self, script, driver):
+
+        self._get_screen(driver)
+
+    def after_navigate_back(self, driver):
+
+        self._get_screen(driver)
+
+    def after_navigate_forward(self, driver):
+
+        self._get_screen(driver)
+
+    def after_navigate_to(self, url, driver):
+
+        self._get_screen(driver)
+
+    def after_quit(self, driver):
+
+        self._save_video()
+
+    def before_close(self, driver):
+
+        self._get_screen(driver)
+
+    def before_quit(self, driver):
+
+        self._get_screen(driver)

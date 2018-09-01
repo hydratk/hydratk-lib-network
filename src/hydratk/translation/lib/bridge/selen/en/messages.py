@@ -33,5 +33,7 @@ msg = {
     'htk_selen_executing_script': ["Executing script: {0}"],
     'htk_selen_script_executed': ["Script executed"],
     'htk_selen_saving_screen': ["Saving screenshot to '{0}'"],
-    'htk_selen_screen_saved': ["Screenshot saved"]
+    'htk_selen_screen_saved': ["Screenshot saved"],
+    'htk_selen_saving_video': ["Saving video to file: '{0}', duration: '{1}'"],
+    'htk_selen_video_saved': ["Video saved"]
 }

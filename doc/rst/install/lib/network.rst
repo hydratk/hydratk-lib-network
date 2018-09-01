@@ -63,6 +63,7 @@ These modules will be installed automatically, if not installed yet.
 * hydratk
 * cassandra-driver
 * cx_Oracle
+* imageio
 * JPype1
 * jsonrpclib
 * lxml
@@ -90,7 +91,7 @@ These modules will be installed automatically, if not installed yet.
 * suds
 * tftpy
 
-Modules cx_Oracle, lxml, MySQL-python, paramiko, pymssql, psycopg2, pycurl, python-ldap, selenium require several 
+Modules cx_Oracle, imageio, lxml, MySQL-python, paramiko, pymssql, psycopg2, pycurl, python-ldap, selenium require several 
 libraries which will be installed via Linux package managers, if not installed yet.
 
   .. note ::
@@ -129,7 +130,14 @@ cx_Oracle
 * Debian apt-get: libaio1, libaio-dev
 * Red Hat yum: libaio
 * Fedora dnf: libaio
-* SuSe zypper: libaio1     
+* SuSe zypper: libaio1
+
+imageio
+
+* Debian apt-get: libjpeg-dev, zlib1g-del
+* Red Hat yum: libjpeg-devel, zlib-devel
+* Fedora dnf: libjpeg-devel, zlib-devel
+* SuSe zypper: libjpeg-devel, zlib-devel
     
 lxml
 
@@ -207,7 +215,7 @@ When you install JVM, you can update library and JPype1 including jar files will
 Library offers following profiles.
 
 * basic - hydratk, jsonrpclib, lxml, paramiko, pycurl, python-ntlm, requests, requests_ntlm, scapy, simplejson, suds, tftpy
-* bridge - basic profile, JPype1, pyexcel, pyexcel-xlsx, pyexcel-ods3, selenium
+* bridge - basic profile, imageio, JPype1, pyexcel, pyexcel-xlsx, pyexcel-ods3, selenium
 * db - basic profile, cassandra-driver, cx_Oracle, MySQL-python, mysqlclient, psycopg2, pymongo, pymssql, python-ldap redis
 * jms - basic profile, paho-mqtt, python-qpid-proton, stompest
 * full - everything    

@@ -20,6 +20,7 @@ autodoc_default_flags = ['members', 'private-members', 'special-members']
 autodoc_mock_imports = [
     'cassandra.cluster', 'cassandra.auth', 'cassandra.protocol',
     'cx_Oracle',
+    'imageio',
     'jpype',
     'jsonrpclib', 'jsonrpclib.jsonrpc',
     'ldap', 'ldap.modlist',
@@ -36,7 +37,7 @@ autodoc_mock_imports = [
     'redis',
     'requests', 'requests.exceptions', 'requests.packages.urllib3', 'requests.auth', 'requests_ntlm',
     'scapy.all', 'scapy.error',
-    'selenium', 'selenium.common.exceptions', 'selenium.webdriver.support.ui', 'selenium.webdriver.common.utils',
+    'selenium', 'selenium.common.exceptions', 'selenium.webdriver.support.events', 'selenium.webdriver.support.ui', 'selenium.webdriver.common.utils', 'selenium.webdriver.remote.webelement',
     'simplejson', 'simplejson.scanner',
     'stompest', 'stompest.config', 'stompest.sync', 'stompest.protocol', 'stompest.error',
     'suds', 'suds.cache', 'suds.client', 'suds.transport', 'suds.transport.https', 'suds.wsse',

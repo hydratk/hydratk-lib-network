@@ -10,18 +10,13 @@ API
 
 Module hydratk.lib.bridge.selen
 
-Constructor requires attribute browser, PhantomJS (headless browser) is chosen by default.
-Browser libraries including PhantomJS are not bundled with HydraTK and must be installed individually.  
+Constructor requires attribute browser. Only browsers with headless mode are supported (PhantomJS project was cancelled).
+Browser libraries are not bundled with HydraTK and must be installed individually.  
 
 Supported browsers:
 
-* Android
-* BlackBerry
-* Firefox
-* Internet Explorer
-* Opera
-* PhantomJS
-* Safari
+* Firefox (needs browser and geckodriver)
+* Chrome (needs browser and chromedriver)
 
 Methods:
 
@@ -53,7 +48,7 @@ Examples
      from hydratk.lib.bridge.selen import SeleniumBridge
      
      # initialize bridge
-     bridge = SeleniumBridge('PhantomJS')
+     bridge = SeleniumBridge('Firefox')
      
      # open registration module
      bridge.open('https://oneportal.com/web/registration')  
@@ -83,3 +78,13 @@ Examples
      
      # close browser
      bridge.close()
+     
+     # headless mode
+     bridge = SeleniumBridge('Firefox', headless=True)
+     bridge = SeleniumBridge('Chrome', headless=True)
+     
+     # save video
+     # file movie_yyyymmddhh24miss.gif is created
+     # videos from standard mode are of better quality than from headless mode
+     bridge = SeleniumBridge('Firefox', save_video=True)
+     bridge = SeleniumBridge('Chrome', headless=True, save_video=True)  

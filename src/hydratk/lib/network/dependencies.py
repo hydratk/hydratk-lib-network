@@ -21,6 +21,11 @@ dep_modules = {
         'package': 'cassandra-driver',
         'optional': True
     },
+    'imageio': {
+        'min-version': '2.3.0',
+        'package': 'imageio',
+        'optional': True
+    },
     'lxml': {
         'min-version': '3.3.3',
         'package': 'lxml'

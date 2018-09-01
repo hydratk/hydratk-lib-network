@@ -16,29 +16,29 @@ Test-Scenario-1:
     
     Test-Condition-1: 
       Id: tco_01
-      Name: tco_phantomjs
+      Name: tco_firefox
       Desc: Firefox browser
       
       Test: |
-        c = SeleniumBridge('PHANTOMJS')
+        c = SeleniumBridge('Firefox')
         res = c.__class__.__name__
       
       Validate: |
         this.test_result = res
         assert (res == 'SeleniumBridge'), '__init__ = SeleniumBridge'
         res = [c._browser, c._client.__class__.__name__]
-        exp = ['PHANTOMJS', 'WebDriver']
+        exp = ['FIREFOX', 'WebDriver']
         this.test_result = str(res)   
         assert (res == exp), '_browser, _client = {0}'.format(exp)    
         c.close()
         
     Test-Condition-2: 
       Id: tco_02
-      Name: tco_firefox
-      Desc: Firefox browser
+      Name: tco_firefox_headless
+      Desc: Firefox browser in headless mode
       
       Test: |
-        c = SeleniumBridge('FIREFOX')
+        c = SeleniumBridge('Firefox', True)
         res = c.__class__.__name__
       
       Validate: |
@@ -48,10 +48,46 @@ Test-Scenario-1:
         exp = ['FIREFOX', 'WebDriver']
         this.test_result = str(res)   
         assert (res == exp), '_browser, _client = {0}'.format(exp)  
-        c.close()
+        c.close()        
         
     Test-Condition-3: 
       Id: tco_03
+      Name: tco_chrome
+      Desc: Chrome browser
+      
+      Test: |
+        c = SeleniumBridge('Chrome')
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'SeleniumBridge'), '__init__ = SeleniumBridge'
+        res = [c._browser, c._client.__class__.__name__]
+        exp = ['CHROME', 'WebDriver']
+        this.test_result = str(res)   
+        assert (res == exp), '_browser, _client = {0}'.format(exp)  
+        c.close()
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_chrome_headless
+      Desc: Chrome browser in headless mode
+      
+      Test: |
+        c = SeleniumBridge('Chrome', True)
+        res = c.__class__.__name__
+      
+      Validate: |
+        this.test_result = res
+        assert (res == 'SeleniumBridge'), '__init__ = SeleniumBridge'
+        res = [c._browser, c._client.__class__.__name__]
+        exp = ['CHROME', 'WebDriver']
+        this.test_result = str(res)   
+        assert (res == exp), '_browser, _client = {0}'.format(exp)  
+        c.close()        
+        
+    Test-Condition-5: 
+      Id: tco_05
       Name: tco_invalid
       Desc: Invalid browser
       
@@ -88,8 +124,8 @@ Test-Scenario-2:
       Desc: Getter client
       
       Test: |
-        c = SeleniumBridge()
-        c.open('http://localhost:8080/Autobot/')
+        c = SeleniumBridge('Firefox', True)
+        c.open('http://0.0.0.0:8888/')
         res = c.client.__class__.__name__
       
       Validate: |        
@@ -148,15 +184,16 @@ Test-Scenario-2:
       Desc: Setter confirm_alert
       
       Test: |
-        c = SeleniumBridge()
-        c.open('http://localhost:8080/Autobot/')
+        c = SeleniumBridge('Firefox', True)
+        c.open('http://0.0.0.0:8888/')
         obj = False
         c.confirm_url = obj
         res = c.confirm_url
       
       Validate: |        
         this.test_result = res
-        assert (res == obj), 'confirm_url = {0}'.format(obj)           
+        assert (res == obj), 'confirm_url = {0}'.format(obj)
+        c.close()           
         
 Test-Scenario-3:
   Id: ts_03
@@ -178,16 +215,16 @@ Test-Scenario-3:
     
     Test-Condition-1: 
       Id: tco_01
-      Name: tco_phantomjs
-      Desc: Open URL via PhantomJS
+      Name: tco_firefox
+      Desc: Open URL via Firefox
       
       Test: |
         mh = MasterHead.get_head()
         evs = ['selen_before_open', 'selen_after_open']
         reg_ev_hook(mh, evs[0])
         reg_ev_hook(mh, evs[1])
-        c = SeleniumBridge('PhantomJS')
-        url = 'http://127.0.0.1:8080/Autobot/'  
+        c = SeleniumBridge('Firefox')
+        url = 'http://0.0.0.0:8888/'  
         res = c.open(url)
       
       Validate: |         
@@ -202,21 +239,49 @@ Test-Scenario-3:
         del mh._event_hooks[evs[1]]   
         del events[0]
         del events[0] 
-        c.close()      
+        c.close()
         
     Test-Condition-2: 
       Id: tco_02
-      Name: tco_firefox
-      Desc: Open URL via Firefox
+      Name: tco_firefox_headless
+      Desc: Open URL via Firefox headless
       
       Test: |
-        c = SeleniumBridge('Firefox') 
+        c = SeleniumBridge('Firefox', True) 
         res = c.open(url)
       
       Validate: |         
         this.test_result = res
         assert (res), 'open_url = True' 
-        c.close()        
+        c.close()               
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_chrome
+      Desc: Open URL via Chrome
+      
+      Test: |
+        c = SeleniumBridge('Chrome') 
+        res = c.open(url)
+      
+      Validate: |         
+        this.test_result = res
+        assert (res), 'open_url = True' 
+        c.close()
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_chrome_headless
+      Desc: Open URL via Chrome headless
+      
+      Test: |
+        c = SeleniumBridge('Chrome', True) 
+        res = c.open(url)
+      
+      Validate: |         
+        this.test_result = res
+        assert (res), 'open_url = True' 
+        c.close()                 
         
   Test-Case-2:
     Id: tc_02
@@ -229,8 +294,8 @@ Test-Scenario-3:
       Desc: Invalid host
       
       Test: |
-        c = SeleniumBridge()
-        url = 'http://1.1.1.1:8080/Autobot/'
+        c = SeleniumBridge('Firefox', True)
+        url = 'http://1.1.1.1:8888/'
         res = c.open(url)
       
       Validate: |    
@@ -243,7 +308,7 @@ Test-Scenario-3:
       Desc: Invalid protocol
       
       Test: |
-        url = 'https://127.0.0.1:8080/Autobot/'
+        url = 'https://0.0.0.0:8888/'
         res = c.open(url)
       
       Validate: |    
@@ -273,7 +338,7 @@ Test-Scenario-4:
       Desc: Close    
     
       Test: |
-        c = SeleniumBridge()
+        c = SeleniumBridge('Firefox', True)
         res = c.close()
         
       Validate: |
@@ -300,16 +365,16 @@ Test-Scenario-5:
     
     Test-Condition-1: 
       Id: tco_01
-      Name: tco_phantomjs
-      Desc: Wait via PhantomJS
+      Name: tco_firefox
+      Desc: Wait via Firefox
       
       Test: |
         mh = MasterHead.get_head()
         evs = ['selen_before_wait', 'selen_after_wait']
         reg_ev_hook(mh, evs[0])
         reg_ev_hook(mh, evs[1])
-        c = SeleniumBridge('PhantomJS')
-        url = 'http://127.0.0.1:8080/Autobot/'  
+        c = SeleniumBridge('Firefox')
+        url = 'http://0.0.0.0:8888/'  
         c.open(url)
         res = c.wait_for_element('customerId')
       
@@ -325,30 +390,60 @@ Test-Scenario-5:
         del mh._event_hooks[evs[1]]   
         del events[0]
         del events[0] 
-        c.close()   
+        c.close()
         
     Test-Condition-2: 
       Id: tco_02
-      Name: tco_firefox
-      Desc: Wait via Firefox
+      Name: tco_firefox_headless
+      Desc: Wait via Firefox headless
       
       Test: |
-        c = SeleniumBridge('Firefox') 
+        c = SeleniumBridge('Firefox', True) 
         c.open(url)
         res = c.wait_for_element('customerId')
       
       Validate: |         
         this.test_result = res
         assert (res), 'wait_for_element = True' 
-        c.close()  
+        c.close()           
         
     Test-Condition-3: 
       Id: tco_03
+      Name: tco_chrome
+      Desc: Wait via Chrome
+      
+      Test: |
+        c = SeleniumBridge('Chrome') 
+        c.open(url)
+        res = c.wait_for_element('customerId')
+      
+      Validate: |         
+        this.test_result = res
+        assert (res), 'wait_for_element = True' 
+        c.close()
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_chrome_headless
+      Desc: Wait via Chrome headless
+      
+      Test: |
+        c = SeleniumBridge('Chrome', True) 
+        c.open(url)
+        res = c.wait_for_element('customerId')
+      
+      Validate: |         
+        this.test_result = res
+        assert (res), 'wait_for_element = True' 
+        c.close()           
+        
+    Test-Condition-5: 
+      Id: tco_05
       Name: tco_elem_id
       Desc: Element id
       
       Test: |
-        c = SeleniumBridge()
+        c = SeleniumBridge('Firefox', True)
         c.open(url)
         res = c.wait_for_element('customerRead', 'id')
       
@@ -356,21 +451,21 @@ Test-Scenario-5:
         this.test_result = res
         assert (res), 'wait_for_element = True'    
         
-    Test-Condition-4: 
-      Id: tco_04
+    Test-Condition-6: 
+      Id: tco_06
       Name: tco_elem_xpath
       Desc: Element xpath
       
       Test: |
         c.open(url)
-        res = c.wait_for_element('//div[@id=\'customerRead\']', 'xpath')
+        res = c.wait_for_element('//button[@id=\'customerRead\']', 'xpath')
       
       Validate: |   
         this.test_result = res
         assert (res), 'wait_for_element = True'   
         
-    Test-Condition-5: 
-      Id: tco_05
+    Test-Condition-7: 
+      Id: tco_07
       Name: tco_invalid_id
       Desc: Invalid element id
       
@@ -382,8 +477,8 @@ Test-Scenario-5:
         this.test_result = res
         assert (not res), 'wait_for_element = False'             
         
-    Test-Condition-6: 
-      Id: tco_06
+    Test-Condition-8: 
+      Id: tco_08
       Name: tco_invalid_xpath
       Desc: Invalid element xpath
       
@@ -416,15 +511,15 @@ Test-Scenario-6:
     
     Test-Condition-1: 
       Id: tco_01
-      Name: tco_phantomjs
-      Desc: Get via PhantomJS
+      Name: tco_firefox
+      Desc: Get via Firefox
       
       Test: |
         mh = MasterHead.get_head()
         evs = 'selen_before_get_elem'
         reg_ev_hook(mh, evs)
-        c = SeleniumBridge('PhantomJS')
-        url = 'http://127.0.0.1:8080/Autobot/'  
+        c = SeleniumBridge('Firefox')
+        url = 'http://0.0.0.0:8888/'  
         c.open(url)
         sleep(3)
         res = c.get_element('customerId')
@@ -439,15 +534,15 @@ Test-Scenario-6:
         assert (res == url), '_url = {0}'.format(url)
         del mh._event_hooks[evs]  
         del events[0]
-        c.close()   
+        c.close()
         
     Test-Condition-2: 
       Id: tco_02
-      Name: tco_firefox
-      Desc: Get via Firefox
+      Name: tco_firefox_headless
+      Desc: Get via Firefox headless
       
       Test: |
-        c = SeleniumBridge('Firefox')
+        c = SeleniumBridge('Firefox', True)
         c.open(url)
         sleep(3)
         res = c.get_element('customerId')
@@ -455,15 +550,47 @@ Test-Scenario-6:
       Validate: |         
         this.test_result = str(res)
         assert (res != None), 'get_element != None' 
-        c.close()                 
+        c.close()            
         
     Test-Condition-3: 
       Id: tco_03
+      Name: tco_chrome
+      Desc: Get via Chrome
+      
+      Test: |
+        c = SeleniumBridge('Chrome')
+        c.open(url)
+        sleep(3)
+        res = c.get_element('customerId')
+      
+      Validate: |         
+        this.test_result = str(res)
+        assert (res != None), 'get_element != None' 
+        c.close()
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_chrome_headless
+      Desc: Get via Firefox headless
+      
+      Test: |
+        c = SeleniumBridge('Firefox', True)
+        c.open(url)
+        sleep(3)
+        res = c.get_element('customerId')
+      
+      Validate: |         
+        this.test_result = str(res)
+        assert (res != None), 'get_element != None' 
+        c.close()                          
+        
+    Test-Condition-5: 
+      Id: tco_05
       Name: tco_elem_id
       Desc: Get element by id
       
       Test: |
-        c = SeleniumBridge()
+        c = SeleniumBridge('Firefox', True)
         c.open(url)
         sleep(3)
         res = c.get_element('customerRead', 'id')
@@ -472,37 +599,13 @@ Test-Scenario-6:
         this.test_result = str(res)
         assert (res != None), 'get_element != None'                
         
-    Test-Condition-4: 
-      Id: tco_04
+    Test-Condition-6: 
+      Id: tco_06
       Name: tco_elem_class
       Desc: Get element by class
       
       Test: |
-        res = c.get_element('v-formlayout-row', 'class')
-      
-      Validate: |         
-        this.test_result = str(res)
-        assert (res != None), 'get_element != None'        
-        
-    Test-Condition-5: 
-      Id: tco_05
-      Name: tco_elems_class
-      Desc: Get elements by class
-      
-      Test: |
-        res = c.get_element('v-formlayout-row', 'class', False)
-      
-      Validate: |         
-        this.test_result = str(res)
-        assert (len(res) > 0), 'get_element is not empty'    
-        
-    Test-Condition-6: 
-      Id: tco_06
-      Name: tco_elem_css
-      Desc: Get element by css
-      
-      Test: |
-        res = c.get_element('.autobot .v-tabsheet-tabitemcell .v-caption .v-captiontext', 'css')
+        res = c.get_element('tabcontent', 'class')
       
       Validate: |         
         this.test_result = str(res)
@@ -510,11 +613,11 @@ Test-Scenario-6:
         
     Test-Condition-7: 
       Id: tco_07
-      Name: tco_elems_css
-      Desc: Get elements by css
+      Name: tco_elems_class
+      Desc: Get elements by class
       
       Test: |
-        res = c.get_element('.autobot .v-tabsheet-tabitemcell .v-caption .v-captiontext', 'css', False)
+        res = c.get_element('row', 'class', False)
       
       Validate: |         
         this.test_result = str(res)
@@ -522,6 +625,30 @@ Test-Scenario-6:
         
     Test-Condition-8: 
       Id: tco_08
+      Name: tco_elem_css
+      Desc: Get element by css
+      
+      Test: |
+        res = c.get_element('div.tab button', 'css')
+      
+      Validate: |         
+        this.test_result = str(res)
+        assert (res != None), 'get_element != None'        
+        
+    Test-Condition-9: 
+      Id: tco_09
+      Name: tco_elems_css
+      Desc: Get elements by css
+      
+      Test: |
+        res = c.get_element('div.tab button', 'css', False)
+      
+      Validate: |         
+        this.test_result = str(res)
+        assert (len(res) > 0), 'get_element is not empty'    
+        
+    Test-Condition-10: 
+      Id: tco_10
       Name: tco_elem_tag
       Desc: Get element by tag
       
@@ -532,8 +659,8 @@ Test-Scenario-6:
         this.test_result = str(res)
         assert (res != None), 'get_element != None'        
         
-    Test-Condition-9: 
-      Id: tco_09
+    Test-Condition-11: 
+      Id: tco_11
       Name: tco_elems_tag
       Desc: Get elements by tag
       
@@ -544,8 +671,8 @@ Test-Scenario-6:
         this.test_result = str(res)
         assert (len(res) > 0), 'get_element is not empty'       
         
-    Test-Condition-10: 
-      Id: tco_10
+    Test-Condition-12: 
+      Id: tco_12
       Name: tco_elem_xpath
       Desc: Get element by xpath
       
@@ -556,8 +683,8 @@ Test-Scenario-6:
         this.test_result = str(res)
         assert (res != None), 'get_element != None'        
         
-    Test-Condition-11: 
-      Id: tco_11
+    Test-Condition-13: 
+      Id: tco_13
       Name: tco_elems_xpath
       Desc: Get elements by xpath
       
@@ -580,8 +707,8 @@ Test-Scenario-6:
       Desc: Invalid id 
       
       Test: |
-        c = SeleniumBridge()
-        url = 'http://127.0.0.1:8080/Autobot/'  
+        c = SeleniumBridge('Firefox', True)
+        url = 'http://0.0.0.0:8888/'  
         c.open(url)
         sleep(3)  
         res = c.get_element('xx', 'id')    
@@ -684,15 +811,15 @@ Test-Scenario-7:
     
     Test-Condition-1: 
       Id: tco_01
-      Name: tco_phantomjs
-      Desc: Read via PhantomJS
+      Name: tco_firefox
+      Desc: Read via Firefox
       
       Test: |
         mh = MasterHead.get_head()
         evs = 'selen_before_read_elem'
         reg_ev_hook(mh, evs)
-        c = SeleniumBridge('PhantomJS')
-        url = 'http://127.0.0.1:8080/Autobot/'  
+        c = SeleniumBridge('Firefox')
+        url = 'http://0.0.0.0:8888/'  
         c.open(url)
         sleep(3)
         res = c.read_element('customerId')
@@ -709,11 +836,11 @@ Test-Scenario-7:
         
     Test-Condition-2: 
       Id: tco_02
-      Name: tco_firefox
-      Desc: Read via Firefox
+      Name: tco_firefox_headless
+      Desc: Read via Firefox headless
       
       Test: |
-        c = SeleniumBridge('Firefox') 
+        c = SeleniumBridge('Firefox', True) 
         c.open(url)
         sleep(3)
         res = c.read_element('customerId')
@@ -721,15 +848,47 @@ Test-Scenario-7:
       Validate: |         
         this.test_result = str(res)
         assert (res != None), 'read_element != None' 
-        c.close()    
+        c.close()         
         
     Test-Condition-3: 
       Id: tco_03
+      Name: tco_chrome
+      Desc: Read via Chrome
+      
+      Test: |
+        c = SeleniumBridge('Chrome') 
+        c.open(url)
+        sleep(3)
+        res = c.read_element('customerId')
+      
+      Validate: |         
+        this.test_result = str(res)
+        assert (res != None), 'read_element != None' 
+        c.close()
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_chrome_headless
+      Desc: Read via Chrome headless
+      
+      Test: |
+        c = SeleniumBridge('Chrome', True) 
+        c.open(url)
+        sleep(3)
+        res = c.read_element('customerId')
+      
+      Validate: |         
+        this.test_result = str(res)
+        assert (res != None), 'read_element != None' 
+        c.close()             
+        
+    Test-Condition-5: 
+      Id: tco_05
       Name: tco_text
       Desc: Read element text attribute
       
       Test: |
-        c = SeleniumBridge() 
+        c = SeleniumBridge('Firefox', True) 
         c.open(url)
         sleep(3)
         res = c.read_element('customerId', attr='type', attr_val='text')
@@ -738,13 +897,13 @@ Test-Scenario-7:
         this.test_result = str(res)
         assert (res != None), 'read_element != None'  
         
-    Test-Condition-4: 
-      Id: tco_04
+    Test-Condition-6: 
+      Id: tco_06
       Name: tco_attr
       Desc: Read element with attribute
       
       Test: |
-        res = c.read_element('customerId', attr='tabindex', attr_val='0')
+        res = c.read_element('customerId', attr='name', attr_val='customerId')
       
       Validate: |         
         this.test_result = str(res)
@@ -762,8 +921,8 @@ Test-Scenario-7:
       Desc: Invalid element
       
       Test: |
-        c = SeleniumBridge()
-        url = 'http://127.0.0.1:8080/Autobot/'  
+        c = SeleniumBridge('Firefox', True)
+        url = 'http://0.0.0.0:8888/'  
         c.open(url)
         sleep(3)
         res = c.read_element('xx')  
@@ -778,7 +937,7 @@ Test-Scenario-7:
       Desc: Invalid attribute
       
       Test: |
-        res = c.read_element('customerId', attr='xx', attr_val='0')  
+        res = c.read_element('customerId', attr='xx', attr_val='customerId')  
         
       Validate: |         
         this.test_result = str(res)
@@ -790,7 +949,7 @@ Test-Scenario-7:
       Desc: Invalid attribute value
       
       Test: |
-        res = c.read_element('customerId', attr='tabindex', attr_val='1')  
+        res = c.read_element('customerId', attr='name', attr_val='1')  
         
       Validate: |         
         this.test_result = str(res)
@@ -818,15 +977,15 @@ Test-Scenario-8:
     
     Test-Condition-1: 
       Id: tco_01
-      Name: tco_phantomjs
-      Desc: Set via PhantomJS
+      Name: tco_firefox
+      Desc: Set via Firefox
       
       Test: |
         mh = MasterHead.get_head()
         evs = 'selen_before_set_elem'
         reg_ev_hook(mh, evs)
-        c = SeleniumBridge('PhantomJS')
-        url = 'http://127.0.0.1:8080/Autobot/'  
+        c = SeleniumBridge('Firefox')
+        url = 'http://0.0.0.0:8888/'  
         c.open(url)
         sleep(3)
         elem, val = 'customerId', 'xx'
@@ -840,15 +999,15 @@ Test-Scenario-8:
         assert (res == evs), 'set_element fires'.format(evs)
         del mh._event_hooks[evs]  
         del events[0]
-        c.close()      
+        c.close()
         
     Test-Condition-2: 
       Id: tco_02
-      Name: tco_firefox
-      Desc: Set via PhantomJS
+      Name: tco_firefox_headless
+      Desc: Set via Firefox headless
       
       Test: |
-        c = SeleniumBridge('Firefox')
+        c = SeleniumBridge('Firefox', True)
         c.open(url)
         sleep(3)
         res = c.set_element(elem, val)
@@ -856,15 +1015,47 @@ Test-Scenario-8:
       Validate: |         
         this.test_result = res
         assert (res), 'set_element = True' 
-        c.close()  
+        c.close()               
         
     Test-Condition-3: 
       Id: tco_03
+      Name: tco_chrome
+      Desc: Set via Chrome
+      
+      Test: |
+        c = SeleniumBridge('Chrome')
+        c.open(url)
+        sleep(3)
+        res = c.set_element(elem, val)
+      
+      Validate: |         
+        this.test_result = res
+        assert (res), 'set_element = True' 
+        c.close()
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_chrome_headless
+      Desc: Set via Chrome headless
+      
+      Test: |
+        c = SeleniumBridge('Chrome', True)
+        c.open(url)
+        sleep(3)
+        res = c.set_element(elem, val)
+      
+      Validate: |         
+        this.test_result = res
+        assert (res), 'set_element = True' 
+        c.close()           
+        
+    Test-Condition-5: 
+      Id: tco_05
       Name: tco_text
       Desc: Set element with attribute
       
       Test: |
-        c = SeleniumBridge() 
+        c = SeleniumBridge('Firefox', True) 
         c.open(url)
         sleep(3)
         res = c.set_element('customerId', val, attr='type', attr_val='text')
@@ -885,8 +1076,8 @@ Test-Scenario-8:
       Desc: Invalid element
       
       Test: |
-        c = SeleniumBridge()
-        url = 'http://127.0.0.1:8080/Autobot/'  
+        c = SeleniumBridge('Firefox', True)
+        url = 'http://0.0.0.0:8888/'  
         c.open(url)
         sleep(3)
         val = 'xx'
@@ -914,7 +1105,7 @@ Test-Scenario-8:
       Desc: Invalid attribute value
       
       Test: |
-        res = c.set_element('customerId', val, attr='tabindex', attr_val='1')  
+        res = c.set_element('customerId', val, attr='name', attr_val='1')  
         
       Validate: |         
         this.test_result = res
@@ -942,16 +1133,16 @@ Test-Scenario-9:
     
     Test-Condition-1: 
       Id: tco_01
-      Name: tco_phantomjs
-      Desc: Execute via PhantomJS
+      Name: tco_firefox
+      Desc: Execute via Firefox
       
       Test: |
         mh = MasterHead.get_head()
         evs = ['selen_before_script', 'selen_after_script']
         reg_ev_hook(mh, evs[0])
         reg_ev_hook(mh, evs[1])
-        c = SeleniumBridge('PhantomJS')
-        url = 'http://127.0.0.1:8080/Autobot/'  
+        c = SeleniumBridge('Firefox')
+        url = 'http://0.0.0.0:8888/'  
         c.open(url)
         sleep(3)
         script = "return document.getElementById('customerId').value;"
@@ -968,14 +1159,14 @@ Test-Scenario-9:
         del events[0]
         del events[0]
         c.close()      
-        
+
     Test-Condition-2: 
       Id: tco_02
-      Name: tco_firefox
-      Desc: Execute via Firefox
+      Name: tco_firefox_headless
+      Desc: Execute via Firefox headless
       
       Test: |
-        c = SeleniumBridge('Firefox')
+        c = SeleniumBridge('Firefox', True)
         c.open(url)
         sleep(3)
         res = c.exec_script(script)
@@ -987,11 +1178,43 @@ Test-Scenario-9:
         
     Test-Condition-3: 
       Id: tco_03
+      Name: tco_chrome
+      Desc: Execute via Chrome
+      
+      Test: |
+        c = SeleniumBridge('Chrome')
+        c.open(url)
+        sleep(3)
+        res = c.exec_script(script)
+      
+      Validate: |         
+        this.test_result = res
+        assert (res != None), 'exec_script != None' 
+        c.close()         
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_chrome_headless
+      Desc: Execute via Chrome headless
+      
+      Test: |
+        c = SeleniumBridge('Chrome', True)
+        c.open(url)
+        sleep(3)
+        res = c.exec_script(script)
+      
+      Validate: |         
+        this.test_result = res
+        assert (res != None), 'exec_script != None' 
+        c.close() 
+        
+    Test-Condition-5: 
+      Id: tco_05
       Name: tco_read_text
       Desc: Read text field
       
       Test: |
-        c = SeleniumBridge()
+        c = SeleniumBridge('Firefox', True)
         c.open(url)
         sleep(3)
         elem, val = 'customerId', 'xx'
@@ -1003,27 +1226,27 @@ Test-Scenario-9:
         this.test_result = res
         assert (res == val), 'exec_script = {0}'.format(val)
         
-    Test-Condition-4: 
-      Id: tco_04
+    Test-Condition-6: 
+      Id: tco_06
       Name: tco_read_select
       Desc: Read select
       
       Test: |
-        script = "var e = document.getElementById('customerStatus').getElementsByTagName('select')[0];return e.options[1].text;"
+        script = "var e = document.getElementById('customerStatus');return e.options[1].text;"
         res = c.exec_script(script)  
         
       Validate: |
         this.test_result = res
-        exp = 'suspend'
+        exp = 'deactive'
         assert (res == exp), 'exec_script = {0}'.format(exp)    
         
-    Test-Condition-5: 
-      Id: tco_05
+    Test-Condition-7: 
+      Id: tco_07
       Name: tco_invalid
       Desc: Invalid script
       
       Test: |
-        script = "var e = document.getElementById('customer').getElementsByTagName('select')[0];return e.options[1].text;"
+        script = "var e = document.getElementById('customer');return e.options[1].text;"
         res = c.exec_script(script)  
         
       Validate: |
@@ -1054,16 +1277,16 @@ Test-Scenario-10:
     
     Test-Condition-1: 
       Id: tco_01
-      Name: tco_phantomjs
-      Desc: Save via PhantomJS
+      Name: tco_firefox
+      Desc: Save via Firefox
       
       Test: |
         mh = MasterHead.get_head()
         evs = ['selen_before_save_screen', 'selen_after_save_screen']
         reg_ev_hook(mh, evs[0])
         reg_ev_hook(mh, evs[1])
-        c = SeleniumBridge('PhantomJS')
-        url = 'http://127.0.0.1:8080/Autobot/'  
+        c = SeleniumBridge('Firefox')
+        url = 'http://0.0.0.0:8888/'  
         c.open(url)
         sleep(3)
         file = prefix+'/var/local/hydratk/test.png'
@@ -1086,11 +1309,11 @@ Test-Scenario-10:
         
     Test-Condition-2: 
       Id: tco_02
-      Name: tco_firefox
-      Desc: Save via Firefox
+      Name: tco_firefox_headless
+      Desc: Save via Firefox headless
       
       Test: |
-        c = SeleniumBridge('Firefox')
+        c = SeleniumBridge('Firefox', True)
         c.open(url)
         sleep(3)
         res = c.save_screen(file)
@@ -1102,14 +1325,52 @@ Test-Scenario-10:
         assert (res), 'file {0} created'.format(file)
         c.close()    
         remove(file)     
-        
+     
     Test-Condition-3: 
       Id: tco_03
+      Name: tco_chrome
+      Desc: Save via Chrome
+      
+      Test: |
+        c = SeleniumBridge('Chrome')
+        c.open(url)
+        sleep(3)
+        res = c.save_screen(file)
+      
+      Validate: |         
+        this.test_result = res
+        assert (res), 'save_screen = True' 
+        this.test_resut = res = (path.exists(file))
+        assert (res), 'file {0} created'.format(file)
+        c.close()    
+        remove(file) 
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_chrome_headless
+      Desc: Save via Chrome headless
+      
+      Test: |
+        c = SeleniumBridge('Chrome', True)
+        c.open(url)
+        sleep(3)
+        res = c.save_screen(file)
+      
+      Validate: |         
+        this.test_result = res
+        assert (res), 'save_screen = True' 
+        this.test_resut = res = (path.exists(file))
+        assert (res), 'file {0} created'.format(file)
+        c.close()    
+        remove(file)              
+        
+    Test-Condition-5: 
+      Id: tco_05
       Name: tco_invalid
       Desc: Invalid path
       
       Test: |
-        c = SeleniumBridge()
+        c = SeleniumBridge('Firefox', True)
         c.open(url)
         sleep(3)
         res = c.save_screen('/private/xx')

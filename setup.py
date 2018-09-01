@@ -135,6 +135,7 @@ config = {
     'modules': [
         {'module': 'hydratk', 'version': '>=0.5.0', 'profile': 'basic'},
         {'module': 'cassandra-driver', 'version': '>=3.7.0', 'profile': 'db'},
+        {'module': 'imageio', 'version': '>=2.3.0', 'profile': 'bridge'},
         {'module': 'lxml', 'version': '>=3.3.3', 'profile': 'basic'},
         {'module': 'paho-mqtt', 'version': '>=1.2', 'profile': 'jms'},
         {'module': 'paramiko', 'version': '>=1.16.0', 'profile': 'basic'},
@@ -206,6 +207,72 @@ config = {
                     'libaio1': {
                         'cmd': '/sbin/ldconfig -p | grep libaio || locate -b libaio | grep {0}'.format(syscfg.HTK_ROOT_DIR),
                         'errmsg': 'Unable to locate shared library libaio1'
+                    }
+                }
+            }
+        },
+        'imageio': {
+            'debian': {
+                'apt-get': [
+                    'libjpeg-dev',
+                    'zlib1g-dev'
+                ],
+                'check': {
+                    'libjpeg-dev': {
+                        'cmd': 'dpkg --get-selections | grep libjpeg-dev || locate -b libjpeg | grep {0}'.format(syscfg.HTK_ROOT_DIR),
+                        'errmsg': 'Unable to locate shared library libjpeg-dev'
+                    },
+                    'zlib1g-dev': {
+                        'cmd': 'dpkg --get-selections | grep zlib1g-dev || locate -b zlib | grep {0}'.format(syscfg.HTK_ROOT_DIR),
+                        'errmsg': 'Unable to locate package zlib1g-dev'
+                    }
+                }
+            },
+            'redhat': {
+                'yum': [
+                    'libjpeg-devel',
+                    'zlib-devel'
+                ],
+                'check': {
+                    'libjpeg-dev': {
+                        'cmd': 'yum list installed | grep libjpeg-turbo-devel || locate -b libjpeg | grep {0}'.format(syscfg.HTK_ROOT_DIR),
+                        'errmsg': 'Unable to locate shared library libjpeg-devel'
+                    },
+                    'zlib1g-dev': {
+                        'cmd': 'yum list installed | grep zlib-devel || locate -b zlib | grep {0}'.format(syscfg.HTK_ROOT_DIR),
+                        'errmsg': 'Unable to locate package zlib-devel'
+                    }
+                }
+            },
+            'fedora': {
+                'dnf': [
+                    'libjpeg-devel',
+                    'zlib-devel'
+                ],
+                'check': {
+                    'libjpeg-dev': {
+                        'cmd': 'dnf list installed | grep libjpeg || locate -b libjpeg | grep {0}'.format(syscfg.HTK_ROOT_DIR),
+                        'errmsg': 'Unable to locate shared library libjpeg-devel'
+                    },
+                    'zlib1g-dev': {
+                        'cmd': 'dnf list installed | grep zlib-devel || locate -b zlib | grep {0}'.format(syscfg.HTK_ROOT_DIR),
+                        'errmsg': 'Unable to locate package zlib-devel'
+                    }
+                }
+            },
+            'suse': {
+                'zypper': [
+                    'libjpeg-devel',
+                    'zlib-devel'
+                ],
+                'check': {
+                    'libjpeg-dev': {
+                        'cmd': 'dnf list installed | grep libjpeg || locate -b libjpeg | grep {0}'.format(syscfg.HTK_ROOT_DIR),
+                        'errmsg': 'Unable to locate shared library libjpeg-devel'
+                    },
+                    'zlib1g-dev': {
+                        'cmd': 'dnf list installed | grep zlib-devel || locate -b zlib | grep {0}'.format(syscfg.HTK_ROOT_DIR),
+                        'errmsg': 'Unable to locate package zlib-devel'
                     }
                 }
             }
@@ -847,7 +914,7 @@ task.run_pre_install(argv, config)
 
 st_setup(
     name='hydratk-lib-network',
-    version='0.2.2',
+    version='0.2.3',
     description='Clients/API for many network protocols and technologies',
     long_description=readme,
     author='Petr Rašek, HydraTK team',

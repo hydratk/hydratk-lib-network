@@ -20,8 +20,8 @@ Test-Scenario-1:
       Desc: Alert not present
       
       Test: |
-        c = SeleniumBridge('FIREFOX')
-        c.open('http://localhost:8080/Autobot/')
+        c = SeleniumBridge('Firefox', True)
+        c.open('http://0.0.0.0:8888/')
         res = c.check_alert()
       
       Validate: |
@@ -52,13 +52,13 @@ Test-Scenario-2:
       Desc: Get
       
       Test: |
-        c = SeleniumBridge('FIREFOX')
-        c.open('http://localhost:8080/Autobot/')
+        c = SeleniumBridge('Firefox', True)
+        c.open('http://0.0.0.0:8888/')
         res = c.get_current_url()
       
       Validate: |
         this.test_result = str(res)
-        exp = 'http://localhost:8080/Autobot/'
+        exp = 'http://0.0.0.0:8888/'
         assert (res == exp), 'get_current_url = {0}'.format(exp)  
         c.close()    
         
@@ -84,13 +84,13 @@ Test-Scenario-3:
       Desc: Get
       
       Test: |
-        c = SeleniumBridge('FIREFOX')
-        c.open('http://localhost:8080/Autobot/')
+        c = SeleniumBridge('Firefox', True)
+        c.open('http://0.0.0.0:8888/')
         res = c.get_title()
       
       Validate: |
         this.test_result = str(res)
-        exp = ''
+        exp = 'TestEnv'
         assert (res == exp), 'get_title = {0}'.format(exp)  
         c.close()     
         
@@ -116,8 +116,8 @@ Test-Scenario-4:
       Desc: Back
       
       Test: |
-        c = SeleniumBridge('FIREFOX')
-        c.open('http://localhost:8080/Autobot/')
+        c = SeleniumBridge('Firefox', True)
+        c.open('http://0.0.0.0:8888/')
         res = c.go_back()
       
       Validate: |
@@ -147,8 +147,8 @@ Test-Scenario-5:
       Desc: Refresh
       
       Test: |
-        c = SeleniumBridge('FIREFOX')
-        c.open('http://localhost:8080/Autobot/')
+        c = SeleniumBridge('Firefox', True)
+        c.open('http://0.0.0.0:8888/')
         res = c.refresh()
       
       Validate: |
@@ -178,8 +178,8 @@ Test-Scenario-6:
       Desc: PNG output
       
       Test: |
-        c = SeleniumBridge('PHANTOMJS')
-        c.open('http://localhost:8080/Autobot/')
+        c = SeleniumBridge('Firefox', True)
+        c.open('http://0.0.0.0:8888/')
         res = c.get_screen('png')
         
       Validate: |
@@ -209,4 +209,155 @@ Test-Scenario-6:
       Validate: |
         this.test_result = res
         assert (res == None), 'get_screen == None'                  
-        c.close()                              
+        c.close()
+        
+Test-Scenario-7:
+  Id: ts_07
+  Path: hydratk/lib/bridge/selen/02_methods_ut.jedi
+  Name: ts_event_listener
+  Desc: Test class EventListener
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.lib.bridge.selen import EventListener
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_init
+    Desc: Initialize EventListener
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_init
+      Desc: Initialize
+      
+      Test: |
+        filename, duration = 'movie.gif', 0.5
+        c = EventListener(filename, duration)
+        res = [c.__class__.__name__, c._filename, c._duration]
+        
+      Validate: |
+        this.test_result = str(res)
+        exp = ['EventListener', filename, duration]
+        assert (res == exp), 'exp = {0}'.format(exp)
+         
+Test-Scenario-8:
+  Id: ts_08
+  Path: hydratk/lib/bridge/selen/02_methods_ut.jedi
+  Name: ts_save_video
+  Desc: Test _save_video method
+  Author: Petr Rasek <bowman@hydratk.org>
+  Version: 0.1
+  
+  Pre-Req: |
+    from hydratk.core.masterhead import MasterHead
+    from hydratk.lib.bridge.selen import SeleniumBridge
+    from yodahelpers.hydratk.core.events import events, reg_ev_hook
+    from time import sleep
+    from os import path, remove
+    from sys import prefix    
+  
+  Test-Case-1:
+    Id: tc_01
+    Name: tc_save_video
+    Desc: Save video
+    
+    Test-Condition-1: 
+      Id: tco_01
+      Name: tco_firefox
+      Desc: Video via Firefox
+      
+      Test: |
+        mh = MasterHead.get_head()
+        evs = ['selen_before_save_video', 'selen_after_save_video']
+        reg_ev_hook(mh, evs[0])
+        reg_ev_hook(mh, evs[1])
+        filename, duration = 'movie.gif', 0.5
+        c = SeleniumBridge('Firefox', False, True, filename, duration)
+        url = 'http://0.0.0.0:8888/'  
+        c.open(url)
+        sleep(3)
+        elem, val = 'customerId', 'xx'
+        c.set_element(elem, val)
+        
+      Validate: |
+        c.close()
+        res = [events[0]._id, events[1]._id]
+        this.test_result = str(res)
+        assert (res == evs), 'exec_script fires'.format(evs)
+        del mh._event_hooks[evs[0]]  
+        del mh._event_hooks[evs[1]] 
+        del events[0]
+        del events[0]
+        this.test_resut = res = (path.exists(filename))
+        assert (res), 'file {0} created'.format(filename)
+        remove(filename)
+        
+    Test-Condition-2: 
+      Id: tco_02
+      Name: tco_firefox_headless
+      Desc: Video via Firefox headless
+      
+      Test: |
+        c = SeleniumBridge('Firefox', True, True, filename, duration)
+        c.open(url)
+        sleep(3)
+        c.set_element(elem, val)      
+      
+      Validate: |
+        c.close()
+        this.test_resut = res = (path.exists(filename))
+        assert (res), 'file {0} created'.format(filename)
+        remove(filename)
+        
+    Test-Condition-3: 
+      Id: tco_03
+      Name: tco_chrome
+      Desc: Video via Chrome
+      
+      Test: |
+        c = SeleniumBridge('Chrome', False, True, filename, duration)
+        c.open(url)
+        sleep(3)
+        c.set_element(elem, val)      
+      
+      Validate: |
+        c.close()
+        this.test_resut = res = (path.exists(filename))
+        assert (res), 'file {0} created'.format(filename)
+        remove(filename) 
+        
+    Test-Condition-4: 
+      Id: tco_04
+      Name: tco_chrome_headless
+      Desc: Video via Chrome headless
+      
+      Test: |
+        c = SeleniumBridge('Chrome', True, True, filename, duration)
+        c.open(url)
+        sleep(3)
+        c.set_element(elem, val)      
+      
+      Validate: |
+        c.close()
+        this.test_resut = res = (path.exists(filename))
+        assert (res), 'file {0} created'.format(filename)
+        remove(filename)
+        
+    Test-Condition-5: 
+      Id: tco_05
+      Name: tco_invalid
+      Desc: Invalid path
+      
+      Test: |
+        filename = '/xx/movie.gif'
+        c = SeleniumBridge('Firefox', True, True, filename, duration)
+        c.open(url)
+        sleep(3)
+        c.set_element(elem, val)      
+      
+      Validate: |
+        c.close()
+        this.test_resut = res = (path.exists(filename))
+        assert (not res), 'file {0} not created'.format(filename)                                                                                  
